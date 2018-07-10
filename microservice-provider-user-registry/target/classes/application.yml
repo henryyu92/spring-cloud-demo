@@ -1,0 +1,41 @@
+server:
+  port: 8901
+logging:
+  level:
+    org.mooc: debug
+spring:
+  application:
+    name: microservice-provider-user-registry
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/spring-cloud-demo?useSSL=false
+    username: root
+    password: root
+    druid:
+      initial-size: 5
+      max-active: 20
+      max-waite: 60000
+      pool-prepared-statements: false
+      max-pool-prepared-statement-per-connection-size: -1
+      validation-query: select 'x'
+      validation-query-timeout: 60000
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 100000
+      filters: stat,log4j,wall
+
+mybatis:
+  config-location: classpath:mybatis.cfg.xml
+  type-aliases-package: org.mooc.springcloud.entity
+  mapper-locations:
+    - classpath:mapper/*.xml
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://user:password@localhost:8761/eureka
+  instance:
+    instance-id: provider-user-registry-8901
+    prefer-ip-address: true
