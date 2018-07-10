@@ -1,0 +1,52 @@
+server:
+  port: 8900
+logging:
+  level:
+    org.mooc: debug
+spring:
+  application:
+    name: microservice-provider-user
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/spring-cloud-demo?useSSL=false
+    username: root
+    password: root
+    druid:
+      initial-size: 5
+      max-active: 20
+      # 获取连接最大等待时间，单位 毫秒
+      max-waite: 60000
+      # 是否开启 PSCache，mysql 下建议关闭
+      pool-prepared-statements: false
+      # 如果大于0 会开启 PSCached，不管 pool-prepared-statements 的配置
+      max-pool-prepared-statement-per-connection-size: -1
+      # 检测连接是否有效的 sql，如不设置则
+      validation-query: select 'x'
+      # 检测连接是否有效的超时时间
+      validation-query-timeout: 60000
+      # 申请连接时执行 validation-query 检测连接是否有效，会降低性能
+      test-on-borrow: false
+      # 归还连接时执行 validation-query 检测连接是否有效，会影响性能
+      test-on-return: false
+      # 申请连接时检测，如果空闲时间大于 time-between-eviction-runs-millis，执行 validation-query 检测连接是否有效
+      # 不会影响性能，建议开启
+      test-while-idle: true
+      # 有两个含义：
+      # Destroy线程会检测连接的间隔时间，如果连接空闲时间大于等于minEvictableIdleTimeMillis则关闭物理连接
+      # testWhileIdle的判断依据，详细看testWhileIdle属性的说明
+      # 默认 1 分钟
+      time-between-eviction-runs-millis: 60000
+      # 连接保持空闲而不被驱逐的最小时间
+      min-evictable-idle-time-millis: 100000
+      # 属性类型是字符串，通过别名的方式配置扩展插件
+      # 监控统计用的filter:stat
+      # 日志用的filter:log4j
+      # filter:wall
+      filters: stat,log4j,wall
+
+
+mybatis:
+  config-location: classpath:mybatis.cfg.xml
+  type-aliases-package: org.mooc.springcloud.entity
+  mapper-locations:
+    - classpath:mapper/*.xml
