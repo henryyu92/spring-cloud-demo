@@ -12,4 +12,5 @@ eureka:
     # 只维护注册的实例
     fetch-registry: false
     service-url:
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+      # 需要域名映射
+      defaultZone: http://localhost:8762/eureka/,http://localhost:8763/eureka

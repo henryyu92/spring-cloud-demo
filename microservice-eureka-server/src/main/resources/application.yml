@@ -12,4 +12,4 @@ eureka:
     # 只维护注册的实例
     fetch-registry: false
     service-url:
-      defaultZone: http://user:password@${eureka.instance.hostname}:${server.port}/eureka/
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/

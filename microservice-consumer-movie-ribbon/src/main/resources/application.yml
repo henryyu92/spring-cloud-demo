@@ -2,11 +2,11 @@ server:
   port: 7901
 spring:
   application:
-    name: consumer-movie-registry
+    name: provider-user-ribbon
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
   instance:
-    instance-id: movie-consumer-registry-7901
+    instance-id: movie-consumer-ribbon-7901
     prefer-ip-address: true

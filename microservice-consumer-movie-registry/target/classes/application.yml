@@ -3,10 +3,6 @@ server:
 spring:
   application:
     name: consumer-movie-registry
-  security:
-    user:
-      name: user
-      password: password
 eureka:
   client:
     service-url:
