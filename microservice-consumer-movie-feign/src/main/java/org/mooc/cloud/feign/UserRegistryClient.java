@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @FeignClient("microservice-provider-user-registry")
-public interface UserFeignClient {
+public interface UserRegistryClient {
 
     @GetMapping("/user/{id}")
     public User getUser(@PathVariable("id") Long id);

@@ -23,6 +23,8 @@
 		<module>microservice-consumer-movie-registry</module>
 		<module>microservice-provider-user-registry</module>
 		<module>microservice-consumer-movie-ribbon</module>
+		<module>microservice-consumer-movie-feign</module>
+		<module>microservice-provider-user-hystrix</module>
 	</modules>
 
 	<dependencyManagement>
