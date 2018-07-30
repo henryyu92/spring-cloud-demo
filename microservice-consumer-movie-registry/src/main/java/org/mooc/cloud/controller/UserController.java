@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 public class UserController {
 
-    private static final String providerHost = "http://localhost:8900";
+    private static final String providerHost = "http://localhost:8901";
 
     @Autowired
     private RestTemplate restTemplate;

@@ -3,13 +3,21 @@ server:
 spring:
   application:
     name: eureka-server
+  security:
+    user:
+      name: user
+      password: passwd
 eureka:
   instance:
     hostname: localhost
   client:
-    # 不向注册中心注册自己
+    # Indicates whether or not this instance should register its information with eureka
+    # server for discovery by others.
     register-with-eureka: false
-    # 只维护注册的实例
+    # Indicates whether this client should fetch eureka registry information from eureka server.
     fetch-registry: false
     service-url:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+logging:
+  level:
+    root: info
