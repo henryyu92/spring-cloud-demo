@@ -1,0 +1,17 @@
+server:
+  port: 3333
+logging:
+  level:
+    root: info
+spring:
+  application:
+    name: zuul
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+zuul:
+  routes:
+    user:
+      path: /user/**
+      serviceId: microservice-provider-user-registry

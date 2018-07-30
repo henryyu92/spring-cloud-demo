@@ -19,6 +19,10 @@ public class MicroserviceConsumerMovieRibbonApplication {
 		SpringApplication.run(MicroserviceConsumerMovieRibbonApplication.class, args);
 	}
 
+	/**
+	 * Ribbon is a client-side load balancer that gives you a lot of control over the behavior of HTTP and TCP clients.
+	 * @return
+	 */
 	@Bean
 	@LoadBalanced
 	public RestTemplate restTemplate(){
