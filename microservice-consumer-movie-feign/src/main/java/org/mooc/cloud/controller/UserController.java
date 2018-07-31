@@ -1,15 +1,12 @@
 package org.mooc.cloud.controller;
 
 import org.mooc.cloud.entity.User;
-import org.mooc.cloud.feign.UserFeignClient;
 import org.mooc.cloud.feign.UserHystrixClient;
 import org.mooc.cloud.feign.UserRegistryClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 @RestController
 public class UserController {
