@@ -9,13 +9,15 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://user:passwd@localhost:8761/eureka/
+      defaultZone: http://user:passwd@localhost:8761/eureka
   instance:
     instance-id: ${spring.application.name}-${server.port}
     prefer-ip-address: true
 zuul:
   ignored-services: '*'
+  # Flag saying whether to strip the prefix from the path before forwarding.
+  strip-prefix: true
   routes:
-    user:
-      path: /user/**
-      serviceId: microservice-provider-user-registry
+    movie:
+      path: /proxy/**
+      serviceId: microservice-consumer-movie-feign

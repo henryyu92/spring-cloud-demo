@@ -2,6 +2,7 @@ server:
   port: 8761
 spring:
   application:
+    # this is the default for the Eureka service ID or VIP
     name: eureka-server
   security:
     user:

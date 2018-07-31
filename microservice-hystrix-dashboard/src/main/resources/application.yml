@@ -1,2 +1,12 @@
 server:
   port: 7900
+spring:
+  application:
+    name: microservice-hystrix-darshboard
+eureka:
+  client:
+    service-url:
+      defaultZone: http://user:passwd@localhost:8761/eureka
+  instance:
+    instance-id: ${spring.application.name}-${server.port}
+    prefer-ip-address: true

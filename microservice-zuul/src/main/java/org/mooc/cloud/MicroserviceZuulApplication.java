@@ -11,11 +11,9 @@ import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 public class MicroserviceZuulApplication {
 
 	/**
-	 * Eureka is the Netflix Service Discovery Server and Client.
-	 * The server can be configured and deployed to be highly available,
-	 * with each server replicating state about the registered services to the others.
 	 *
-	 * @param args
+	 * Spring Cloud has created an embedded Zuul proxy to ease the development of a common use case
+	 * where a UI application wants to make proxy calls to one or more back end services.
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(MicroserviceZuulApplication.class, args);

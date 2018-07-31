@@ -35,7 +35,7 @@ public class UserController {
         return services;
     }
 
-    public User processFallBack(@PathVariable("id") Long id){
+    public User processFallback(Long id){
         User user = new User();
         user.setUsername("error");
         return user;
