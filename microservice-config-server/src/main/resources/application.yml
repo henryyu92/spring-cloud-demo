@@ -13,9 +13,11 @@ spring:
     config:
       server:
         git:
-          uri:
-          username:
-          password:
+          uri: file:///C:/Users/sinaif/IdeaProjects/config-repo
+        health:
+          repositories:
+            config-repo:
+              profiles: dev
 eureka:
   client:
     service-url:
