@@ -3,11 +3,19 @@ server:
 spring:
   application:
     name: microservice-provider-user-config
-  profiles:
-    active: dev
   cloud:
     config:
-      uri: http://localhost:8888
+#      uri: http://localhost:8888
+      discovery:
+        # Flag to indicate that config server discovery is enabled (config server URL
+        # will be looked up via discovery).
+        enabled: true
+        service-id: microservice-config-server
+      name: microservice-provider-user-config
+      profile: dev
+      label: master
+      username: user
+      password: passwd
 
 eureka:
   client:
