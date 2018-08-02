@@ -11,4 +11,5 @@ eureka:
     instance-id: ${spring.application.name}-${server.port}
     prefer-ip-address: true
 turbine:
-  app-config: microservice-provider-user-config
+  app-config: microservice-provider-user-config,microservice-consumer-movie-config
+  cluster-name-expression: new String('default')

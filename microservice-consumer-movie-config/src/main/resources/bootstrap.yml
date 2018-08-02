@@ -1,5 +1,5 @@
 server:
-  port: 7900
+  port: 9000
 
 spring:
   application:
@@ -21,3 +21,9 @@ eureka:
 feign:
   hystrix:
     enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
