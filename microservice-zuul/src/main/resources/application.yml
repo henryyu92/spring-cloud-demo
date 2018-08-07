@@ -6,6 +6,15 @@ logging:
 spring:
   application:
     name: microservice-zuul
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: microservice-config-server
+      profile: dev
+      label: master
+      username: user
+      password: passwd
 eureka:
   client:
     service-url:
@@ -20,4 +29,4 @@ zuul:
   routes:
     movie:
       path: /proxy/**
-      serviceId: microservice-consumer-movie-feign
+      serviceId: microservice-consumer-movie-config
