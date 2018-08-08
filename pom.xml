@@ -30,7 +30,15 @@
 		<module>microservice-config-server</module>
 		<module>microservice-provider-user-config</module>
 		<module>microservice-consumer-movie-config</module>
+		<module>microservice-stream</module>
 	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+		</dependency>
+	</dependencies>
 
 	<dependencyManagement>
 		<dependencies>
@@ -42,10 +50,7 @@
 				<scope>import</scope>
 			</dependency>
 
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-devtools</artifactId>
-			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
