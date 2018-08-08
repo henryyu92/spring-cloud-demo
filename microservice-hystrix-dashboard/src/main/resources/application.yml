@@ -12,4 +12,4 @@ eureka:
     prefer-ip-address: true
 turbine:
   app-config: microservice-provider-user-config,microservice-consumer-movie-config
-  cluster-name-expression: new String('default')
+  cluster-name-expression: "'default'"
