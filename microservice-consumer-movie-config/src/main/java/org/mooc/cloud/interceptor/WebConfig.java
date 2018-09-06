@@ -7,14 +7,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * @author : henry
- * @version : 1.0
- * @Description :
- * @Copyright : Sinaif All Rights Reserved
- * @Company : 海南新浪爱问普惠科技有限公司-富鱼
- * @Create Date : 2018/9/6 10:59
- */
 
 @Configuration
 @EnableWebMvc

@@ -6,14 +6,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * @author : henry
- * @version : 1.0
- * @Description :
- * @Copyright : Sinaif All Rights Reserved
- * @Company : 海南新浪爱问普惠科技有限公司-富鱼
- * @Create Date : 2018/9/6 11:08
- */
+
 public class RequestCheckInterceptor extends HandlerInterceptorAdapter {
 
     @Override
