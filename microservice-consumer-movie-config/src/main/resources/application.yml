@@ -1,7 +1,13 @@
 server:
   port: 8081
 interceptor:
-  includePattens:
+  include-pattens:
     - /**
-  excludePattens:
+  exclude-pattens:
+    - /admin/**
+
+requestCheckInterceptor:
+  include-pattens:
+    - /**
+  exclude-pattens:
     - /admin/**
