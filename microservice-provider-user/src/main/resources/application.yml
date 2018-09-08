@@ -1,4 +1,4 @@
-server:
+ï»¿server:
   port: 8900
 logging:
   level:
@@ -14,33 +14,33 @@ spring:
     druid:
       initial-size: 5
       max-active: 20
-      # »ñÈ¡Á¬½Ó×î´óµÈ´ıÊ±¼ä£¬µ¥Î» ºÁÃë
+      # è·å–è¿æ¥æœ€å¤§ç­‰å¾…æ—¶é—´ï¼Œå•ä½ æ¯«ç§’
       max-waite: 60000
-      # ÊÇ·ñ¿ªÆô PSCache£¬mysql ÏÂ½¨Òé¹Ø±Õ
+      # æ˜¯å¦å¼€å¯ PSCacheï¼Œmysql ä¸‹å»ºè®®å…³é—­
       pool-prepared-statements: false
-      # Èç¹û´óÓÚ0 »á¿ªÆô PSCached£¬²»¹Ü pool-prepared-statements µÄÅäÖÃ
+      # å¦‚æœå¤§äº0 ä¼šå¼€å¯ PSCachedï¼Œä¸ç®¡ pool-prepared-statements çš„é…ç½®
       max-pool-prepared-statement-per-connection-size: -1
-      # ¼ì²âÁ¬½ÓÊÇ·ñÓĞĞ§µÄ sql£¬Èç²»ÉèÖÃÔò
+      # æ£€æµ‹è¿æ¥æ˜¯å¦æœ‰æ•ˆçš„ sqlï¼Œå¦‚ä¸è®¾ç½®åˆ™
       validation-query: select 'x'
-      # ¼ì²âÁ¬½ÓÊÇ·ñÓĞĞ§µÄ³¬Ê±Ê±¼ä
+      # æ£€æµ‹è¿æ¥æ˜¯å¦æœ‰æ•ˆçš„è¶…æ—¶æ—¶é—´
       validation-query-timeout: 60000
-      # ÉêÇëÁ¬½ÓÊ±Ö´ĞĞ validation-query ¼ì²âÁ¬½ÓÊÇ·ñÓĞĞ§£¬»á½µµÍĞÔÄÜ
+      # ç”³è¯·è¿æ¥æ—¶æ‰§è¡Œ validation-query æ£€æµ‹è¿æ¥æ˜¯å¦æœ‰æ•ˆï¼Œä¼šé™ä½æ€§èƒ½
       test-on-borrow: false
-      # ¹é»¹Á¬½ÓÊ±Ö´ĞĞ validation-query ¼ì²âÁ¬½ÓÊÇ·ñÓĞĞ§£¬»áÓ°ÏìĞÔÄÜ
+      # å½’è¿˜è¿æ¥æ—¶æ‰§è¡Œ validation-query æ£€æµ‹è¿æ¥æ˜¯å¦æœ‰æ•ˆï¼Œä¼šå½±å“æ€§èƒ½
       test-on-return: false
-      # ÉêÇëÁ¬½ÓÊ±¼ì²â£¬Èç¹û¿ÕÏĞÊ±¼ä´óÓÚ time-between-eviction-runs-millis£¬Ö´ĞĞ validation-query ¼ì²âÁ¬½ÓÊÇ·ñÓĞĞ§
-      # ²»»áÓ°ÏìĞÔÄÜ£¬½¨Òé¿ªÆô
+      # ç”³è¯·è¿æ¥æ—¶æ£€æµ‹ï¼Œå¦‚æœç©ºé—²æ—¶é—´å¤§äº time-between-eviction-runs-millisï¼Œæ‰§è¡Œ validation-query æ£€æµ‹è¿æ¥æ˜¯å¦æœ‰æ•ˆ
+      # ä¸ä¼šå½±å“æ€§èƒ½ï¼Œå»ºè®®å¼€å¯
       test-while-idle: true
-      # ÓĞÁ½¸öº¬Òå£º
-      # DestroyÏß³Ì»á¼ì²âÁ¬½ÓµÄ¼ä¸ôÊ±¼ä£¬Èç¹ûÁ¬½Ó¿ÕÏĞÊ±¼ä´óÓÚµÈÓÚminEvictableIdleTimeMillisÔò¹Ø±ÕÎïÀíÁ¬½Ó
-      # testWhileIdleµÄÅĞ¶ÏÒÀ¾İ£¬ÏêÏ¸¿´testWhileIdleÊôĞÔµÄËµÃ÷
-      # Ä¬ÈÏ 1 ·ÖÖÓ
+      # æœ‰ä¸¤ä¸ªå«ä¹‰ï¼š
+      # Destroyçº¿ç¨‹ä¼šæ£€æµ‹è¿æ¥çš„é—´éš”æ—¶é—´ï¼Œå¦‚æœè¿æ¥ç©ºé—²æ—¶é—´å¤§äºç­‰äºminEvictableIdleTimeMillisåˆ™å…³é—­ç‰©ç†è¿æ¥
+      # testWhileIdleçš„åˆ¤æ–­ä¾æ®ï¼Œè¯¦ç»†çœ‹testWhileIdleå±æ€§çš„è¯´æ˜
+      # é»˜è®¤ 1 åˆ†é’Ÿ
       time-between-eviction-runs-millis: 60000
-      # Á¬½Ó±£³Ö¿ÕÏĞ¶ø²»±»ÇıÖğµÄ×îĞ¡Ê±¼ä
+      # è¿æ¥ä¿æŒç©ºé—²è€Œä¸è¢«é©±é€çš„æœ€å°æ—¶é—´
       min-evictable-idle-time-millis: 100000
-      # ÊôĞÔÀàĞÍÊÇ×Ö·û´®£¬Í¨¹ı±ğÃûµÄ·½Ê½ÅäÖÃÀ©Õ¹²å¼ş
-      # ¼à¿ØÍ³¼ÆÓÃµÄfilter:stat
-      # ÈÕÖ¾ÓÃµÄfilter:log4j
+      # å±æ€§ç±»å‹æ˜¯å­—ç¬¦ä¸²ï¼Œé€šè¿‡åˆ«åçš„æ–¹å¼é…ç½®æ‰©å±•æ’ä»¶
+      # ç›‘æ§ç»Ÿè®¡ç”¨çš„filter:stat
+      # æ—¥å¿—ç”¨çš„filter:log4j
       # filter:wall
       filters: stat,log4j,wall
 
