@@ -6,7 +6,7 @@ import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 
 @SpringBootApplication
 @EnableEurekaServer
-public class MicroserviceEurekaServerApplication {
+public class MicroServiceGatewayApplication {
 
 	/**
 	 * Eureka is the Netflix Service Discovery Server and Client.

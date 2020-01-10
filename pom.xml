@@ -8,57 +8,25 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.0.1.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
-	
+    <properties>
+        <java.version>1.8</java.version>
+        <spring-boot-admin.version>2.2.1</spring-boot-admin.version>
+        <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
+    </properties>
+
 	<modules>
-		<module>microservice-consumer-movie</module>
-		<module>microservice-provider-user</module>
+		<module>microservice-business-movie</module>
+		<module>microservice-business-user</module>
 		<module>microservice-eureka-server</module>
-		<module>microservice-eureka-server-cluster</module>
-		<module>microservice-consumer-movie-registry</module>
-		<module>microservice-provider-user-registry</module>
-		<module>microservice-consumer-movie-ribbon</module>
-		<module>microservice-consumer-movie-feign</module>
-		<module>microservice-provider-user-hystrix</module>
-		<module>microservice-hystrix-dashboard</module>
-		<module>microservice-zuul</module>
 		<module>microservice-config-server</module>
-		<module>microservice-provider-user-config</module>
-		<module>microservice-consumer-movie-config</module>
+		<module>microservice-gateway</module>
+		<module>microservice-zuul</module>
+		<module>microservice-hystrix-dashboard</module>
+		<module>microservice-ribbon</module>
+		<module>microservice-feign</module>
 		<module>microservice-stream</module>
+		<module>microservice-dependencies</module>
 	</modules>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-		</dependency>
-	</dependencies>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>Finchley.RELEASE</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-
-
-		</dependencies>
-	</dependencyManagement>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
-	</properties>
 
 	<build>
 		<plugins>
