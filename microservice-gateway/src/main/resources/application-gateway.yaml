@@ -1,0 +1,59 @@
+spring:
+  cloud:
+    gateway:
+      enabled: true # 启用 spring-cloud-gateway 默认为 true
+      # 路由策略
+      routes:
+        - id: after_route
+          uri: https://example.org
+          # 匹配在指定时间之后的请求
+          predicates:
+            - After=2017-01-20T17:42:47.789-07:00[America/Denver]
+        - id: before_route
+          uri: https://example.org
+          # 匹配在指定时间之前的请求
+          predicates:
+            - Before=2017-01-20T17:42:47.789-07:00[America/Denver]
+        - id: between_route
+          uri: https://example.org
+          predicates:
+            - Between=2017-01-20T17:42:47.789-07:00[America/Denver], 2017-01-21T17:42:47.789-07:00[America/Denver]
+        - id: cookie_route
+          uri: https://example.org
+          predicates:
+            - Cookie=chocolate, ch.p
+            - Cookie=key, value
+        - id: header_route
+          uri: https://example.org
+          predicates:
+            - Header=X-Request-Id, \d+
+        - id: host_route
+          uri: https://example.org
+          predicates:
+            - Host=**.somehost.org,**.anotherhost.org
+        - id: method_route
+          uri: https://example.org
+          predicates:
+            - Method=GET,POST
+        - id: host_route
+          uri: https://example.org
+          predicates:
+            - Path=/red/{segment},/blue/{segment}
+        - id: query_route
+          uri: https://example.org
+          predicates:
+            - Query=green   # 请求参数为 green
+            - Query=red, gree.  # 请求参数为 red，请求参数值匹配正则表达式 gree
+        - id: remoteaddr_route
+          uri: https://example.org
+          predicates:
+            - RemoteAddr=192.168.1.1/24
+        # 权重路由，80% 流量转发到 weighthigh.org，20% 流量转发到 weightlow.org
+        - id: weight_high
+          uri: https://weighthigh.org
+          predicates:
+            - Weight=group1, 8
+        - id: weight_low
+          uri: https://weightlow.org
+          predicates:
+            - Weight=group1, 2
