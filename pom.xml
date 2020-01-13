@@ -26,6 +26,7 @@
 		<module>microservice-feign</module>
 		<module>microservice-stream</module>
 		<module>microservice-dependencies</module>
+		<module>microservice-admin</module>
 	</modules>
 
 </project>

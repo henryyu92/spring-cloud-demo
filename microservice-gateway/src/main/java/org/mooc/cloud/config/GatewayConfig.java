@@ -1,11 +1,19 @@
 package org.mooc.cloud.config;
 
 
+import org.springframework.cloud.gateway.filter.ratelimit.RedisRateLimiter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
+import org.springframework.cloud.gateway.support.ipresolver.RemoteAddressResolver;
 import org.springframework.cloud.gateway.support.ipresolver.XForwardedRemoteAddressResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @author Administrator
@@ -14,8 +22,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GatewayConfig {
 
+    @RequestMapping("/hystrixfallback")
+    public String hystrixfallback() {
+        return "This is a fallback";
+    }
+
     public void configure(){
-        XRemoteAddressResolver resolver = ForwardedRemoteAddressResolver.maxTrustedIndex(1);
+        RemoteAddressResolver resolver = XForwardedRemoteAddressResolver.maxTrustedIndex(1);
     }
 
 
@@ -42,5 +55,26 @@ public class GatewayConfig {
                 .build();
     }
 
+    @Bean
+    RedisRateLimiter redisRateLimiter() {
+        return new RedisRateLimiter(1, 2);
+    }
+
+    @Bean
+    SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) throws Exception {
+        return http.httpBasic().and()
+                .csrf().disable()
+                .authorizeExchange()
+                .pathMatchers("/anything/**").authenticated()
+                .anyExchange().permitAll()
+                .and()
+                .build();
+    }
+
+    @Bean
+    public MapReactiveUserDetailsService reactiveUserDetailsService() {
+        UserDetails user = User.withUsername("user").password("password").roles("USER").build();
+        return new MapReactiveUserDetailsService(user);
+    }
 
 }
