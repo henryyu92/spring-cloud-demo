@@ -7,6 +7,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
  * @author
  */
 @SpringBootApplication
+//@EnableEurekaClient
+//@EnableHystrix
 public class MicroServiceGatewayApplication {
 
 	public static void main(String[] args) {

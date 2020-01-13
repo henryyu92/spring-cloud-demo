@@ -22,8 +22,6 @@
 		<module>microservice-gateway</module>
 		<module>microservice-zuul</module>
 		<module>microservice-hystrix-dashboard</module>
-		<module>microservice-ribbon</module>
-		<module>microservice-feign</module>
 		<module>microservice-stream</module>
 		<module>microservice-dependencies</module>
 		<module>microservice-admin</module>
