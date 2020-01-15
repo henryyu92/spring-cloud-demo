@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.MapReactiveUserDetailsServi
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * @author Administrator
@@ -22,14 +21,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Configuration
 public class GatewayConfig {
 
-    @RequestMapping("/hystrixfallback")
-    public String hystrixfallback() {
-        return "This is a fallback";
-    }
+
 
     public void configure(){
         RemoteAddressResolver resolver = XForwardedRemoteAddressResolver.maxTrustedIndex(1);
     }
+
 
 
     @Bean

@@ -22,4 +22,10 @@ public class UserController {
 
         return user;
     }
+
+    @GetMapping("/test")
+    public String test(){
+        String forObject = restTemplate.getForObject("http://localhost:7000/get", String.class);
+        return forObject;
+    }
 }
