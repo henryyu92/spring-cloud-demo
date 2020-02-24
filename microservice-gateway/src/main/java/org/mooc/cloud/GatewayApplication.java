@@ -10,10 +10,10 @@ import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 @SpringBootApplication
 //@EnableEurekaClient
 @EnableHystrix
-public class MicroServiceGatewayApplication {
+public class GatewayApplication {
 
 	public static void main(String[] args) {
-		new SpringApplicationBuilder(MicroServiceGatewayApplication.class).run(args);
+		new SpringApplicationBuilder(GatewayApplication.class).run(args);
 	}
 
 }
