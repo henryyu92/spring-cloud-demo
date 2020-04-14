@@ -21,21 +21,22 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @Configuration
 public class GatewayConfig {
 
+    RemoteAddressResolver resolver;
 
+    public GatewayConfig(){
+        resolver = XForwardedRemoteAddressResolver.maxTrustedIndex(1);
+    }
 
     public void configure(){
         RemoteAddressResolver resolver = XForwardedRemoteAddressResolver.maxTrustedIndex(1);
     }
 
 
-
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder){
         return builder.routes()
-                .route("path_route", r -> r.path("/get")
-                        .uri("http://httpbin.org"))
-                .route("host_route", r -> r.host("*.myhost.org")
-                        .uri("http://httpbin.org"))
+                .route("path_route", r -> r.path("/get").uri("http://httpbin.org"))
+                .route("host_route", r -> r.host("*.myhost.org").uri("http://httpbin.org"))
                 .route("rewrite_route", r -> r.host("*.rewrite.org")
                         .filters(f -> f.rewritePath("/foo/(?<segment>.*)", "/${segment}"))
                         .uri("http://httpbin.org"))

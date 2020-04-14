@@ -25,6 +25,7 @@
 		<module>microservice-stream</module>
 		<module>microservice-dependencies</module>
 		<module>microservice-admin</module>
-	</modules>
+        <module>microservice-starter</module>
+    </modules>
 
 </project>
