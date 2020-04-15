@@ -69,7 +69,9 @@
 					<plugin>
 						<!-- 打包资源 -->
 						<artifactId>maven-assembly-plugin</artifactId>
-						<configuration></configuration>
+						<configuration>
+							
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>

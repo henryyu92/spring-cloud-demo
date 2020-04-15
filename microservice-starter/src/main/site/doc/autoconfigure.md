@@ -1,3 +1,7 @@
+### SpringBoot 启动
+SpringBoot 应用通过 ```SpringApplication.run``` 方法启动，其需要传入主资源类和 main 方法参数，其中主资源类用于指定初始化 Context 的配置，方法参数作为运行时的参数。
+
+
 ### 自动化配置原理
 Spring Boot 自动化配置相关的源码位于 ```org.springframework.boot.autoconfigure``` 包下，在对应的 ```spring-boot-autoconfigure.jar``` 包中有一个配置文件 ```/META-INF/spring.factories``` 是 Spring Boot 自动配置的关键，该文件中列出了可以被 Spring Boot 实施自动配置的模块清单：
 ```properties
