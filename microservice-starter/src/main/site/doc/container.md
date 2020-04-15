@@ -1,3 +1,16 @@
+## IoC 容器
+在 Spring 中，IoC 容器是实现依赖控制反转(DI)的载体，它可以在对象生成或初始化时直接将数据注入到对象中，也可以通过将对象引用注入到对象数据域中的方式来注入对方法调用的依赖。
+
+通过 IoC 容器，对象依赖关系的管理被反转了，转到 IoC 容器中来了，对象之间的相互依赖关系由 IoC 容器进行管理，并由 IoC 容器完成对象的注入。
+
+
+Spring 中设计的 IoC 容器主要有两类：
+- ```BeanFactory``` 接口为核心的容器，包括 ```HierarchicalBeanFactory```, ```ListableBeanFactory```
+- ApplicationContext 为核心的容器，包括 ```ListableBeanFactory```, ```ListableBeanFactory``` 和 ```WebApplicationContext```
+
+BeanFactory 接口提供了使用 IoC 容器的规范，只提供了最基本的 IoC 容器的功能。Spring 提供的其他容器(如 DefaultListableBeanFactory)都是对 BeanFactory 的功能的扩展，
+
+在基本的 IoC 容器的接口定义和实现上，Spring 通过定义 BeanDefinition 来管理基于 Spring 的应用中的各种对象以及它们之间的相互依赖关系。对 IoC 容器来说，BeanDefinition 就是对依赖反转模式中管理的对象依赖关系的抽象，也是容器实现依赖反转功能的核心数据结构，依赖反转功能都是围绕 BeanDefinition 的处理来完成。
 ### 容器初始化
 Spring 在实例化 AnnotationConfigApplicationContext 是开始容器的初始化工作，在实例化 AnnotationConfigApplicationContext 前先实例化父类 ConfigurableListableBeanFactory，在父类中初始化了 beanFactory：
 ```java
