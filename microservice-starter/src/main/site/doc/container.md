@@ -8,10 +8,20 @@ Spring 中设计的 IoC 容器主要有两类：
 - ```BeanFactory``` 接口为核心的容器，包括 ```HierarchicalBeanFactory```, ```ListableBeanFactory```
 - ApplicationContext 为核心的容器，包括 ```ListableBeanFactory```, ```ListableBeanFactory``` 和 ```WebApplicationContext```
 
-BeanFactory 接口提供了使用 IoC 容器的规范，只提供了最基本的 IoC 容器的功能。Spring 提供的其他容器(如 DefaultListableBeanFactory)都是对 BeanFactory 的功能的扩展，
+BeanFactory 接口提供了使用 IoC 容器的规范，只提供了最基本的 IoC 容器的功能，Spring 提供的其他容器(如 DefaultListableBeanFactory)都是对 BeanFactory 的功能的扩展。创建 IoC 容器时需要几个步骤：
+- 创建 IoC 配置文件的抽象资源，这个抽象资源包含了 BeanDefinition 的定义信息
+- 创建一个载入 BeanDefinition 的读取器，用于载入抽象资源
+- 解析载入的资源，完成 BeanDefinition 的载入和注册
+
+Spring 提供了许多已经定义好的容器实现(继承自 ApplicationContext)，这些容器在 BeanFactory 的基础上增加了多种特性，如通过 Resource 和 ResourceLoader 支持不同的 Resource 加载 BeanDefinition；通过 ApplicationEventPublisher 引入事件机制和 Bean 的生命周期结合为 Bean 的管理提供了便利
 
 在基本的 IoC 容器的接口定义和实现上，Spring 通过定义 BeanDefinition 来管理基于 Spring 的应用中的各种对象以及它们之间的相互依赖关系。对 IoC 容器来说，BeanDefinition 就是对依赖反转模式中管理的对象依赖关系的抽象，也是容器实现依赖反转功能的核心数据结构，依赖反转功能都是围绕 BeanDefinition 的处理来完成。
+
 ### 容器初始化
+IoC 容器的初始化主要包含 BeanDefinition 的 Resource 定位、载入和注册三个过程，三个过程可以分别扩展从而实现多种不同的 IoC 容器。
+
+
+
 Spring 在实例化 AnnotationConfigApplicationContext 是开始容器的初始化工作，在实例化 AnnotationConfigApplicationContext 前先实例化父类 ConfigurableListableBeanFactory，在父类中初始化了 beanFactory：
 ```java
 public GenericApplicationContext() {
