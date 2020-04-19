@@ -20,9 +20,21 @@ Spring 提供了许多已经定义好的容器实现(继承自 ApplicationContex
 ### 容器初始化
 IoC 容器的初始化主要包含 BeanDefinition 的 Resource 定位、载入和注册三个过程，三个过程可以分别扩展从而实现多种不同的 IoC 容器。
 
+IoC 容器的初始化一般不包含 Bean 依赖注入的实现，依赖注入一般发生在第一次通过 getBean 向容器获取 Bean 的时候，但是 Bean 定义信息中设置来了 lazyinit 属性则会在 IoC 容器初始化时完成 Bean 的依赖注入。
+
+#### Resource 定位
+Resource 定位指的是 BeanDefinition 的资源定位，由 ResourceLoader 加载资源生成 Resource，这个 Resource 提供了获取 BeanDefinition 资源的接口。
+
+Spring 注解开发在实例化
 
 
-Spring 在实例化 AnnotationConfigApplicationContext 是开始容器的初始化工作，在实例化 AnnotationConfigApplicationContext 前先实例化父类 ConfigurableListableBeanFactory，在父类中初始化了 beanFactory：
+#### BeanDefinition 载入
+通过 Resource 提供的接口获取 BeanDefinition 资源并将转换成 BeanDefinition 结构。
+
+#### BeanDefinition 注册
+把解析得到的 BeanDefinition 向 IoC 容器注册，其本质是将 BeanDefinition 存储到 IoC 容器中的一个 HashMap 中去。
+
+Spring 在实例化 AnnotationConfigApplicationContext 时开始容器的初始化工作，在实例化 AnnotationConfigApplicationContext 前先实例化父类 ConfigurableListableBeanFactory，在父类中初始化了 beanFactory：
 ```java
 public GenericApplicationContext() {
     this.beanFactory = new DefaultListableBeanFactory();
@@ -96,7 +108,6 @@ public void register(Class<?>... annotatedClasses) {
     BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 }
 ```
-##### BeanDefinition
 ##### BeanDefinitionRegistry
 BeanDefinition 注册到 beanFactory 的 beanDefinitionMap 中，beanDefinitionMap 是一个 ConcurrentHashMap<String, BeanDefinition> 的数据结构，其中 key 是 beanName，value 是 BeanDefinition：
 ```java
