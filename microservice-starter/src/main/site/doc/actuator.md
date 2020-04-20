@@ -46,6 +46,15 @@ management.endpoints.web.path-mapping.health=healthcheck
 ```
 
 #### 自定义 Endpoint
+在 @Bean 注解的类上使用 @Endpoint 即可以将当前 Bean 作为 Endpoint 通过 JMX 或者 HTTP 方式暴露。使用 @JmxEndpoint 只能通过 JMX 方式暴露，@WebEndpoint 只能通过 HTTP 方式暴露。
+
+使用 @EndpointWebExtension 和 @EndpointJmxEndpoint 来扩展 Endpoint 的功能。
+
+Endpont 中的方法可以用 @ReadOperation, @WriteOperation 或 @DeleteOperation 注解来自动通过 JXM 或者 HTTP 暴露。
+
+通过在一个实现了 Supplier<Endpoint> 接口的类上增加 @ServletEndpoint 注解可以创建一个 Servelt Endpoint，这样可以将 Servlet 作为 Endpoint 暴露。
+
+@ControllerEndpoint 和 @RestControllerEndpoint 则可以用于实现基于 Spring MVC 的 Endpoint，其访问的方法通过 @RequestMapping 和 GetMapping 来映射。
 
 
 
