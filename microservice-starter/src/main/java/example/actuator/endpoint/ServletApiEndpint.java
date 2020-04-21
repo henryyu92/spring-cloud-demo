@@ -1,4 +1,4 @@
-package example.actuator;
+package example.actuator.endpoint;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;

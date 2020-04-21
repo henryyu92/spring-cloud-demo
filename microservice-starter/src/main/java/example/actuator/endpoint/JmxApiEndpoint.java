@@ -1,5 +1,7 @@
-package example.actuator;
+package example.actuator.endpoint;
 
+import example.actuator.endpoint.ApiEndpoint;
+import example.actuator.metric.Metric;
 import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpoint;
 
 @JmxEndpoint(id = "jmx")

@@ -1,4 +1,4 @@
-package example.actuator;
+package example.actuator.source;
 
 public class ApiEndpointContributor {
 }

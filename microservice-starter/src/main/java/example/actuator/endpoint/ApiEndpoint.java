@@ -1,6 +1,7 @@
-package example.actuator;
+package example.actuator.endpoint;
 
 
+import example.actuator.metric.Metric;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
