@@ -1,11 +1,11 @@
 package example.actuator.endpoint;
 
-import example.actuator.endpoint.ApiEndpoint;
 import example.actuator.metric.Metric;
+import example.actuator.sink.AbstractSink;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 
 @WebEndpoint(id = "webApi")
-public class HttpApiEndpoint implements ApiEndpoint {
+public class HttpApiEndpoint extends AbstractSink implements ApiEndpoint {
 
     @Override
     public Metric perform() {
