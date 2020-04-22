@@ -3,5 +3,12 @@ package example.actuator.source;
 /**
  * 监控源
  */
-public interface Source {
+
+@FunctionalInterface
+public interface Source<T> {
+    /**
+     * 收集监控信息
+     * @return
+     */
+    T collect();
 }
