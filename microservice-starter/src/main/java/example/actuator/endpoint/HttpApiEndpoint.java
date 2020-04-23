@@ -1,6 +1,6 @@
 package example.actuator.endpoint;
 
-import example.actuator.metric.Metric;
+import example.actuator.metric.Metrics;
 import example.actuator.sink.AbstractSink;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 
@@ -8,17 +8,17 @@ import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 public class HttpApiEndpoint extends AbstractSink implements ApiEndpoint {
 
     @Override
-    public Metric perform() {
+    public Metrics perform() {
         return null;
     }
 
     @Override
-    public Metric writeOp() {
+    public Metrics writeOp() {
         return null;
     }
 
     @Override
-    public Metric deleteOp() {
+    public Metrics deleteOp() {
         return null;
     }
 }

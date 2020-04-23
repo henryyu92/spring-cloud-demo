@@ -61,5 +61,11 @@ Endpont 中的方法可以用 @ReadOperation, @WriteOperation 或 @DeleteOperati
 https://blog.csdn.net/alinyua/article/details/80009435
 https://my.oschina.net/u/3266761/blog/2960774
 ## Micrometer
+spring-actuator 中集成了 Micrometer 框架作为度量系统。
+
+Micrometer 中的核心接口是 Meter 表示用于收集应用中的度量接口，其具体类型包括：Timer, Counter, Gauge, DistributionSummary, LongTaskTimer, FunctionCounter, FunctionTimer 和 TimeGauge。
+
+- Counter 是一种单值的度量类型，是一个增量为正数的单值计数器，可以应用在记录总量或者计数的场景
+- FunctionCounter
 
 https://www.cnblogs.com/rolandlee/p/11343848.html

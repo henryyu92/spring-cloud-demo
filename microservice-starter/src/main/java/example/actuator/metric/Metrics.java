@@ -1,4 +1,4 @@
 package example.actuator.metric;
 
-public class Metric {
+public class Metrics {
 }

@@ -1,10 +1,10 @@
 package example.actuator.source;
 
-import example.actuator.metric.Metric;
+import example.actuator.metric.Metrics;
 
-public class ApiEndpointContributor implements Source<Metric> {
+public class ApiEndpointContributor implements Source<Metrics> {
     @Override
-    public Metric collect() {
+    public Metrics collect() {
         return null;
     }
 }

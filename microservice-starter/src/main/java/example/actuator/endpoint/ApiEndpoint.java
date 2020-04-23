@@ -1,7 +1,7 @@
 package example.actuator.endpoint;
 
 
-import example.actuator.metric.Metric;
+import example.actuator.metric.Metrics;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
@@ -13,19 +13,19 @@ public interface ApiEndpoint {
      * @return
      */
     @ReadOperation
-    Metric perform();
+    Metrics perform();
 
     /**
      * 通过 POST 方法访问
      * @return
      */
     @WriteOperation
-    Metric writeOp();
+    Metrics writeOp();
 
     /**
      * 通过 DELETE 方法访问
      * @return
      */
     @DeleteOperation
-    Metric deleteOp();
+    Metrics deleteOp();
 }

@@ -1,23 +1,22 @@
 package example.actuator.endpoint;
 
-import example.actuator.endpoint.ApiEndpoint;
-import example.actuator.metric.Metric;
+import example.actuator.metric.Metrics;
 import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpoint;
 
 @JmxEndpoint(id = "jmx")
 public class JmxApiEndpoint implements ApiEndpoint {
     @Override
-    public Metric perform() {
+    public Metrics perform() {
         return null;
     }
 
     @Override
-    public Metric writeOp() {
+    public Metrics writeOp() {
         return null;
     }
 
     @Override
-    public Metric deleteOp() {
+    public Metrics deleteOp() {
         return null;
     }
 }
