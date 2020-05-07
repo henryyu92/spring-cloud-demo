@@ -24,15 +24,18 @@ public class QueryOrderIdCommand extends HystrixCommand<Integer> {
      */
     protected QueryOrderIdCommand(HystrixCommandGroupKey group) {
         super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(""))
-        .andCommandKey(HystrixCommandKey.Factory.asKey(""))
-        .andCommandPropertiesDefaults(
+            .andCommandKey(HystrixCommandKey.Factory.asKey(""))
+            .andCommandPropertiesDefaults(
                 HystrixCommandProperties.Setter()
-                .withCircuitBreakerEnabled(true)
-                .withCircuitBreakerRequestVolumeThreshold(10)
-                .withCircuitBreakerSleepWindowInMilliseconds(5000)
-                .withCircuitBreakerErrorThresholdPercentage(50)
-                .withExecutionTimeoutEnabled(true))
-        .andThreadPoolPropertiesDefaults(
+                .withRequestCacheEnabled(false)   // 不开启请求缓存
+                .withCircuitBreakerEnabled(true)  // 启动断路器
+                .withCircuitBreakerRequestVolumeThreshold(10)   // 触发熔断的请求数
+                .withCircuitBreakerErrorThresholdPercentage(50) // 触发熔断的请求比例
+                .withCircuitBreakerSleepWindowInMilliseconds(5000)  // 熔断后直接拒绝请求的时长，之后熔断器进入 half-open 状态
+                .withExecutionTimeoutEnabled(true)          // 请求超时调用 fallback
+                .withExecutionTimeoutInMilliseconds(1000)   // 请求超时时长
+            )
+            .andThreadPoolPropertiesDefaults(
                 HystrixThreadPoolProperties.Setter()
                 .withCoreSize(10))
         );
