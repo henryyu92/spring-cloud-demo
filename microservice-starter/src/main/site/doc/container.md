@@ -25,22 +25,13 @@ IoC 容器的初始化一般不包含 Bean 依赖注入的实现，依赖注入�
 #### Resource 定位
 Resource 定位指的是 BeanDefinition 的资源定位，由 ResourceLoader 加载资源生成 Resource，这个 Resource 提供了获取 BeanDefinition 资源的接口。
 
-Spring 注解开发在实例化
-
-
-#### BeanDefinition 载入
-通过 Resource 提供的接口获取 BeanDefinition 资源并将转换成 BeanDefinition 结构。
-
-#### BeanDefinition 注册
-把解析得到的 BeanDefinition 向 IoC 容器注册，其本质是将 BeanDefinition 存储到 IoC 容器中的一个 HashMap 中去。
-
-Spring 在实例化 AnnotationConfigApplicationContext 时开始容器的初始化工作，在实例化 AnnotationConfigApplicationContext 前先实例化父类 ConfigurableListableBeanFactory，在父类中初始化了 beanFactory：
+Spring 在实例化 ```AnnotationConfigApplicationContext``` 时开始容器的初始化工作，在实例化 ```AnnotationConfigApplicationContext``` 前先实例化父类 ```ConfigurableListableBeanFactory```，在父类中初始化了 beanFactory：
 ```java
 public GenericApplicationContext() {
     this.beanFactory = new DefaultListableBeanFactory();
 }
 ```
-AnnotationConfigApplicationContext 构造器中有三个方法调用：
+```AnnotationConfigApplicationContext``` 无参构造函数中，初始化了 reader 和 scanner 分别用于将指定的类和包下的类解析为 BeanDefinition：
 ```java
 public AnnotationConfigApplicationContext() {
     // 实例化 reader 用于注册指定的类到 BeanDefinitionRegistry
@@ -48,6 +39,9 @@ public AnnotationConfigApplicationContext() {
     // 实例化 scanner 用于扫描包下的类到 BeanDefinitionRegistry
     this.scanner = new ClassPathBeanDefinitionScanner(this);
 }
+```
+在 ```AnnotationConfigApplicationContext``` 的构造函数中包含三个方法的调用，分别用于初始化 ApplicaitonContext，将当前传入的配置类加载到 IoC 容器中，刷新 IoC 容器：
+```java
 
 public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
     this();
@@ -57,6 +51,14 @@ public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
     refresh();
 }
 ```
+在 ApplicationConfigApplication 调用 refresh 方法之前，Spring 实例化了 IoC 容器，此时部分内置的 BeanDefinition 注册到了容器中，通过注解方式定义的 BeanDefinition 还没有解析注册到容器中，注解方式定义的 Bean 的 BeanDefinition 是在 refresh 方法中注册到容器。
+
+#### BeanDefinition 载入
+通过 Resource 提供的接口获取 BeanDefinition 资源并将转换成 BeanDefinition 结构。
+
+#### BeanDefinition 注册
+把解析得到的 BeanDefinition 向 IoC 容器注册，其本质是将 BeanDefinition 存储到 IoC 容器中的一个 HashMap 中去。
+
 #### Resource 资源定位
 AnnotationConfigApplicationContext 构造函数中实例化了 reader 和 scanner 分别用于将指定类和包下的类解析为 BeanDefinition 并通过 BeanDefinitionRegistry 注册：
 ```java
@@ -134,7 +136,11 @@ else {
 // ...
 ```
 #### 刷新容器
-AnnotationConfigApplicationContext 中将指定的类注册到容器之后调用 refresh 方法刷新容器，该方法是整个 Spring 容器初始化以及 Spring bean 初始化的核心，该方法内调用了 12 个子方法：
+
+容器初始化指定了 scnner 和 reader 并且实例化了 beanFactory 之后，就会调用 ```AbstractApplicationContext``` 的 refresh 方法刷新容器。IoC 容器刷新时会将定义的 Bean 从资源文件中加载解析成 BeanDefinition 并注册到容器中，是 Spring 容器初始化的核心。
+
+refresh 方法是一个模板方法，整个方法内部调用了 12 个子方法，每个方法完成容器刷新过程中各自的工作：
+
 - ```prepareRefresh```：主要是 properties 的处理
 - ```obtainFreshBeanFactory```：获取 beanFactory，在 AnnotationConfigApplicationContext 实例化时 beanFactory 已经创建，因此该方法直接返回创建的 DefaultListableBeanFactory 实例
 - ```prepareBeanFactory```：对 beanFactory 中设置一些属性，其中向 beanFactory 加入了 ApplicationContextAwareProcessor
