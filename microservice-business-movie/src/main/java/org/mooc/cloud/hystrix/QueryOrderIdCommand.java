@@ -15,6 +15,10 @@ import com.netflix.hystrix.*;
  *
  * 如果在之后，断路器尝试执行 command，调用没有出错，返回了正常结果，那么 Hystrix 就会把断路器关闭。
  *
+ *
+ *
+ * https://blog.csdn.net/loushuiyifan/article/details/82702522
+ *
  */
 public class QueryOrderIdCommand extends HystrixCommand<Integer> {
 
