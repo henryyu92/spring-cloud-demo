@@ -1,7 +1,23 @@
 ## IoC 容器
-在 Spring 中，IoC 容器是实现依赖控制反转(DI)的载体，它可以在对象生成或初始化时直接将数据注入到对象中，也可以通过将对象引用注入到对象数据域中的方式来注入对方法调用的依赖。
 
-通过 IoC 容器，对象依赖关系的管理被反转到 IoC 容器中来了，对象之间的相互依赖关系由 IoC 容器进行管理，并由 IoC 容器完成对象的注入。
+IoC(Inversion of Control) 是一种 “控制反转” 的思想，即对象的控制权(初始化、属性赋值等)交由容器管理，而不是手动管理。
+
+IoC 容器是实现依赖注入(DI, Dependency Injection)的载体，IoC 容器在创建对象时自动将其依赖注入到对象中并管理了对象的生命周期。
+
+IoC 容器解耦了对象的耦合，在使用对象时只需要从容器中获取对象即可，而不需要关心对象之间的依赖关系。
+
+Spring 中 IoC 容器使用两种方式注入对象：
+- 构造器注入：在创建对象的构造器中传入依赖的对象实现对象的注入
+- setter 方法注入：通过对象的 setter 方法向对象中注入依赖的对象
+
+Spring 中的 IoC 容器主要有 ```BeanFactory``` 和 ```ApplicationContext``` 两大体系，其中 ```BeanFactory``` 体系只提供了容器的基础功能，而 ```ApplicationContext``` 体系在提供基础容器功能外还引入了 ```Resource``` 支持不同资源以及 ```ApplicationEventPublisher``` 事件机制。
+
+### BeanFactory
+
+```BeanFactory``` 体系提供了容器的基础功能， 
+
+
+### ApplicatioinContext
 
 
 Spring 中设计的 IoC 容器主要有两类：
@@ -17,10 +33,38 @@ Spring 提供了许多已经定义好的容器实现(继承自 ApplicationContex
 
 在基本的 IoC 容器的接口定义和实现上，Spring 通过定义 BeanDefinition 来管理基于 Spring 的应用中的各种对象以及它们之间的相互依赖关系。对 IoC 容器来说，BeanDefinition 就是对依赖反转模式中管理的对象依赖关系的抽象，也是容器实现依赖反转功能的核心数据结构，依赖反转功能都是围绕 BeanDefinition 的处理来完成。
 
-### 容器初始化
-IoC 容器的初始化主要包含 BeanDefinition 的 Resource 定位、载入和注册三个过程，三个过程可以分别扩展从而实现多种不同的 IoC 容器。
+```java
+```                                                                                                                                                                                                       
 
-IoC 容器的初始化一般不包含 Bean 依赖注入的实现，依赖注入一般发生在第一次通过 getBean 向容器获取 Bean 的时候，但是 Bean 定义信息中设置来了 lazyinit 属性则会在 IoC 容器初始化时完成 Bean 的依赖注入。
+### Resource
+
+```Resource``` 接口继承 ```InputStreamSource``` 接口，是 Spring 框架中所有资源的抽象。该接口提供了对资源描述的方法并由抽象类 ```AbstractResource``` 提供默认实现，继承自 ```InputStreamSource``` 的 ```getInputStream``` 是获取资源数据流的方法，不同的资源通过重写该方法定义不同的方式获取资源数据流。
+
+在 Resource 体系中，不同的资源提供了不同的实现类：
+- ```FileSystemResource```：对 ```java.io.File``` 类型资源的封装，使用 NIO 进行读写交互
+- ```ByteArrayResource```：对字节数组类型资源的封装，当调用 ```getInputStream``` 方法获取数据流时会根据字节数组构造 ```ByteArrayInputStream```
+- ```UrlResource```：对 ```java.net.URL``` 类型资源的封装，内部使用 URL 获取数据流
+- ```ClassPathResource```：classPath 类型资源的实现，使用给定的 ClassLoader 或者 Class 获取资源数据流
+- ```InputStreamResource```：将给定的 InputStream 封装资源
+
+#### ResoureLoader
+
+Spring 将资源定义和资源加载分离开，```Resource``` 接口定义了同一的资源，```ResourceLoader``` 接口定义了同一资源的加载。
+
+```ResourceLoader``` 是 Spring 中资源加载的抽象，具体资源的加载需要对应的资源加载器完成。```ResourceLoader``` 提供了两个接口方法：
+- ```getResource```：根据指定资源路径返回 Resource 实例，返回的 Resource 实例不保证资源存在，需要调用 ```Resource#exists``` 方法确认资源存在
+- ```getClassLoader```：返回 ```ResourceLoader``` 使用的类加载器
+
+DefualResourceLoader 作为默认实现，实现的 ```getResource``` 接口根据指定的 location 返回对应的 Resource
+
+### BeanDenifitioin
+
+#### BeanDefinitionReader
+
+### 容器初始化
+
+Spring 中 IoC 容器初始化的整个过程完成了三件事：定位资源、装载、注册。IoC 容器的初始化一般不包含 Bean 依赖注入的实现，依赖注入一般发生在第一次通过 getBean 向容器获取 Bean 的时候，但是 Bean 定义信息中设置来了 lazyinit 属性则会在 IoC 容器初始化时完成 Bean 的依赖注入。
+
 
 #### Resource 定位
 Resource 定位指的是 BeanDefinition 的资源定位，由 ResourceLoader 加载资源生成 Resource，这个 Resource 提供了获取 BeanDefinition 资源的接口。
