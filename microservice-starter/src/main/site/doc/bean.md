@@ -50,72 +50,6 @@ protected Object doCreateBean(final String beanName, final RootBeanDefinition mb
 }
 ```
 
-### Bean 循环依赖
-
-Spring 内部实现了三个 Map 用于解决 Bean 的依赖问题，即三级缓存：
-```java
-/** Cache of singleton objects: bean name to bean instance. */
-private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
-
-/** Cache of singleton factories: bean name to ObjectFactory. */
-private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
-
-/** Cache of early singleton objects: bean name to bean instance. */
-private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
-```
-
-
-```doCreateBean``` 方法中调用 ```getSingleton``` 方法先尝试获取缓存的单例对象：
-```java
-protected Object getSingleton(String beanName, boolean allowEarlyReference) {
-    // 从一级缓存中获取对象，即从已经初始化完毕的单例集合中获取对象
-    Object singletonObject = this.singletonObjects.get(beanName);
-    // 获取不到并且该对象正在初始化
-    if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
-        synchronized (this.singletonObjects) {
-            // 从二级缓存中获取初始化完毕的单例对象
-            singletonObject = this.earlySingletonObjects.get(beanName);
-            // 获取不到并且该对象允许提前暴露，即可以在没有初始化完就放入二级缓存
-            if (singletonObject == null && allowEarlyReference) {
-                // 从三级缓存中获取对象(对象不一定初始化完毕)
-                ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
-                if (singletonFactory != null) {
-                    singletonObject = singletonFactory.getObject();
-                    this.earlySingletonObjects.put(beanName, singletonObject);
-                    this.singletonFactories.remove(beanName);
-                }
-            }
-        }
-    }
-    return singletonObject;
-}
-```
-- isSingletonCurrentlyInCreation 方法判断当前单例对象是否正在创建中，如果当前对象有依赖对象，则在依赖对象初始化的过程中当前对象依然是在创建中的状态
-- allowEarlyReference 表示当前单例对象可以提前暴露，即可以通过 ```sigletonFactory#getObject``` 方法获取
-
-Bean 创建过程中在调用 createBeanInstance 创建出单例对象之后(对象并没有初始化完成)调用 ```addSingletonFactory``` 将对象提前暴露到了二级缓存中：
-```java
-addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
-
-protected void addSingletonFactory(String beanName, ObjectFactory<?> singletonFactory) {
-    Assert.notNull(singletonFactory, "Singleton factory must not be null");
-    synchronized (this.singletonObjects) {
-        if (!this.singletonObjects.containsKey(beanName)) {
-            this.singletonFactories.put(beanName, singletonFactory);
-            this.earlySingletonObjects.remove(beanName);
-            this.registeredSingletons.add(beanName);
-        }
-    }
-}
-```
-
-整个循环依赖的流程如下：
-- 对象 A 在初始化时先实例化了对象，并将自己提前曝光在 singletonFactories 中，然后在调用 setter 方法注入依赖对象 B 时需要初始化对象 B
-- 对象 B 在初始化时先实例化了对象，并将自己提前曝光在 singletonFactories 中，然后在调用 setter 方法注入依赖对象 A 时需要初始化对象 A
-- 对象 A 在初始化时可以从 singletonFactories 中获取到直接返回，此时对象 B 的 setter 方法注入依赖对象 A 可以完成，对象 B 的整个初始化过程可以完成，将对象 B 放入 singletonObjects 集合中
-- 对象 B 的初始化完成后，对象 A 的 setter 方法注入就可以完成，对象 A 的整个初始化就可以完成了，此时需要将对象 A 从 earlySingletonObjects 集合移入 singletonObjects 集合中
-
-
 #### Spring 生命周期扩展点
 Spring 生命周期的扩展点主要分为两类：
 - ```BeanPostProcessor``` 接口：BeanPostProcessor 的实现类会切入到多个 Bean 的生命周期中，自动注入以及 AOP 的实现都和 BeanPostProcessor 有关
@@ -370,4 +304,68 @@ public class CustomApplicationListener implements ApplicationListener<Applicatio
 }
 ```
 #### Spring Bean 循环依赖
+https://blog.csdn.net/chaitoudaren/article/details/104833575
+
+Spring 内部实现了三个 Map 用于解决 Bean 的依赖问题，即三级缓存：
+```java
+/** Cache of singleton objects: bean name to bean instance. */
+private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
+
+/** Cache of singleton factories: bean name to ObjectFactory. */
+private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
+
+/** Cache of early singleton objects: bean name to bean instance. */
+private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
+```
+
+
+```doCreateBean``` 方法中调用 ```getSingleton``` 方法先尝试获取缓存的单例对象：
+```java
+protected Object getSingleton(String beanName, boolean allowEarlyReference) {
+    // 从一级缓存中获取对象，即从已经初始化完毕的单例集合中获取对象
+    Object singletonObject = this.singletonObjects.get(beanName);
+    // 获取不到并且该对象正在初始化
+    if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
+        synchronized (this.singletonObjects) {
+            // 从二级缓存中获取初始化完毕的单例对象
+            singletonObject = this.earlySingletonObjects.get(beanName);
+            // 获取不到并且该对象允许提前暴露，即可以在没有初始化完就放入二级缓存
+            if (singletonObject == null && allowEarlyReference) {
+                // 从三级缓存中获取对象(对象不一定初始化完毕)
+                ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
+                if (singletonFactory != null) {
+                    singletonObject = singletonFactory.getObject();
+                    this.earlySingletonObjects.put(beanName, singletonObject);
+                    this.singletonFactories.remove(beanName);
+                }
+            }
+        }
+    }
+    return singletonObject;
+}
+```
+- isSingletonCurrentlyInCreation 方法判断当前单例对象是否正在创建中，如果当前对象有依赖对象，则在依赖对象初始化的过程中当前对象依然是在创建中的状态
+- allowEarlyReference 表示当前单例对象可以提前暴露，即可以通过 ```sigletonFactory#getObject``` 方法获取
+
+Bean 创建过程中在调用 createBeanInstance 创建出单例对象之后(对象并没有初始化完成)调用 ```addSingletonFactory``` 将对象提前暴露到了二级缓存中：
+```java
+addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
+
+protected void addSingletonFactory(String beanName, ObjectFactory<?> singletonFactory) {
+    Assert.notNull(singletonFactory, "Singleton factory must not be null");
+    synchronized (this.singletonObjects) {
+        if (!this.singletonObjects.containsKey(beanName)) {
+            this.singletonFactories.put(beanName, singletonFactory);
+            this.earlySingletonObjects.remove(beanName);
+            this.registeredSingletons.add(beanName);
+        }
+    }
+}
+```
+
+整个循环依赖的流程如下：
+- 对象 A 在初始化时先实例化了对象，并将自己提前曝光在 singletonFactories 中，然后在调用 setter 方法注入依赖对象 B 时需要初始化对象 B
+- 对象 B 在初始化时先实例化了对象，并将自己提前曝光在 singletonFactories 中，然后在调用 setter 方法注入依赖对象 A 时需要初始化对象 A
+- 对象 A 在初始化时可以从 singletonFactories 中获取到直接返回，此时对象 B 的 setter 方法注入依赖对象 A 可以完成，对象 B 的整个初始化过程可以完成，将对象 B 放入 singletonObjects 集合中
+- 对象 B 的初始化完成后，对象 A 的 setter 方法注入就可以完成，对象 A 的整个初始化就可以完成了，此时需要将对象 A 从 earlySingletonObjects 集合移入 singletonObjects 集合中
 #### 创建单例 bean
