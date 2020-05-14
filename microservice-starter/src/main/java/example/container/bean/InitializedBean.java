@@ -10,6 +10,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import java.lang.annotation.Annotation;
+
 @Component
 public class InitializedBean implements BeanNameAware, BeanFactoryAware, ApplicationContextAware, BeanPostProcessor, InitializingBean {
     /**
@@ -49,6 +51,15 @@ public class InitializedBean implements BeanNameAware, BeanFactoryAware, Applica
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 
         System.out.println("step 6 is BeanPostProcessor#postProcessAfterInitialization 。。。。");
+
+        Annotation[] annotations = bean.getClass().getAnnotations();
+        if (annotations == null || annotations.length == 0){
+            return bean;
+        }
+
+        for (Annotation an : annotations){
+
+        }
 
         return bean;
     }
