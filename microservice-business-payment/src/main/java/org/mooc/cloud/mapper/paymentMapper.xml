@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="">
+
+    <resultMap id="baseResultMap" type="">
+        <id column="" property="" jdbcType=""></id>
+    </resultMap>
+
+    <!-- 插入数据返回最后一条数据的主键 -->
+    <insert id="create" parameterType="" useGeneratedKeys="true" keyProperty="id">
+        insert into payment(serial) value (#{serial});
+    </insert>
+
+
+</mapper>

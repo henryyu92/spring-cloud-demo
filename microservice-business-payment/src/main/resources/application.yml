@@ -2,13 +2,14 @@
   port: 8900
 logging:
   level:
-    org.mooc: debug
+    org.mooc: info
 spring:
   application:
-    name: microservice-provider-user
+    name: microservice-payment
   datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/spring-cloud-demo?useSSL=false
+    url: jdbc:mysql://localhost:3306/spring-cloud-example?useSSL=false
     username: root
     password: root
     druid:
@@ -47,6 +48,6 @@ spring:
 
 mybatis:
   config-location: classpath:mybatis.cfg.xml
-  type-aliases-package: org.mooc.springcloud.entity
+  type-aliases-package: org.mooc.cloud.entity
   mapper-locations:
     - classpath:mapper/*.xml
