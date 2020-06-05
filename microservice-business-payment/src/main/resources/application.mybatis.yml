@@ -1,0 +1,5 @@
+mybatis:
+  config-location: classpath:mybatis.cfg.xml
+  type-aliases-package: org.mooc.cloud.entity
+  mapper-locations:
+    - classpath:mapper/*.xml

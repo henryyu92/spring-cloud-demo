@@ -17,7 +17,7 @@
 	<modules>
 		<module>microservice-business-order</module>
 		<module>microservice-business-payment</module>
-		<module>microservice-eureka-server</module>
+		<module>microservice-registry-eureka</module>
 		<module>microservice-config-server</module>
 		<module>microservice-gateway</module>
 		<module>microservice-zuul</module>

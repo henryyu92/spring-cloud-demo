@@ -34,10 +34,15 @@ public class QueryOrderIdCommand extends HystrixCommand<Integer> {
                 .withRequestCacheEnabled(false)   // 不开启请求缓存
                 .withCircuitBreakerEnabled(true)  // 启动断路器
                 .withCircuitBreakerRequestVolumeThreshold(10)   // 触发熔断的请求数
+                .withCircuitBreakerSleepWindowInMilliseconds(10)    // 时间窗口
                 .withCircuitBreakerErrorThresholdPercentage(50) // 触发熔断的请求比例
                 .withCircuitBreakerSleepWindowInMilliseconds(5000)  // 熔断后直接拒绝请求的时长，之后熔断器进入 half-open 状态
                 .withExecutionTimeoutEnabled(true)          // 请求超时调用 fallback
                 .withExecutionTimeoutInMilliseconds(1000)   // 请求超时时长
+                // 设置信号量模式资源隔离
+                .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)
+                // 设置最大线程数
+                .withExecutionIsolationSemaphoreMaxConcurrentRequests(10)
             )
             .andThreadPoolPropertiesDefaults(
                 HystrixThreadPoolProperties.Setter()

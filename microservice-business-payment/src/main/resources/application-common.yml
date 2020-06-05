@@ -1,0 +1,8 @@
+logging:
+  level:
+    org.mooc: info
+spring:
+  application:
+    name: microservice-payment
+
+

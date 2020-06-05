@@ -1,0 +1,25 @@
+server:
+  port: 7001
+spring:
+  application:
+    # this is the default for the Eureka service ID or VIP
+    name: eureka-server
+  security:
+    user:
+      name: user
+      password: passwd
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # Indicates whether or not this instance should register its information with eureka
+    # server for discovery by others.
+    register-with-eureka: false
+    # Indicates whether this client should fetch eureka registry information from eureka server.
+    fetch-registry: false
+    service-url:
+      # Eureka Client 访问 Eureka Server 的地址
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+logging:
+  level:
+    root: info

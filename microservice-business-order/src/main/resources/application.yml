@@ -1,2 +1,16 @@
 server:
-  port: 8000
+  port: 8901
+
+spring:
+  application:
+    name: microservice-order
+  profiles:
+    active: eureka
+
+ribbon:
+  read-timeout: 5000
+  connect-timeout: 5000
+
+logging:
+  level:
+    com.mooc.cloud.feign.FeignService: info

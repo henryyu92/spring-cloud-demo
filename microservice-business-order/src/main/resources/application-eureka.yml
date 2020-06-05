@@ -1,0 +1,6 @@
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://user:passwd@localhost:7001/eureka,http://user:passwd@localhost:7002/eureka

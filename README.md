@@ -10,4 +10,4 @@
 * [监控](site/doc/springboot/actuator.md)
 
 ### Spring Cloud
-* [Hystrix](site/doc/cloud/hystrix.md)
+* [Hystrix](site/doc/cloud/fallback.md)

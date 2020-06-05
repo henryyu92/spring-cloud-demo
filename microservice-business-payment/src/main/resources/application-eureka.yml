@@ -1,0 +1,11 @@
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://user:passwd@localhost:7001/eureka,http://user:passwd@localhost:7002/eureka
+  instance:
+    # Eureka 控制台显示名称，而不是主机名
+    instance-id: ${spring.application.name}-${server.port}
+    # 访问路径显示 IP
+    prefer-ip-address: true

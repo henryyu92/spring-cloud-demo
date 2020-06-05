@@ -1,0 +1,14 @@
+server:
+  port: 7002
+eureka:
+  instance:
+    hostname: server2
+  client:
+    # Indicates whether or not this instance should register its information with eureka
+    # server for discovery by others.
+    register-with-eureka: false
+    # Indicates whether this client should fetch eureka registry information from eureka server.
+    fetch-registry: false
+    service-url:
+      # Eureka Client 访问 Eureka Server 的地址
+      defaultZone: http://localhost:7001/eureka/
