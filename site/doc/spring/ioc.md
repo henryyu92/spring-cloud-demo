@@ -1,43 +1,20 @@
-## IoC 容器
+## IoC
 
-IoC(Inversion of Control) 是一种 “控制反转” 的思想，即对象的控制权(初始化、属性赋值等)交由容器管理，而不是手动管理。
+IoC(Inversion of Control) 是一种“控制反转”的思想，即对象的控制权(生命周期)不是由上层对象控制，而是交由统一的容器来控制，控制对象生命周期的容器也称为 IoC 容器。
 
-IoC 容器是实现依赖注入(DI, Dependency Injection)的载体，IoC 容器在创建对象时自动将其依赖注入到对象中并管理了对象的生命周期。
+IoC 容器是也是实现依赖注入(DI, Dependency Injection)的载体，IoC 容器在创建对象时自动将其依赖对象注入并管理了对象的生命周期。IoC 容器解耦了对象的耦合，在使用对象时只需要从容器中获取对象即可，而不需要关心对象之间的依赖关系。
 
-IoC 容器解耦了对象的耦合，在使用对象时只需要从容器中获取对象即可，而不需要关心对象之间的依赖关系。
+### IoC 容器
 
-Spring 中 IoC 容器使用两种方式注入对象：
-- 构造器注入：在创建对象的构造器中传入依赖的对象实现对象的注入
-- setter 方法注入：通过对象的 setter 方法向对象中注入依赖的对象
+Spring IoC 容器有两种方式实现依赖注入：
+- 构造器注入：在创建对象的构造器中传入依赖的对象实现依赖对象的注入
+- Setter 方法注入：通过调用对象的 setter 方法实现依赖对象的注入
 
-Spring 中的 IoC 容器主要有 ```BeanFactory``` 和 ```ApplicationContext``` 两大体系，其中 ```BeanFactory``` 体系只提供了容器的基础功能，而 ```ApplicationContext``` 体系在提供基础容器功能外还引入了 ```Resource``` 支持不同资源以及 ```ApplicationEventPublisher``` 事件机制。
+Spring 提供了 BeanFactory 和 ApplicationContext 两类容器，BeanFactory 作为基础的容器提供了 IoC 容器的基本功能，而 ApplicationContext 在提供了容器功能的基础上引入了 Resource 支持不同的资源以及 ApplicationEventPublisher 支持事件机制。
 
-### BeanFactory
+Spring 通过 BeanDefinition 来定义对象以及其之间的相互依赖关系，Spring IoC 容器创建管理对象前需要加载资源并转换成 BeanDefinition。
 
-```BeanFactory``` 体系提供了容器的基础功能， 
-
-
-### ApplicatioinContext
-
-
-Spring 中设计的 IoC 容器主要有两类：
-- ```BeanFactory``` 接口为核心的容器，包括 ```HierarchicalBeanFactory```, ```ListableBeanFactory```
-- ```ApplicationContext``` 为核心的容器，包括 ```ListableBeanFactory```, ```ListableBeanFactory``` 和 ```WebApplicationContext```
-
-BeanFactory 接口提供了使用 IoC 容器的规范，只提供了最基本的 IoC 容器的功能，Spring 提供的其他容器(如 DefaultListableBeanFactory)都是对 BeanFactory 的功能的扩展。创建 IoC 容器时需要几个步骤：
-- 创建 IoC 配置文件的抽象资源，这个抽象资源包含了 BeanDefinition 的定义信息
-- 创建一个载入 BeanDefinition 的读取器，用于载入抽象资源
-- 解析载入的资源，完成 BeanDefinition 的载入和注册
-
-Spring 提供了许多已经定义好的容器实现(继承自 ApplicationContext)，这些容器在 BeanFactory 的基础上增加了多种特性，如通过 Resource 和 ResourceLoader 支持不同的 Resource 加载 BeanDefinition；通过 ApplicationEventPublisher 引入事件机制和 Bean 的生命周期结合为 Bean 的管理提供了便利
-
-在基本的 IoC 容器的接口定义和实现上，Spring 通过定义 BeanDefinition 来管理基于 Spring 的应用中的各种对象以及它们之间的相互依赖关系。对 IoC 容器来说，BeanDefinition 就是对依赖反转模式中管理的对象依赖关系的抽象，也是容器实现依赖反转功能的核心数据结构，依赖反转功能都是围绕 BeanDefinition 的处理来完成。
-
-```java
-```                                                                                                                                                                                                       
-
-### Resource
-
+#### Resource
 ```Resource``` 接口继承 ```InputStreamSource``` 接口，是 Spring 框架中所有资源的抽象。该接口提供了对资源描述的方法并由抽象类 ```AbstractResource``` 提供默认实现，继承自 ```InputStreamSource``` 的 ```getInputStream``` 是获取资源数据流的方法，不同的资源通过重写该方法定义不同的方式获取资源数据流。
 
 在 Resource 体系中，不同的资源提供了不同的实现类：
@@ -47,24 +24,21 @@ Spring 提供了许多已经定义好的容器实现(继承自 ApplicationContex
 - ```ClassPathResource```：classPath 类型资源的实现，使用给定的 ClassLoader 或者 Class 获取资源数据流
 - ```InputStreamResource```：将给定的 InputStream 封装资源
 
-#### ResoureLoader
-
-Spring 将资源定义和资源加载分离开，```Resource``` 接口定义了同一的资源，```ResourceLoader``` 接口定义了同一资源的加载。
-
-```ResourceLoader``` 是 Spring 中资源加载的抽象，具体资源的加载需要对应的资源加载器完成。```ResourceLoader``` 提供了两个接口方法：
+#### ResourceLoader
+Spring 将资源定义和资源加载分离开，```Resource``` 接口定义了资源，```ResourceLoader``` 接口定义了资源的加载。```ResourceLoader``` 是 Spring 中资源加载的抽象，具体资源的加载需要对应的资源加载器完成。```ResourceLoader``` 提供了两个接口方法：
 - ```getResource```：根据指定资源路径返回 Resource 实例，返回的 Resource 实例不保证资源存在，需要调用 ```Resource#exists``` 方法确认资源存在
 - ```getClassLoader```：返回 ```ResourceLoader``` 使用的类加载器
 
 DefualResourceLoader 作为默认实现，实现的 ```getResource``` 接口根据指定的 location 返回对应的 Resource
 
-### BeanDenifitioin
-
 #### BeanDefinitionReader
 
-### 容器初始化
+BeanDefinitionReader 将加载的 Resource 资源转换为对应的 BeanDefinition 并注册到容器中，容器通过注册 BeanDefinition 创建对象及其依赖对象。
 
-Spring 中 IoC 容器初始化的整个过程完成了三件事：定位资源、装载、注册。IoC 容器的初始化一般不包含 Bean 依赖注入的实现，依赖注入一般发生在第一次通过 getBean 向容器获取 Bean 的时候，但是 Bean 定义信息中设置来了 lazyinit 属性则会在 IoC 容器初始化时完成 Bean 的依赖注入。
 
+#### 容器初始化
+
+Spring 将指定位置的资源加载并解析成 BeanDefinition 然后注册到容器中，然后通过反射技术将 BeanDefinition 描述的对象实例化并注入依赖对象，完成整个容器的初始化。
 
 #### Resource 定位
 Resource 定位指的是 BeanDefinition 的资源定位，由 ResourceLoader 加载资源生成 Resource，这个 Resource 提供了获取 BeanDefinition 资源的接口。
@@ -198,3 +172,32 @@ refresh 方法是一个模板方法，整个方法内部调用了 12 个子方�
 - ```finishBeanFactoryInitialization```：初始化 BeanDefinition 定义的非 lazy 的 Bean。在这个方法中调用 ```beanFactory.preInstantiateSingletons()```，beanFactory 遍历 beanName 得到 BeanDefinition 并进行校验后调用 ```getBean(beanName)``` 方法实例化 Bean
 
 ### 关闭容器
+
+
+### BeanFactory 和 FactoryBean
+
+BeanFactory 是 Spring 的 IoC 容器，管理着 Spring 中的 bean 的生命周期；FactoryBean 是一个接口，当 IoC 容器中的 Bean 实现了 FactoryBean 后通过 getBean 方法获取的对象并不是容器中管理的实现类对象，而是这个实现类中的 getObject 方法返回的对象，要想获取 FactoryBean 的实现类需要在 bean 的名称前加上 &
+
+```java
+public class A implements FactoryBean<Student> {
+    @Override
+    public Student getObject() throws Exception {
+        return new Student();
+    }
+
+    @Override
+    public Class<?> getObjectType() {
+        return Student.class;
+    }
+}
+
+
+Object bean1 = context.getBean("studentFactoryBean");
+// example.container.bean.Student@2c604965
+System.out.println(bean1);
+
+Object bean2 = context.getBean("&studentFactoryBean");
+// example.container.bean.StudentFactoryBean@57f8951a
+System.out.println(bean2);
+```
+FacotryBean 接口可以用于 AOP 代理对象的创建，在运行时创建代理对象并在代理对象的目标方法中根据业务要求织入相应的方法，这个对象在 Spring 中就是 ProxyFactoryBean
