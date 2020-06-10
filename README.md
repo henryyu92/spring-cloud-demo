@@ -1,8 +1,9 @@
 ### Spring
 * [IoC](site/doc/spring/ioc.md)
 * [AOP](site/doc/spring/aop.md)
-* [Bean](site/doc/spring/bean.md)
+* [Bean 生命周期](site/doc/spring/bean.md)
 * [声明式事务](site/doc/spring/transaction.md)
+* [扩展点](site/doc/spring/extension.md)
 
 ### Spring Boot 
 * [注解](site/doc/springboot/annotation.md)
