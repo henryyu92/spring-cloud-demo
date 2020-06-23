@@ -5,6 +5,28 @@ Spring 声明式事务将事务管理代码从业务方法中分离出来，以�
 在 Spring Boot 中由于在启动是自动加载的 ```TransactionAutoConfiguration``` 中注入的 TransactionManager，因此在使用时只需要在关注的事务方法上加上 @Transactional 注解同时指定事务传播级别以及异常回滚策略即可。
 
 ```java
+@Service
+public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private DataSourceTransactionManager transactionManager;
+
+    @Override
+    @Transactional
+    public void save(User user){
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setName("SomeTxName");
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+
+        TransactionStatus status = transactionManager.getTransaction(def);
+        try{
+
+        }catch(Exception ex){
+            transactionManager.rollback(status);
+            throw ex;
+        }
+    }
+}
 ```
 
 ### 事务传播级别
