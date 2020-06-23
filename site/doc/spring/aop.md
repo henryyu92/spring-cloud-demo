@@ -3,7 +3,7 @@ AOP(Aspect Oriented Programming) 是面向切面的编程，通过代理模式�
 
 #### 连接点(Joinpoint)
 连接点是指程序执行过程中的一些点，比如方法调用，异常处理。Spring 连接点仅支持方法级别，即每个方法调用是一个连接点。
-```java
+```
 public interface Joinpoint{
     // 用于执行拦截器链中的下一个拦截器逻辑
     Object proceed() throws Throwable;
@@ -11,11 +11,11 @@ public interface Joinpoint{
     Object getThis();
 
     AccessibleObject getStaticPart();
-}
+} 
 ```
 #### 切点(Pointcut)
 切点是用于选择连接点的，Spring 中切点通过 Pointcut 接口定义：
-```java
+```
 public interface Pointcut{
     // 返回一个类型过滤器
     ClassFilter getClassFilter();
@@ -37,7 +37,7 @@ Pointcut 接口中定义了两个接口分别用于返回类型过滤器和方�
 
 #### 切面(Aspect)
 切面是一个概念，用于将切入点和通知组合起来可以确定在指定的目标对象执行指定的通知：
-```java
+```
 @Component
 @Aspect
 public class AopDemo{
@@ -55,7 +55,7 @@ public class AopDemo{
 ```
 #### 织入(Weaving)
 织入是在切点的引导下将切面指定的通知(逻辑处理)插入到指定的连接点(目标方法)上，使得通知逻辑在目标方法调用时得以执行。Spring 通过 AbstractAutoProxyCreator 实现织入，AbstractAutoProxyCreator 实现了 BeanPostProcessor 接口，在 bean 初始化完毕之后会调用 postProcessAfterInitialization 方法：
-```java
+```
 public Object postProcessAfterInitialization(@Nullable Object bean, String beanName) {
     if (bean != null) {
         Object cacheKey = getCacheKey(bean.getClass(), beanName);
@@ -102,13 +102,13 @@ wrapIfNecessary 方法中调用 getAdvicesAndAdvisorsForBean 方法判断是否�
 - 基于 CGLIB 的动态代理
 
 基于 JKD 的动态代理创建代理对象需要目标对象实现了接口，JDK 动态代理通过 Proxy 类为目标对象创建代理对象：
-```java
+```
 public static Object newProxyInstance(ClassLoader loader, Class<?>[] interfaces, InvocationHandler h)
 ```
 - loader 表示类加载器
 - interfaces 表示目标类实现的接口
 - h 用于封装代理逻辑
-```java
+```
 public class JdkProxyCreator implements InvocationHandler {
     // 目标对象
     private Ojbect target;
@@ -142,7 +142,7 @@ public class JdkProxyCreator implements InvocationHandler {
 }
 ```
 如果目标对象没有实现接口则需要使用 CGLIB 实现动态代理的创建，CGLIB 的代理逻辑封装在 MethodInterceptor 实现类中，代理对象通过 Enhancer 类的 create 方法创建：
-```java
+```
 public class CglibProxyCreator implements MethodInterceptor{
     private Object target;
 

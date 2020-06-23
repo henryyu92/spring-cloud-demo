@@ -2,6 +2,14 @@
 
 Spring 在初始化容器以及在管理 Bean 的生命周期的过程中设置了多个扩展点，通过扩展点可以介入整个过程从而可以自定义的操作整个流程。
 
+### Resource
+
+### BeanFactoryPostProcessor
+
+### BeanPostProcessor
+
+BeanPostProcessor 是 Spring Bean 生命周期中经常使用的扩展点，
+
 ### BeanDefinitionRegistryPostProcessor
 
 `BeanDefinitionRegistryPostProcessor` 接口继承自 `BeanFactoryPostProcessor` 接口，可以在其他 BeanPostProcessor 实现类执行之前注册更多的 BeanDefinition。
@@ -64,6 +72,19 @@ public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) 
 - ApplicationContextAware
 - BeanFactoryAware
 - ResourceLoaderAware
+
+
+### EventListener
+
+事件监听机制包括事件、事件发布者和事件监听者
+
+#### ApplicationEvent
+
+#### ApplicationEventPublisher
+
+#### ApplicationListener
+
+
 
 
 **[Back](../)**

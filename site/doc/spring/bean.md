@@ -6,7 +6,7 @@ Spring Bean 整个生命周期交由 Spring 容器管理，Spring Bean 在容器
 - 销毁(Destruction)
 
 Spring 容器的 getBean 方法是实例化 bean 的入口，真正的实例化逻辑在 ``` AbstractAutowireCapableBeanFactory#doCreateBean```方法中：
-```java
+```
 protected Object doCreateBean(final String beanName, final RootBeanDefinition mbd, final @Nullable Object[] args)
         throws BeanCreationException {
 
@@ -97,7 +97,7 @@ InstantiationAwareBeanPostProcessor 接口是 BeanPostProcessor 接口的子接�
 - ```postProcessAfterInstantiation```：在 bean 实例化之后且属性赋值之前调用，默认返回 true
 
 AbstractAutowireCapableBeanFactory 的 doCreateBean 方法是在 createBean 方法中调用的，在调用 doCreateBean 方法创建 bean 之前会调用 ```InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation``` 方法创建 bean 的代理类：
-```java
+```
 protected Object createBean(String beanName, RootBeanDefinition mbd, @Nullable Object[] args)
         throws BeanCreationException {
     
@@ -161,7 +161,7 @@ protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition 
 resolveBeforeInstantiation 方法中调用了 ```InstantiationAwareBeanPostProcessor#postProcessorsBeforeInstantiation``` 方法，该方法可以返回一个代理类替代原始的 bean，这是实现 AOP 的关键。
 
 InstantiationAwareBeanPostProcessor 的 postProcessAfterInstantiation 方法则是在实例化 bean 之后且属性赋值之前调用。在 doCreateBean 方法中首先调用 createBeanInstance 实例化 bean，然后调用 populateBean 方法为实例化 bean 的属性赋值：
-```java
+```
 protected void populateBean(String beanName, RootBeanDefinition mbd, @Nullable BeanWrapper bw) {
 
     // 省略部分代码 ...
@@ -197,7 +197,7 @@ protected void populateBean(String beanName, RootBeanDefinition mbd, @Nullable B
 
 
 BeanPostProcessor 的其他实现类会在 bean 初始化前后调用，在 bean 的初始化方法 initializeBean 中：
-```java
+```
 protected Object initializeBean(final String beanName, final Object bean, @Nullable RootBeanDefinition mbd) {
     
     // 省略部分代码 ...
@@ -235,7 +235,7 @@ protected Object initializeBean(final String beanName, final Object bean, @Nulla
 - ```BeanFactoryAware```：当前初始化的 bean 如果实现 BeanFactoryAware 接口则向其传入 beanFactory
 
 invokeAwareMethods 方法执行完之后会调用 BeanPostProcessor 的 postProcessBeforeInitialization 方法，Spring 容器在创建 bean 之前已经在容器中注册了 ```ApplicationContextAwareProcessor``` 向实现了 EnvironmentAware, EmbeddedValueResolverAware, ResourceLoaderAware, ApplicationEventPublisherAware, MessageSourceAware, ApplicationContextAware 这些接口的 bean 中传入了 ApplicationContext：
-```java
+```
 public Object postProcessBeforeInitialization(final Object bean, String beanName) throws BeansException {
     
     // 省略部分代码 ...
@@ -311,7 +311,7 @@ https://zhuanlan.zhihu.com/p/84267654
 Spring Bean 的循环依赖需要从 AbstractBean 的 getBean 方法开始分析。
 
 Spring 内部实现了三个 Map 用于解决 Bean 的依赖问题，即三级缓存：
-```java
+```
 /** Cache of singleton objects: bean name to bean instance. */
 private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
 
@@ -323,7 +323,7 @@ private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
 ```
 
 AbstractBeanFactory 的 doGetBean 方法中首先通过 getSingleton 方法获取单例对象：
-```java
+```
 protected Object getSingleton(String beanName, boolean allowEarlyReference) {
     // 从一级缓存中获取对象，即从已经初始化完毕的单例集合中获取对象
     Object singletonObject = this.singletonObjects.get(beanName);
@@ -351,7 +351,7 @@ protected Object getSingleton(String beanName, boolean allowEarlyReference) {
 - allowEarlyReference 表示当前单例对象可以提前暴露，即可以通过 ```sigletonFactory#getObject``` 方法获取
 
 在 Bean 初始化时由于缓存中并没有缓存当前对象，所以 getSigleton 方法会返回 null，此时会再次调用 getSigleton 方法但是会传入 ObjectFactory 用于创建 Bean：
-```java
+```
 // Create bean instance.
 if (mbd.isSingleton()) {
 	sharedInstance = getSingleton(beanName, () -> {
@@ -370,7 +370,7 @@ bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
 }
 ```
 Bean 创建过程中在调用 createBeanInstance 创建出单例对象之后(对象并没有初始化完成)调用 ```addSingletonFactory``` 将对象提前暴露到了二级缓存中：
-```java
+```
 addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 
 protected void addSingletonFactory(String beanName, ObjectFactory<?> singletonFactory) {
@@ -385,7 +385,7 @@ protected void addSingletonFactory(String beanName, ObjectFactory<?> singletonFa
 }
 ```
 Bean 在属性注入处理完之后会再次调用 getSigleton 方法获取提前暴露的对象，并将获取的对象暴露出去：
-```java
+```
 Object earlySingletonReference = getSingleton(beanName, false);
 ```
 

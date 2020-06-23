@@ -1,4 +1,4 @@
-package example.extension;
+package example.container.bean;
 
 import example.container.bean.StudentFactoryBean;
 import org.springframework.beans.BeansException;

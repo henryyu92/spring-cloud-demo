@@ -44,13 +44,13 @@ Spring 将指定位置的资源加载并解析成 BeanDefinition 然后注册到
 Resource 定位指的是 BeanDefinition 的资源定位，由 ResourceLoader 加载资源生成 Resource，这个 Resource 提供了获取 BeanDefinition 资源的接口。
 
 Spring 在实例化 ```AnnotationConfigApplicationContext``` 时开始容器的初始化工作，在实例化 ```AnnotationConfigApplicationContext``` 前先实例化父类 ```ConfigurableListableBeanFactory```，在父类中初始化了 beanFactory：
-```java
+```
 public GenericApplicationContext() {
     this.beanFactory = new DefaultListableBeanFactory();
 }
 ```
 ```AnnotationConfigApplicationContext``` 无参构造函数中，初始化了 reader 和 scanner 分别用于将指定的类和包下的类解析为 BeanDefinition：
-```java
+```
 public AnnotationConfigApplicationContext() {
     // 实例化 reader 用于注册指定的类到 BeanDefinitionRegistry
     this.reader = new AnnotatedBeanDefinitionReader(this);
@@ -59,7 +59,7 @@ public AnnotationConfigApplicationContext() {
 }
 ```
 在 ```AnnotationConfigApplicationContext``` 的构造函数中包含三个方法的调用，分别用于初始化 ApplicaitonContext，将当前传入的配置类加载到 IoC 容器中，刷新 IoC 容器：
-```java
+```
 
 public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
     this();
@@ -79,7 +79,7 @@ public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
 
 #### Resource 资源定位
 AnnotationConfigApplicationContext 构造函数中实例化了 reader 和 scanner 分别用于将指定类和包下的类解析为 BeanDefinition 并通过 BeanDefinitionRegistry 注册：
-```java
+```
 public void register(Class<?>... annotatedClasses) {
     for (Class<?> annotatedClass : annotatedClasses) {
         // 真正实现在 doRegisterBean 中
@@ -130,7 +130,7 @@ public void register(Class<?>... annotatedClasses) {
 ```
 ##### BeanDefinitionRegistry
 BeanDefinition 注册到 beanFactory 的 beanDefinitionMap 中，beanDefinitionMap 是一个 ConcurrentHashMap<String, BeanDefinition> 的数据结构，其中 key 是 beanName，value 是 BeanDefinition：
-```java
+```
 // ...
 
 if (hasBeanCreationStarted()) {
@@ -178,7 +178,7 @@ refresh 方法是一个模板方法，整个方法内部调用了 12 个子方�
 
 BeanFactory 是 Spring 的 IoC 容器，管理着 Spring 中的 bean 的生命周期；FactoryBean 是一个接口，当 IoC 容器中的 Bean 实现了 FactoryBean 后通过 getBean 方法获取的对象并不是容器中管理的实现类对象，而是这个实现类中的 getObject 方法返回的对象，要想获取 FactoryBean 的实现类需要在 bean 的名称前加上 &
 
-```java
+```
 public class A implements FactoryBean<Student> {
     @Override
     public Student getObject() throws Exception {

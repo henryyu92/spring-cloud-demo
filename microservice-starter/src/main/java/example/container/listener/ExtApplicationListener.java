@@ -1,4 +1,4 @@
-package example.container;
+package example.container.listener;
 
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;

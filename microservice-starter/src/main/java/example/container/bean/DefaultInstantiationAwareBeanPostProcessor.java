@@ -1,4 +1,4 @@
-package example.extension;
+package example.container.bean;
 
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
 import org.springframework.stereotype.Component;
