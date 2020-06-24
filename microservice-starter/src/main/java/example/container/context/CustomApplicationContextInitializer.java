@@ -1,4 +1,4 @@
-package example.container;
+package example.container.context;
 
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -6,9 +6,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 /**
  * ApplicationContextInitializer
  */
-public class ExtApplicationContextInitializer implements ApplicationContextInitializer {
+public class CustomApplicationContextInitializer implements ApplicationContextInitializer {
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
-        System.out.println("ext applicationContext initializer");
+        System.out.println("custom applicationContext initializer");
     }
 }

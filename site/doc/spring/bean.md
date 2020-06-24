@@ -395,4 +395,5 @@ Object earlySingletonReference = getSingleton(beanName, false);
 - 对象 A 在初始化时可以从 singletonFactories 中获取到，并将获取到的 bean 放入 earlySingletonObjects 中然后返回，此时对象 B 的 setter 方法注入依赖对象 A 可以完成，对象 B 的整个初始化过程可以完成，将对象 B 放入 singletonObjects 集合中并从 earlySingletonObjects 中移除
 - 对象 B 的初始化完成后，对象 A 的 setter 方法注入就可以完成，对象 A 的整个初始化就可以完成了，此时需要将对象 A 从 earlySingletonObjects 集合移入 singletonObjects 集合中
 
-#### 创建单例 bean
+
+### 扩展点

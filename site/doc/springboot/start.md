@@ -1,4 +1,13 @@
-# Spring Boot
+## Spring Boot
+
+
+
+
+
+### Spring Boot 启动
+
+
+
 ## 创建 Spring boot 项目
 创建spring boot 项目，pom.xml 中添加：
 ```xml
@@ -16,7 +25,7 @@
         <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 </dependencies>
-```xml
+```
 使用 spring boot 自动打包，pom.xml 中添加:
 ```xml
 <build>
@@ -39,36 +48,20 @@
     <optional>true</optional>
 </dependency>
 ```
-## Spring boot 项目目录结构
-```java
-com
-    - example
-        -myapplication
-            - Application.java
-            - customer
-                - Customer.java
-                - CustomerController.java
-                - CustomerService.java
-                - CustomerRepository.java
-            - order
-                - Order.java
-                - OrderController.java
-                - OrderService.java
-                - OrderRepository.java
-```
-## Spring boot 的特性
+
+
 ### SpringApplication
 
 ### 自定义启动时 Banner
 Spring boot 在启动时会打印 *banner.txt* 中的内容，可以通过修改 banner.txt 并且使用 *spring.banner.location* 指定 banner 文件位置，*spirng.banner.charset* 指定编码来自定义启动时 banner。Sprign boot 除了支持 .txt 文件外，还支持 .gif, .jpg, .png 等图片文件，使用 *spring.banner.image.location* 在 application.properties 中指定位置即可：
-```properties
+```
 spring.banner.location=/banner.txt
 spring.banner.location=utf-8
 
 spirng.banner.image.location=/banner.gif
 ```
 除了使用配置文件外，也可以使用代码来自定义启动时 banner
-```java
+```
 new SpringApplicationBuilder().banner(new Banner(){
     public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out){
         ...

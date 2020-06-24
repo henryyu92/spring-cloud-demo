@@ -4,17 +4,19 @@ IoC(Inversion of Control) 是一种“控制反转”的思想，即对象的控
 
 IoC 容器是也是实现依赖注入(DI, Dependency Injection)的载体，IoC 容器在创建对象时自动将其依赖对象注入并管理了对象的生命周期。IoC 容器解耦了对象的耦合，在使用对象时只需要从容器中获取对象即可，而不需要关心对象之间的依赖关系。
 
-### IoC 容器
 
-Spring IoC 容器有两种方式实现依赖注入：
-- 构造器注入：在创建对象的构造器中传入依赖的对象实现依赖对象的注入
-- Setter 方法注入：通过调用对象的 setter 方法实现依赖对象的注入
+### 容器初始化
 
-Spring 提供了 BeanFactory 和 ApplicationContext 两类容器，BeanFactory 作为基础的容器提供了 IoC 容器的基本功能，而 ApplicationContext 在提供了容器功能的基础上引入了 Resource 支持不同的资源以及 ApplicationEventPublisher 支持事件机制。
+使用 Spring IoC 容器之前需要初始化，容器初始化的过程实在 `ConfigurableApplicationContext#refresh` 方法中实现
 
-Spring 通过 BeanDefinition 来定义对象以及其之间的相互依赖关系，Spring IoC 容器创建管理对象前需要加载资源并转换成 BeanDefinition。
 
-#### Resource
+### 依赖注入
+
+### 容器关闭
+
+### 扩展点
+
+### Resource
 ```Resource``` 接口继承 ```InputStreamSource``` 接口，是 Spring 框架中所有资源的抽象。该接口提供了对资源描述的方法并由抽象类 ```AbstractResource``` 提供默认实现，继承自 ```InputStreamSource``` 的 ```getInputStream``` 是获取资源数据流的方法，不同的资源通过重写该方法定义不同的方式获取资源数据流。
 
 在 Resource 体系中，不同的资源提供了不同的实现类：
