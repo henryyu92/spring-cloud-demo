@@ -1,3 +1,3 @@
-org.springframework.context.ApplicationListener=example.container.event.ExtApplicationListener
+# org.springframework.context.ApplicationListener=example.container.event.ExtApplicationListener
 
-org.springframework.context.ApplicationContextInitializer=example.container.context.CustomApplicationContextInitializer
+# org.springframework.context.ApplicationContextInitializer=example.container.context.CustomApplicationContextInitializer
