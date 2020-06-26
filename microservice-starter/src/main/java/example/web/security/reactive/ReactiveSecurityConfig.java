@@ -1,4 +1,4 @@
-package example.web.security;
+package example.web.security.reactive;
 
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 

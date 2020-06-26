@@ -1,4 +1,4 @@
-package example.web.security;
+package example.web.security.servlet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -9,7 +9,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebServletSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    public WebServletSecurityConfig(){
+        super(true);
+    }
 
     @Autowired
     private AuthenticationProvider provider;
@@ -32,6 +36,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests().antMatchers("/*").permitAll()
+                .and().formLogin().loginPage("/login")
         .and().csrf().disable();
     }
 }

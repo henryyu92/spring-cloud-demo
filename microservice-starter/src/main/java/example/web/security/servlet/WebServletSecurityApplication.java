@@ -1,14 +1,12 @@
-package example;
+package example.web.security.servlet;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class StarterApplication {
+public class WebServletSecurityApplication {
 
     public static void main(String[] args) {
-
-        SpringApplication.run(StarterApplication.class);
-
+        SpringApplication.run(WebServletSecurityApplication.class);
     }
 }
