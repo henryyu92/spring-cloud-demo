@@ -1,5 +1,15 @@
 ## Web
 
+Web MVC 执行流程
+
+https://www.jianshu.com/p/8a20c547e245
+
+### HandlerMapping
+
+### HandlerAdapters
+
+#### RequestMappingHandlerAdapter
+
 ### RequestMapping
 
 ### HandlerMethodArgumentResolver & HandlerMethodReturnValueHandler
@@ -22,6 +32,14 @@ Spring 提供了大量的 HandlerMethodArgumentResolver 用于支持不同的参
 
 
 ### HttpMessageConverter
+
+`HttpMessageConverter` 接口是 Spring MVC 中用于将 HTTP 中的字节流数据和应用程序中的对象进行转换.
+
+Spring 提供了常用的数据格式的转换:
+- ProtobufHttpMessageConverter
+
+
+
 
 https://www.jianshu.com/p/333ed5ee958dhttps://www.jianshu.com/p/333ed5ee958d
 
