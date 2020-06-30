@@ -141,7 +141,7 @@ public static class ConfigurationPropertiesBeanRegistrar implements ImportBeanDe
 }
 ```
 
-### @ConfigurationProperties
+### @ConfigurationProperties & @EnableConfigurationProperties
 注解用于外部配置，在类上或者在 @Configuration 注解类中的 @Bean 方法上添加这个注解就可以将类和外部的 Properties 类绑定。
 ```java
 @ConfigurationProperties(prefix="spring.redis")
@@ -198,8 +198,7 @@ public class RedisProperties{
 	
 }
 ```
-### @EnableConfigurationProperties
-该注解可以将 @ConfigurationProperties 注解的类注册到容器中：
+`@EnableConfigurationProperties` 注解可以将 @ConfigurationProperties 注解的类注册到容器中：
 ```java
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -240,3 +239,5 @@ public class RedisAutoConfiguration {
 
 }
 ```
+
+### @Primary
