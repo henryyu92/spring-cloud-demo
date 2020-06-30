@@ -26,6 +26,7 @@
 		<module>microservice-dependencies</module>
 		<module>microservice-admin</module>
         <module>microservice-starter</module>
+		<module>microservice-scheduler</module>
     </modules>
 
 </project>
