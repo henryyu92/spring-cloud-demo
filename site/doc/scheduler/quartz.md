@@ -24,5 +24,36 @@ https://segmentfault.com/a/1190000015294464
 ### SpringBoot Quartz
 
 Quartz 的 Job 中注入 Spring IoC 的 bean
+```java
+public final class SpringJobFactory extends SpringBeanJobFactory implements
+        ApplicationContextAware {
+
+    private transient AutowireCapableBeanFactory beanFactory;
+
+    @Override
+    public void setApplicationContext(final ApplicationContext context) {
+        beanFactory = context.getAutowireCapableBeanFactory();
+    }
+
+    @Override
+    protected Object createJobInstance(final TriggerFiredBundle bundle) throws Exception {
+        final Object job = super.createJobInstance(bundle);
+        beanFactory.autowireBean(job);
+        return job;
+    }
+}
+
+@Configuration
+public class SchedulerConfig {
+    @Autowired
+    private SpringJobFactory springJobFactory;
+    @Bean
+    public SchedulerFactoryBean schedulerFactoryBean() {
+        SchedulerFactoryBean schedulerFactoryBean = new SchedulerFactoryBean();
+        schedulerFactoryBean.setJobFactory(springJobFactory);
+        return schedulerFactoryBean;
+    }
+}
+```
 
 https://jverson.com/spring-boot-demo/schedule/quartz-springboot.html
