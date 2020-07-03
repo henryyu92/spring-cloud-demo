@@ -19,3 +19,10 @@ https://segmentfault.com/a/1190000015885177
 
 
 https://segmentfault.com/a/1190000015294464
+
+
+### SpringBoot Quartz
+
+Quartz 的 Job 中注入 Spring IoC 的 bean
+
+https://jverson.com/spring-boot-demo/schedule/quartz-springboot.html
