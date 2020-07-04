@@ -80,10 +80,6 @@ https://blog.csdn.net/u013887008/article/details/100183087
 https://www.cnblogs.com/lenve/p/10748453.html
 
 
-#### WebConfigurer
-
-SpringBoot 提供 WebMvcConfigure 用于集成 Spring 提供了 WebMVC
-
 ### WebSockets
 
 

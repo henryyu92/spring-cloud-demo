@@ -1,4 +1,4 @@
-package example.web.servlet;
+package example.web.servlet.mvc;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
