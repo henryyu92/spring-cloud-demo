@@ -32,15 +32,26 @@ HandlerMapping 负责映射 URL 和对应的处理类，Spring 提供了 `BeanNa
 
 `HandlerMapping` 接口定义了 `getHandler` 方法接收 `HttpServletRequest` 并返回 `HandlerExecutionChain`,方法的返回值中包含了该请求对应的处理类.
 
-请求的处理类被包装在 `HandlerMapping` 中，可以和 `HandlerInterceptor` 一起使用，`DispatcherServlet` 将首先按给定的顺序调用每个 `HandlerInterceptor` 的 `CodePreHandle` 方法，如果返回 true 则调用处理程序本身。
+请求的处理类被包装在 `HandlerMapping` 中，可以和 `HandlerInterceptor` 一起使用，`DispatcherServlet` 将首先按给定的顺序调用每个 `HandlerInterceptor` 的 `CodePreHandle` 方法，如果返回 true 则调用处理类本身。
 
-可以使用 `Ordered` 接口指定排序顺序从而使 `DispatcherServlet` 能够根据优先级来选择实例来处理映射。
+可以向 `DispatcherServlet` 提供多个 `HandlerMapping`，通过实现 `Ordered` 接口可以指定 `HandlerMapping` 的优先级，从而使得其可以按照优先级的顺序来处理请求和处理类的映射。
+
+```java
+```
+
+https://blog.csdn.net/qq_38410730/article/details/79507465
 
 #### HandlerAdapter
 
-#### RequestMappingHandlerAdapter
+请求经过 `HandlerMapping` 处理后得到处理请求的 `HandlerExecutionChain`，不同的 `HandlerMapping` 映射的 `HandlerExecutionHandlerChain` 中的处理类是不同的，Spring 利用适配器模式通过 `HandlerAdapter` 接口将不同的处理类以统一的方式进行处理。
+
+https://www.jianshu.com/p/1ccd4b326cff
+
+https://www.jianshu.com/p/23ad68d8b421
 
 #### RequestMapping
+
+#### RequestMappingHandlerAdapter
 
 #### HandlerMethodArgumentResolver & HandlerMethodReturnValueHandler
 
