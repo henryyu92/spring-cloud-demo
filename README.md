@@ -7,6 +7,7 @@
 * [注解](site/doc/spring/annotation.md)
 * [声明式事务](site/doc/spring/transaction.md)
 * [Web](site/doc/spring/web.md)
+* [WebService](site/doc/spring/webservice.md)
 * [Security](site/doc/spring/security.md)
 
 ### Spring Boot 

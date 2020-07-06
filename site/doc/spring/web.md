@@ -28,7 +28,15 @@ https://www.jianshu.com/p/8a20c547e245
 
 #### HandlerMapping
 
-#### HandlerAdapters
+HandlerMapping 负责映射 URL 和对应的处理类，Spring 提供了 `BeanNameUrlHandlerMapping` 和 `RequestMappingHandlerMapping` 两个实现类，如果没有指定的话 Spring MVC 会默认使用 `BeanNameUrlHandlerMapping` 作为实现。
+
+`HandlerMapping` 接口定义了 `getHandler` 方法接收 `HttpServletRequest` 并返回 `HandlerExecutionChain`,方法的返回值中包含了该请求对应的处理类.
+
+请求的处理类被包装在 `HandlerMapping` 中，可以和 `HandlerInterceptor` 一起使用，`DispatcherServlet` 将首先按给定的顺序调用每个 `HandlerInterceptor` 的 `CodePreHandle` 方法，如果返回 true 则调用处理程序本身。
+
+可以使用 `Ordered` 接口指定排序顺序从而使 `DispatcherServlet` 能够根据优先级来选择实例来处理映射。
+
+#### HandlerAdapter
 
 #### RequestMappingHandlerAdapter
 
