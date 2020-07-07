@@ -63,7 +63,7 @@ https://blog.csdn.net/qq_38410730/article/details/79507465
 ```java
 ```
 
-`RequestMappingHandlerAdapter` 实现了 `InitializingBean` 接口,在重写方法 `afterPropertiesSet` 中初始化了 `HandlerMethodArgumentResolver` 和 `HandlerMethodReturnValueHandler` 这两个组件,这两个组件用于处理请求参数和请求返回的结果.
+`RequestMappingHandlerAdapter` 继承 `AbstractHandlerMethodAdapter` 并实现了 `InitializingBean` 接口,在重写方法 `afterPropertiesSet` 中初始化了 `HandlerMethodArgumentResolver` 和 `HandlerMethodReturnValueHandler` 这两个组件,这两个组件用于处理请求参数和请求返回的结果.
 ```java
 ```
 
@@ -105,6 +105,8 @@ Spring 提供了常用的数据格式的转换:
 - ProtobufHttpMessageConverter
 
 
+### WebMvcConfigurer
+
 
 
 https://www.jianshu.com/p/333ed5ee958dhttps://www.jianshu.com/p/333ed5ee958d
@@ -112,8 +114,6 @@ https://www.jianshu.com/p/333ed5ee958dhttps://www.jianshu.com/p/333ed5ee958d
 https://www.scienjus.com/custom-http-message-converter/
 
 https://segmentfault.com/a/1190000012658289
-
-### @ResponseBody & @RequestBody
 
 https://www.jianshu.com/p/333ed5ee958d
 
