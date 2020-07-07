@@ -63,7 +63,7 @@ https://blog.csdn.net/qq_38410730/article/details/79507465
 ```java
 ```
 
-`RequestMappingHandlerAdapter` 实现了 `InitializingBean` 接口,在重载方法 `afterPropertiesSet` 中初始化了 `HandlerMethodArgumentResolver` 和 `HandlerMethodReturnValueHandler` 这两个组件,这两个组件用于处理请求参数和请求返回的结果.
+`RequestMappingHandlerAdapter` 实现了 `InitializingBean` 接口,在重写方法 `afterPropertiesSet` 中初始化了 `HandlerMethodArgumentResolver` 和 `HandlerMethodReturnValueHandler` 这两个组件,这两个组件用于处理请求参数和请求返回的结果.
 ```java
 ```
 
@@ -79,20 +79,20 @@ https://www.jianshu.com/p/23ad68d8b421
 
 ### HandlerMethodArgumentResolver
 
-`HandlerMethodArgumentResolver` 接口是 Spring MVC 中用于将方法中 HttpServletRequest 中的参数转换为方法中的参数.
+`HandlerMethodArgumentResolver` 接口将 `HttpServletRequest` 中的请求参数转换为处理类方法的参数.
 
-Spring 提供了大量的 HandlerMethodArgumentResolver 用于支持不同的参数类型:
+`HandlerMethodArgumentResolver` 接口定义了 2 个方法用于将请求参数转换为处理类方法参数,通过实现该接口并重写这 2 个方法可以实现自定义的请求参数处理.
+- `supportsParameter`:判断当前的 resolver 是否支持这个参数
+- `resolveArgument`:用于解析支持的参数到指定的参数类型
+
+```java
+```
+Spring 提供了默认的 `HandlerMethodArgumentResolver` 的实现类,不同的实现类可以支持将请求参数转换成不同类型的参数:
 - RequestParamMapMethodArgumentResolver 用于处理 @RequestParam 注解的参数
 - RequestHeaderMapMethodArgumentResolver 用于处理 @RequestHeader 注解的参数
 - PathVariableMapMethodArgumentResolver 用于处理 @PathVariable 注解的参数
 - ModelAttributeMethodProcessor 用于处理 @ModelAttribute 注解的参数
 - RequestResponseBodyMethodProcessor 用于处理 @RequestBody 注解的参数
-
-`HandlerMethodArgumentResolver` 接口包含 2 个方法:
-- supportsParameter:判断当前的 resolver 是否支持这个参数
-- resolveArgument:用于解析支持的参数到指定的参数类型
-
-`HandlerMethodReturnValueHandler` 接口是 Spring MVC 中用于
 
 ### HandlerMethodReturnValueHandler
 
