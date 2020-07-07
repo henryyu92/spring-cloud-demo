@@ -43,7 +43,16 @@ https://blog.csdn.net/qq_38410730/article/details/79507465
 
 #### HandlerAdapter
 
-请求经过 `HandlerMapping` 处理后得到处理请求的 `HandlerExecutionChain`，不同的 `HandlerMapping` 映射的 `HandlerExecutionHandlerChain` 中的处理类是不同的，Spring 利用适配器模式通过 `HandlerAdapter` 接口将不同的处理类以统一的方式进行处理。
+请求经过 `HandlerMapping` 处理后得到处理请求的 `HandlerExecutionChain`，不同的 `HandlerMapping` 映射的 `HandlerExecutionHandlerChain` 中的处理类是不同的，Spring 利用适配器模式通过 `HandlerAdapter` 接口将不同的处理类以统一的方式来处理请求。
+
+`HandlerAdapter` 接口定义了三个方法用于适配不同的请求处理链,实现类通过实现接口并重写这三个接口方法实现自定义的适配器.`support` 方法表示当前的适配器是否支持传入的 handler,`handle` 方法用于适配处理类,`getLastModified` 方法表示上次修改的时间.
+
+```java
+
+```
+
+`RequestMappingHandlerAdapter` 是 Spring 中使用的最多的 `HandlerMapping` 实现类,
+
 
 https://www.jianshu.com/p/1ccd4b326cff
 
@@ -51,7 +60,7 @@ https://www.jianshu.com/p/23ad68d8b421
 
 #### RequestMapping
 
-#### RequestMappingHandlerAdapter
+
 
 #### HandlerMethodArgumentResolver & HandlerMethodReturnValueHandler
 
