@@ -13,7 +13,11 @@ Spring 上下文会调用 `WebSecurityConfiguration#setFilterChainProxySecurityC
 SpringSecurityFilterChain 的初始化过程中会调用
 
 
-### Authentication
+`ExceptionTranslationFilter` 用于处理过滤器链抛出的 `AccessDeniedException` 和 `AuthenticationException`, 如果检测到抛出的一场是 `AccessDeniedException` 则会启动 `AuthenticationEntryPoint`, 如果检测到抛出的异常为 `AccessDeniedException` 则会判断是否是匿名用户,如果启动 `AuthenticationEntryPoint` 否则会采用 `AccessDeniedHandler`来处理.
+
+`ExceptionTranslationFilter` 为 Java 异常和 HTTP 响应之间建立起了关联
+
+#### Authentication
 
 Authentication 是验证用户身份的合法性。
 
@@ -22,15 +26,9 @@ Authentication 是验证用户身份的合法性。
 - AuthenticationProvider：具体实现请求的认证，一个 provider 是一种认证方式的实现，Spring Security 提供了多种认证方式
 - Authentication：表示由 AuthenticationManager 的 authenticate 方法完成认证后的认证请求或者已认证的主体的令牌。一旦身份认证完成之后就会将 Authentication 存储在当前认证机制使用的 SecurityContextHolder 管理的 Thread-Local 的 SecurityContext 中。除非 Authentication 的 authenticated 属性设置为 true，否则后续的安全相关的拦截器会再次认证
 
-#### 用户密码认证机制
-
-表单认证
 
 
-基本认证
-
-
-### Authorization
+#### Authorization
 
 Authentication 对象中保存了一个 GrantedAuthority 列表，表示请求主体已经获取的授权。GrantedAuthority 对象通过 AuthenticationManager 插入到 Authentication 对象中，并且由 AccessDecisionManager 在做出授权决策时读取。
 
