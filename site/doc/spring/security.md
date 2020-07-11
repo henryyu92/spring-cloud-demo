@@ -17,15 +17,15 @@ SpringSecurityFilterChain 的初始化过程中会调用
 
 `ExceptionTranslationFilter` 为 Java 异常和 HTTP 响应之间建立起了关联
 
+#### FilterChain
+
 #### Authentication
 
 Authentication 是验证用户身份的合法性。
 
-#### 核心组件
 - AuthenticationManager：认证的管理类，所有需要认证的请求都是通过 AuthenticationManager 的 authenticate 方法完成认证，并根据认证的结果调用具体的 Handler 来处理
 - AuthenticationProvider：具体实现请求的认证，一个 provider 是一种认证方式的实现，Spring Security 提供了多种认证方式
 - Authentication：表示由 AuthenticationManager 的 authenticate 方法完成认证后的认证请求或者已认证的主体的令牌。一旦身份认证完成之后就会将 Authentication 存储在当前认证机制使用的 SecurityContextHolder 管理的 Thread-Local 的 SecurityContext 中。除非 Authentication 的 authenticated 属性设置为 true，否则后续的安全相关的拦截器会再次认证
-
 
 
 #### Authorization
@@ -45,3 +45,6 @@ Spring Security提供了拦截器，用于控制对安全对象（如方法调�
 
 
 https://www.jianshu.com/nb/29347401
+
+
+https://blog.csdn.net/u012702547/article/details/89629415
