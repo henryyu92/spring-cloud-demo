@@ -1,4 +1,4 @@
-package example.web.security.servlet;
+package example.security.servlet;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

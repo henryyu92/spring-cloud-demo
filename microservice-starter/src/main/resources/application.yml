@@ -1,0 +1,6 @@
+server:
+  port: 9700
+
+spring:
+  profiles:
+    active: endpoint

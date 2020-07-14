@@ -1,0 +1,17 @@
+management:
+  server:
+    address: 127.0.0.1
+    port: 9701
+    ssl:
+      enabled: false
+      key-store: classpath:management.jks
+      key-password: secret
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: '*'
+    health:
+      show-details: always
+    shutdown:
+      enabled: false

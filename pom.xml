@@ -27,6 +27,7 @@
 		<module>microservice-admin</module>
         <module>microservice-starter</module>
 		<module>microservice-scheduler</module>
+		<module>microservice-security</module>
     </modules>
 
 </project>

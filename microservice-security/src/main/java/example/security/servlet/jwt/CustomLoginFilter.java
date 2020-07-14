@@ -1,4 +1,4 @@
-package example.web.security.servlet.jwt;
+package example.security.servlet.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;

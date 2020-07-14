@@ -1,4 +1,4 @@
-package example.web.security.servlet;
+package example.security.servlet;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package example.web.security.servlet.authentication;
+package example.security.servlet.authentication;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
