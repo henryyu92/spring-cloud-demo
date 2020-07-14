@@ -7,20 +7,21 @@
   - [HandlerMethodArgumentResolver](#HandlerMethodArgumentResolver)
   - [HandlerMethodReturnValueHandler](#HandlerMethodReturnValueHandler)
   - [HttpMessageConverter](#HttpMessageConverter)
+  - [WebMvcConfigurer](#WebMvcConfigurer)
 - [WebSocket](#WebSocket)
 - [WebFlux](#WebFlux)
 
 ## MVC
 
-Spring MVC 是基于 Servlet 构建的 Web 框架。
+Spring MVC 是基于 Servlet 构建的 Web 框架。Spring MVC 的整体架构是基于前端控制器(DispatcherServlet)设计,HTTP 请求都是由 DispatcherServlet 代理并通过设置的 HandlerMapping 将请求映射到对应的处理器链,然后通过 HandlerAdapter 适配的处理器链完成请求的处理,请求处理的结果由 DispatcherServlet 代理给 ViewResolver 渲染后返回,从而完成整个 HTTP 请求.
 
 ![Web MVC 执行流程](../../resources/mvc.png)
 
 ### DispatcherServlet
 
-Spring MVC 和大多数的 Web 框架一样是围绕着前端控制器模式来设计，也就是一个中央 Servlet(DispatcherServlet) 为请求提供一个共享算法，而实际的工作是由可配置的组件完成，这种模式具有很大的灵活性并且支持多种工作流。
+Dispatcher 是 Spring MVC 框架的中央处理器,所有的请求都会通过 DispatcherServlet 完成处理并返回渲染后的结果.
 
-DispatcherServlet 将请求委托给特殊的 bean 来处理并响应，这些 bean 由 Spring 管理并提供了默认实现，沟通自定义这些 bean 可以扩展或者替换它们：
+Dispatcher 并没有直接参与请求的处理以及结果的渲染,而是通过代理给其内部的组件完成这些功能.Spring MVC 为 DispatcherServlet 的内部组件提供了默认的实现,并将这些 bean 交由容器来管理,通过自定义这些 bean 可以扩展或者替换它们:
 - HandlerMapping：将请求映射到 handler 和 拦截器列表用于预处理和后处理，映射的条件取决于不同的实现类。Spring 提供了两种实现类，其中 `RequestMappingHandlerMapping` 支持 @RequestMapping 注解方式映射，而 `SimpleUrlHandlerMapping` 维护显示注册的 url 映射
 - HandlerApdater：帮助 DispatcherServlet 调用映射到请求的处理程序，而不管程序实际是如何调用的
 - HandlerExceptionResolver：解析应用异常的策略
@@ -106,6 +107,12 @@ Spring 提供了常用的数据格式的转换:
 
 
 ### WebMvcConfigurer
+
+WebMvcConfigure 接口是 Spring 提供的通过代码方式配置 MVC 的入口,通过实现接口并重写接口方法可以使用自定义的 Spring MVC 组件.
+
+```java
+
+```
 
 
 
