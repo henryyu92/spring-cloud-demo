@@ -1,9 +1,9 @@
 ## Web
 
-- [MVC](#MVC)
-  - [DispatcherServlet](#DispatcherServlet)
-  - [HandlerMapping](#HandlerMapping)
-  - [HandlerAdapter](#HandlerAdapter)
+- [MVC](#mvc)
+  - [DispatcherServlet](#dispatcherservlet)
+  - [HandlerMapping](#handlermapping)
+  - [HandlerAdapter](#handleradapter)
   - [HandlerMethodArgumentResolver](#HandlerMethodArgumentResolver)
   - [HandlerMethodReturnValueHandler](#HandlerMethodReturnValueHandler)
   - [HandlerExceptionResolver](#HandlerExceptionResolver)
