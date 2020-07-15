@@ -6,6 +6,7 @@
   - [HandlerAdapter](#HandlerAdapter)
   - [HandlerMethodArgumentResolver](#HandlerMethodArgumentResolver)
   - [HandlerMethodReturnValueHandler](#HandlerMethodReturnValueHandler)
+  - [HandlerExceptionResolver](#HandlerExceptionResolver)
   - [HttpMessageConverter](#HttpMessageConverter)
   - [WebMvcConfigurer](#WebMvcConfigurer)
 - [WebSocket](#WebSocket)
@@ -13,7 +14,7 @@
 
 ## MVC
 
-Spring MVC 是基于 Servlet 构建的 Web 框架。Spring MVC 的整体架构是基于前端控制器(DispatcherServlet)设计,HTTP 请求都是由 DispatcherServlet 代理并通过设置的 HandlerMapping 将请求映射到对应的处理器链,然后通过 HandlerAdapter 适配的处理器链完成请求的处理,请求处理的结果由 DispatcherServlet 代理给 ViewResolver 渲染后返回,从而完成整个 HTTP 请求.
+Spring MVC 是基于 Servlet 构建的 Web 框架。Spring MVC 的整体架构是基于前端控制器(DispatcherServlet)设计,HTTP 请求都是由 DispatcherServlet 代理并通过设置的 HandlerMapping 将请求映射到对应的处理器链(HandlerExecutionChain),然后通过 HandlerAdapter 适配的处理器链完成请求的处理,请求处理的结果由 DispatcherServlet 代理给 ViewResolver 渲染后返回,从而完成整个 HTTP 请求.
 
 ![Web MVC 执行流程](../../resources/mvc.png)
 
@@ -22,22 +23,127 @@ Spring MVC 是基于 Servlet 构建的 Web 框架。Spring MVC 的整体架构�
 Dispatcher 是 Spring MVC 框架的中央处理器,所有的请求都会通过 DispatcherServlet 完成处理并返回渲染后的结果.
 
 Dispatcher 并没有直接参与请求的处理以及结果的渲染,而是通过代理给其内部的组件完成这些功能.Spring MVC 为 DispatcherServlet 的内部组件提供了默认的实现,并将这些 bean 交由容器来管理,通过自定义这些 bean 可以扩展或者替换它们:
-- HandlerMapping：将请求映射到 handler 和 拦截器列表用于预处理和后处理，映射的条件取决于不同的实现类。Spring 提供了两种实现类，其中 `RequestMappingHandlerMapping` 支持 @RequestMapping 注解方式映射，而 `SimpleUrlHandlerMapping` 维护显示注册的 url 映射
-- HandlerApdater：帮助 DispatcherServlet 调用映射到请求的处理程序，而不管程序实际是如何调用的
-- HandlerExceptionResolver：解析应用异常的策略
-- ViewResolver：将从处理程序返回的基于逻辑字符串的视图名称解析为要呈现给响应的实际视图
-- LocalResolver & LocalContextResolver
-- MultipartResolver
-- FlashMapManager
+- HandlerMapping：将请求映射到 handler 和 拦截器链用于预处理和后处理，映射的条件取决于不同的实现类
+- HandlerAdapter：将不同的处理器处理方法适配到统一的方法中并处理方法参数,数据绑定,消息转换等
+- HandlerExceptionResolver：请求映射或者请求处理过程中的异常处理接口
+- ViewResolver：渲染处理器返回的处理结果为真正的视图
 
+`DispatcherServlet` 在 Servlet 容器初始化之后的 `onRefresh` 方法中会初始化内部的组件,在初始化组件的过程中会先到容器中获取,如果没有获取到则会到 `DispatcherServlet.properties` 中获取默认的组件:
+```java
+public class DispatcherServlet extends FrameworkServlet {
 
+    // Servlet 容器初始化后调用
+    protected void onRefresh(ApplicationContext context) {
+        initStrategies(context);
+    }
 
-
-https://www.jianshu.com/p/8a20c547e245
+    // 初始化内部组件
+	protected void initStrategies(ApplicationContext context) {
+	    initMultipartResolver(context);
+	    initLocaleResolver(context);
+	    initThemeResolver(context);
+	    initHandlerMappings(context);
+	    initHandlerAdapters(context);
+	    initHandlerExceptionResolvers(context);
+	    initRequestToViewNameTranslator(context);
+	    initViewResolvers(context);
+	    initFlashMapManager(context);
+	}
+}
+```
+`DispatcherServlet` 始化完内部组件后就可以对外提供 web 服务了,基于 Servlet 容器的 Web 应用的 HTTP 请求会在 Servlet 的 `doService` 中被处理, `DispatcherServlet` 在 `doService` 中在 request 中设置了一些后续需要使用到的 attribute 之后调用 `doDispatch` 来真正处理请求:
+```java
+public class DispatcherServlet extends FrameworkServlet {
+    
+    protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception { 
+        HttpServletRequest processedRequest = request;
+        HandlerExecutionChain mappedHandler = null;
+        boolean multipartRequestParsed = false;
+        
+        WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
+        
+        try { 
+            ModelAndView mv = null;
+            Exception dispatchException = null;
+            
+            try {
+                // 如果是文件流请求则处理,返回 MultipartHttpServletRequest
+                processedRequest = checkMultipart(request);
+                multipartRequestParsed = (processedRequest != request);
+                
+                // Determine handler for the current request.
+                mappedHandler = getHandler(processedRequest);
+                if (mappedHandler == null) { 
+                    noHandlerFound(processedRequest, response);
+                    return; 
+                }
+                
+                // Determine handler adapter for the current request.
+                HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
+                
+                // Process last-modified header, if supported by the handler.
+                String method = request.getMethod();
+                boolean isGet = "GET".equals(method);
+                if (isGet || "HEAD".equals(method)) { 
+                    long lastModified = ha.getLastModified(request, mappedHandler.getHandler());
+                    if (new ServletWebRequest(request, response).checkNotModified(lastModified) && isGet) { 
+                        return; 
+                    } 
+                }
+                
+                if (!mappedHandler.applyPreHandle(processedRequest, response)) { 
+                    return; 
+                }
+                
+                // Actually invoke the handler.
+                mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
+                
+                if (asyncManager.isConcurrentHandlingStarted()) { 
+                    return; 
+                }
+                
+                applyDefaultViewName(processedRequest, mv);
+                mappedHandler.applyPostHandle(processedRequest, response, mv); 
+            } 
+            catch (Exception ex) { 
+                dispatchException = ex; 
+            } 
+            catch (Throwable err) {
+                // As of 4.3, we're processing Errors thrown from handler methods as well,
+                // making them available for @ExceptionHandler methods and other scenarios.
+                dispatchException = new NestedServletException("Handler dispatch failed", err); 
+            }
+            // 处理请求的结果
+            processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException); 
+        } 
+        catch (Exception ex) { 
+            triggerAfterCompletion(processedRequest, response, mappedHandler, ex); 
+        } 
+        catch (Throwable err) { 
+            triggerAfterCompletion(processedRequest, response, mappedHandler,
+                    new NestedServletException("Handler processing failed", err)); 
+        } 
+        finally { 
+            if (asyncManager.isConcurrentHandlingStarted()) {
+                // Instead of postHandle and afterCompletion
+                if (mappedHandler != null) { 
+                    mappedHandler.applyAfterConcurrentHandlingStarted(processedRequest, response); 
+                } 
+            } 
+            else {
+                // Clean up any resources used by a multipart request.
+                if (multipartRequestParsed) { 
+                    cleanupMultipart(processedRequest); 
+                } 
+            } 
+        } 
+    }
+}
+```
 
 ### HandlerMapping
 
-HandlerMapping 负责映射 URL 和对应的处理类，Spring 提供了 `BeanNameUrlHandlerMapping` 和 `RequestMappingHandlerMapping` 两个实现类，如果没有指定的话 Spring MVC 会默认使用 `BeanNameUrlHandlerMapping` 作为实现。
+HandlerMapping 负责映射 URL 和对应的处理类，Spring 提供了 `RequestMappingHandlerMapping` 支持 @RequestMapping 注解映射, `SimpleUrlHandlerMapping` 维护 url 和处理器的映射,默认使用 `BeanNameUrlHandlerMapping` 作为实现。
 
 `HandlerMapping` 接口定义了 `getHandler` 方法接收 `HttpServletRequest` 并返回 `HandlerExecutionChain`,方法的返回值中包含了该请求对应的处理类.
 
@@ -96,6 +202,8 @@ Spring 提供了默认的 `HandlerMethodArgumentResolver` 的实现类,不同的
 - RequestResponseBodyMethodProcessor 用于处理 @RequestBody 注解的参数
 
 ### HandlerMethodReturnValueHandler
+
+### HandlerExceptionResolver
 
 
 ### HttpMessageConverter
