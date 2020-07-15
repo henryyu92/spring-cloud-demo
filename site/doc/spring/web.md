@@ -151,13 +151,51 @@ public class DispatcherServlet extends FrameworkServlet {
 请求处理完成之后的结果由 `processDispatchResult` 方法处理,这个方法除了渲染请求处理返回的 `ModelAndView` 外,还通过 `HandlerExceptionResolver` 全局处理请求映射和处理过程中出现的异常.
 ### HandlerMapping
 
-HandlerMapping 负责映射 URL 和对应的处理类，Spring 提供了 `RequestMappingHandlerMapping` 支持 @RequestMapping 注解映射, `SimpleUrlHandlerMapping` 维护 url 和处理器的映射,默认使用 `BeanNameUrlHandlerMapping` 作为实现。
+HandlerMapping 负责映射 URL 和对应的处理类，`DispatcherServlet` 在启动时会从容器中加载 `HandlerMapping` 的实现类,如果没有指定就使用默认配置`DispatcherServlet.properties`中的实现:
+```java
+public class DispatcherServlet extends FrameworkServlet {
+    private void initHandlerMappings(ApplicationContext context) {
+        this.handlerMappings = null;
+    
+        if (this.detectAllHandlerMappings) {
+            // Find all HandlerMappings in the ApplicationContext, including ancestor contexts.
+    		Map<String, HandlerMapping> matchingBeans =
+    			BeanFactoryUtils.beansOfTypeIncludingAncestors(context, HandlerMapping.class, true, false);
+    		if (!matchingBeans.isEmpty()) {
+    		    this.handlerMappings = new ArrayList<>(matchingBeans.values());
+    		    // We keep HandlerMappings in sorted order.
+    			AnnotationAwareOrderComparator.sort(this.handlerMappings);
+    		}
+        }
+        else {
+            try {
+                // 从容器中加载名称为 handlerMapping 的 HandlerMapping bean
+                HandlerMapping hm = context.getBean(HANDLER_MAPPING_BEAN_NAME, HandlerMapping.class);
+                this.handlerMappings = Collections.singletonList(hm);
+            }
+            catch (NoSuchBeanDefinitionException ex) {
+                // Ignore, we'll add a default HandlerMapping later.
+            }
+        }
+    
+        // Ensure we have at least one HandlerMapping, by registering
+    	// a default HandlerMapping if no other mappings are found.
+    	if (this.handlerMappings == null) {
+            // 获取默认的实现
+    	    this.handlerMappings = getDefaultStrategies(context, HandlerMapping.class);
+    	    if (logger.isTraceEnabled()) {
+    	        logger.trace("No HandlerMappings declared for servlet '" + getServletName() +
+    					"': using default strategies from DispatcherServlet.properties");
+    	    }
+    	}
+    }
+}
+```
+`HandlerMapping` 可以有多个并且通过实现 `Ordered` 接口根据`getOrder`方法返回的值进行排序,从而使得其可以按照优先级的顺序来处理请求和处理类的映射.
 
 `HandlerMapping` 接口定义了 `getHandler` 方法接收 `HttpServletRequest` 并返回 `HandlerExecutionChain`,方法的返回值中包含了该请求对应的处理类.
 
 请求的处理类被包装在 `HandlerMapping` 中，可以和 `HandlerInterceptor` 一起使用，`DispatcherServlet` 将首先按给定的顺序调用每个 `HandlerInterceptor` 的 `CodePreHandle` 方法，如果返回 true 则调用处理类本身。
-
-可以向 `DispatcherServlet` 提供多个 `HandlerMapping`，通过实现 `Ordered` 接口可以指定 `HandlerMapping` 的优先级，从而使得其可以按照优先级的顺序来处理请求和处理类的映射。
 
 ```java
 ```
