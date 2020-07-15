@@ -146,7 +146,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 在真正处理请求之前 `DispatcherServlet` 还会检查请求头的 `last-modified` 值,
 
-请求的处理包含三步:执行处理器链中所有的`Interceptor` 的 preHandle 方法,执行适配类 `HandlerAdapter` 的 handle 方法,执行执行器链中所有的 `Interceptor` 的 postHandle 方法完成请求的处理.
+请求的处理包含三步:执行处理器链中所有的`HandlerInterceptor` 的 preHandle 方法,执行适配类 `HandlerAdapter` 的 handle 方法,执行执行器链中所有的 `HandlerInterceptor` 的 postHandle 方法完成请求的处理.
 
 请求处理完成之后的结果由 `processDispatchResult` 方法处理,这个方法除了渲染请求处理返回的 `ModelAndView` 外,还通过 `HandlerExceptionResolver` 全局处理请求映射和处理过程中出现的异常.
 ### HandlerMapping
@@ -154,6 +154,7 @@ public class DispatcherServlet extends FrameworkServlet {
 HandlerMapping 负责映射 URL 和对应的处理类，`DispatcherServlet` 在启动时会从容器中加载 `HandlerMapping` 的实现类,如果没有指定就使用默认配置`DispatcherServlet.properties`中的实现:
 ```java
 public class DispatcherServlet extends FrameworkServlet {
+
     private void initHandlerMappings(ApplicationContext context) {
         this.handlerMappings = null;
     
@@ -181,7 +182,7 @@ public class DispatcherServlet extends FrameworkServlet {
         // Ensure we have at least one HandlerMapping, by registering
     	// a default HandlerMapping if no other mappings are found.
     	if (this.handlerMappings == null) {
-            // 获取默认的实现
+            // 获取配置文件中指定的默认的实现
     	    this.handlerMappings = getDefaultStrategies(context, HandlerMapping.class);
     	    if (logger.isTraceEnabled()) {
     	        logger.trace("No HandlerMappings declared for servlet '" + getServletName() +
@@ -193,12 +194,31 @@ public class DispatcherServlet extends FrameworkServlet {
 ```
 `HandlerMapping` 可以有多个并且通过实现 `Ordered` 接口根据`getOrder`方法返回的值进行排序,从而使得其可以按照优先级的顺序来处理请求和处理类的映射.
 
-`HandlerMapping` 接口定义了 `getHandler` 方法接收 `HttpServletRequest` 并返回 `HandlerExecutionChain`,方法的返回值中包含了该请求对应的处理类.
+`DispatcherServlet` 中通过调用 `getHandler` 方法为请求映射处理类,方法中通过遍历已经排序的 `HandlerMapping` 并调用其 `getHandler` 方法获取对应的 `HaandlerExecutionChain`:
+```java
+public class DispatcherServlet extends FrameworkServlet {
 
-请求的处理类被包装在 `HandlerMapping` 中，可以和 `HandlerInterceptor` 一起使用，`DispatcherServlet` 将首先按给定的顺序调用每个 `HandlerInterceptor` 的 `CodePreHandle` 方法，如果返回 true 则调用处理类本身。
-
+    protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
+        if (this.handlerMappings != null) {
+            // handlerMappings 已经排序
+            for (HandlerMapping mapping : this.handlerMappings) {
+                HandlerExecutionChain handler = mapping.getHandler(request);
+                if (handler != null) {
+                    return handler;
+                }
+            }
+        }
+        return null;
+    }
+}
+```
+`HandlerMapping` 接口定义了 `getHandler` 方法接收 `HttpServletRequest` 并返回 `HandlerExecutionChain`,其中包含了该请求对应的处理类以及对应的 `HandlerInterceptor` 列表
 ```java
 ```
+Spring 在配置文件中提供了 3 个默认的 `HandlerMapping` 实现类:
+- `BeanNameUrlHandlerMapping`:
+- `RequestMappingHandlerMapping`:
+- `RouterFunctionMapping`:
 
 https://blog.csdn.net/qq_38410730/article/details/79507465
 
