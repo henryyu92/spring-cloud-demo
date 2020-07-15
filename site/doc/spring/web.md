@@ -51,7 +51,7 @@ public class DispatcherServlet extends FrameworkServlet {
     }
 }
 ```
-`DispatcherServlet` 始化完内部组件后就可以对外提供 web 服务了,基于 Servlet 容器的 Web 应用的 HTTP 请求会在 Servlet 的 `doService` 中被处理, `DispatcherServlet` 在 `doService` 中在 request 中设置了一些后续需要使用到的 attribute 之后调用 `doDispatch` 来真正处理请求:
+`DispatcherServlet` 始化完内部组件后就可以对外提供 web 服务了,基于 Servlet 容器的 Web 应用的 HTTP 请求会在 Servlet 的 `doService` 中被处理, `DispatcherServlet` 在 `doService` 中通过 `setAttribute` 方法设置一些后续需要使用的属性之后调用 `doDispatch` 来真正处理请求:
 ```java
 public class DispatcherServlet extends FrameworkServlet {
     
@@ -91,6 +91,7 @@ public class DispatcherServlet extends FrameworkServlet {
                     } 
                 }
                 
+                // 执行处理器链中的 interceptor 的 preHandle 方法
                 if (!mappedHandler.applyPreHandle(processedRequest, response)) { 
                     return; 
                 }
@@ -103,6 +104,7 @@ public class DispatcherServlet extends FrameworkServlet {
                 }
                 
                 applyDefaultViewName(processedRequest, mv);
+                // 执行处理器链中的 interceptor 的 postHandle 方法
                 mappedHandler.applyPostHandle(processedRequest, response, mv); 
             } 
             catch (Exception ex) { 
@@ -140,7 +142,13 @@ public class DispatcherServlet extends FrameworkServlet {
     }
 }
 ```
+`doDispatch` 是 `DispatcherServlet` 的核心, 对 HTTP 请求的处理都包含在其中.方法中首先通过 `checkMultipart` 方法对文件上传请求进行了处理,之后通过 `getHandler` 方法调用其 `RequestMapping` 组件获取到请求对应的 `HandlerExecutionChain`,之后调用 `getHandlerAdapter` 方法将处理器链适配到 `HandlerAdapter`,这时 `DispatcherServlet` 准备好了对该请求处理需要的所有组件.
 
+在真正处理请求之前 `DispatcherServlet` 还会检查请求头的 `last-modified` 值,
+
+请求的处理包含三步:执行处理器链中所有的`Interceptor` 的 preHandle 方法,执行适配类 `HandlerAdapter` 的 handle 方法,执行执行器链中所有的 `Interceptor` 的 postHandle 方法完成请求的处理.
+
+请求处理完成之后的结果由 `processDispatchResult` 方法处理,这个方法除了渲染请求处理返回的 `ModelAndView` 外,还通过 `HandlerExceptionResolver` 全局处理请求映射和处理过程中出现的异常.
 ### HandlerMapping
 
 HandlerMapping 负责映射 URL 和对应的处理类，Spring 提供了 `RequestMappingHandlerMapping` 支持 @RequestMapping 注解映射, `SimpleUrlHandlerMapping` 维护 url 和处理器的映射,默认使用 `BeanNameUrlHandlerMapping` 作为实现。
