@@ -1,9 +1,9 @@
 ## Web
 
 - [MVC](#mvc)
-  - [DispatcherServlet](#dispatcherservlet)
-  - [HandlerMapping](#handlermapping)
-  - [HandlerAdapter](#handleradapter)
+  - [DispatcherServlet](#DispatcherServlet)
+  - [HandlerMapping](#HandlerMapping)
+  - [HandlerAdapter](#HandlerAdapter)
   - [HandlerMethodArgumentResolver](#HandlerMethodArgumentResolver)
   - [HandlerMethodReturnValueHandler](#HandlerMethodReturnValueHandler)
   - [HandlerExceptionResolver](#HandlerExceptionResolver)
@@ -28,7 +28,7 @@ Dispatcher 并没有直接参与请求的处理以及结果的渲染,而是通�
 - HandlerExceptionResolver：请求映射或者请求处理过程中的异常处理接口
 - ViewResolver：渲染处理器返回的处理结果为真正的视图
 
-`DispatcherServlet` 在 Servlet 容器初始化之后的 `onRefresh` 方法中会初始化内部的组件,在初始化组件的过程中会先到容器中获取,如果没有获取到则会到 `DispatcherServlet.properties` 中获取默认的组件:
+`DispatcherServlet` 在 Servlet 容器初始化之后的 `onRefresh` 方法中会初始化内部的组件,在初始化组件的过程中会先到容器中获取,如果没有获取到则会到 `DispatcherServlet.properties` 中获取定义的默认的组件:
 ```java
 public class DispatcherServlet extends FrameworkServlet {
 
@@ -38,17 +38,17 @@ public class DispatcherServlet extends FrameworkServlet {
     }
 
     // 初始化内部组件
-	protected void initStrategies(ApplicationContext context) {
-	    initMultipartResolver(context);
-	    initLocaleResolver(context);
-	    initThemeResolver(context);
-	    initHandlerMappings(context);
-	    initHandlerAdapters(context);
-	    initHandlerExceptionResolvers(context);
-	    initRequestToViewNameTranslator(context);
-	    initViewResolvers(context);
-	    initFlashMapManager(context);
-	}
+    protected void initStrategies(ApplicationContext context) { 
+        initMultipartResolver(context);
+        initLocaleResolver(context);
+        initThemeResolver(context);
+        initHandlerMappings(context);
+        initHandlerAdapters(context);
+        initHandlerExceptionResolvers(context);
+        initRequestToViewNameTranslator(context);
+        initViewResolvers(context);
+        initFlashMapManager(context); 
+    }
 }
 ```
 `DispatcherServlet` 始化完内部组件后就可以对外提供 web 服务了,基于 Servlet 容器的 Web 应用的 HTTP 请求会在 Servlet 的 `doService` 中被处理, `DispatcherServlet` 在 `doService` 中在 request 中设置了一些后续需要使用到的 attribute 之后调用 `doDispatch` 来真正处理请求:
