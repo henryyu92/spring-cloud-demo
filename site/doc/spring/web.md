@@ -151,7 +151,7 @@ public class DispatcherServlet extends FrameworkServlet {
 请求处理完成之后的结果由 `processDispatchResult` 方法处理,这个方法除了渲染请求处理返回的 `ModelAndView` 外,还通过 `HandlerExceptionResolver` 全局处理请求映射和处理过程中出现的异常.
 ### HandlerMapping
 
-HandlerMapping 负责映射 URL 和对应的处理类，`DispatcherServlet` 在启动时会从容器中加载 `HandlerMapping` 的实现类,如果没有指定就使用默认配置`DispatcherServlet.properties`中的实现:
+HandlerMapping 负责映射 URL 和对应的处理类，`DispatcherServlet` 在启动时调用 `initHandlerMappings` 方法，该方法会从容器中加载 `HandlerMapping` 的实现类,如果没有指定就使用默认配置`DispatcherServlet.properties`中的实现:
 ```java
 public class DispatcherServlet extends FrameworkServlet {
 
@@ -165,7 +165,7 @@ public class DispatcherServlet extends FrameworkServlet {
     		if (!matchingBeans.isEmpty()) {
     		    this.handlerMappings = new ArrayList<>(matchingBeans.values());
     		    // We keep HandlerMappings in sorted order.
-    			AnnotationAwareOrderComparator.sort(this.handlerMappings);
+    		    AnnotationAwareOrderComparator.sort(this.handlerMappings);
     		}
         }
         else {
@@ -192,7 +192,7 @@ public class DispatcherServlet extends FrameworkServlet {
     }
 }
 ```
-`HandlerMapping` 可以有多个并且通过实现 `Ordered` 接口根据`getOrder`方法返回的值进行排序,从而使得其可以按照优先级的顺序来处理请求和处理类的映射.
+在初始化 `HandlerMapping` 时可以从容器中获取多个 bean 并且将这些 bean 排序, 通过实现 `Ordered` 接口可以实现自定义排序 `HandlerMapping`,从而使得其可以按照优先级的顺序来处理请求和处理类的映射.
 
 `DispatcherServlet` 中通过调用 `getHandler` 方法为请求映射处理类,方法中通过遍历已经排序的 `HandlerMapping` 并调用其 `getHandler` 方法获取对应的 `HaandlerExecutionChain`:
 ```java
@@ -214,6 +214,11 @@ public class DispatcherServlet extends FrameworkServlet {
 ```
 `HandlerMapping` 接口定义了 `getHandler` 方法接收 `HttpServletRequest` 并返回 `HandlerExecutionChain`,其中包含了该请求对应的处理类以及对应的 `HandlerInterceptor` 列表
 ```java
+public interface HandlerMapping {
+    // 
+    HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception;
+}
+
 ```
 Spring 在配置文件中提供了 3 个默认的 `HandlerMapping` 实现类:
 - `BeanNameUrlHandlerMapping`:
