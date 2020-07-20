@@ -149,6 +149,7 @@ public class DispatcherServlet extends FrameworkServlet {
 请求的处理包含三步:执行处理器链中所有的`HandlerInterceptor` 的 preHandle 方法,执行适配类 `HandlerAdapter` 的 handle 方法,执行执行器链中所有的 `HandlerInterceptor` 的 postHandle 方法完成请求的处理.
 
 请求处理完成之后的结果由 `processDispatchResult` 方法处理,这个方法除了渲染请求处理返回的 `ModelAndView` 外,还通过 `HandlerExceptionResolver` 全局处理请求映射和处理过程中出现的异常.
+
 ### HandlerMapping
 
 HandlerMapping 负责映射 URL 和对应的处理类，`DispatcherServlet` 在启动时调用 `initHandlerMappings` 方法，该方法会从容器中加载 `HandlerMapping` 的实现类,如果没有指定就使用默认配置`DispatcherServlet.properties`中的实现:
@@ -215,10 +216,10 @@ public class DispatcherServlet extends FrameworkServlet {
 `HandlerMapping` 接口定义了 `getHandler` 方法接收 `HttpServletRequest` 并返回 `HandlerExecutionChain`,其中包含了该请求对应的处理类以及对应的 `HandlerInterceptor` 列表
 ```java
 public interface HandlerMapping {
-    // 
+    
+    // 返回包含拦截器和请求处理类的对象
     HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception;
 }
-
 ```
 Spring 在配置文件中提供了 3 个默认的 `HandlerMapping` 实现类:
 - `BeanNameUrlHandlerMapping`:
