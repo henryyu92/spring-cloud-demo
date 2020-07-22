@@ -221,21 +221,38 @@ public interface HandlerMapping {
     HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception;
 }
 ```
-Spring 在配置文件中提供了 3 个默认的 `HandlerMapping` 实现类:
+Spring 在配置文件中提供了默认的 `HandlerMapping` 实现类:
 - `BeanNameUrlHandlerMapping`:将名字以 "/" 开头的 bean 映射为对应请求 url 的处理器类
 - `RequestMappingHandlerMapping`:将 `@RequestMapping` 注解的方法和对应请求的 url 映射
-- `RouterFunctionMapping`:
+
+`HandlerMapping` 的映射逻辑是在 `AbstractHandlerMapping` 中完成，方法 `getHandler` 首先会调用子类重写的 `getHandlerInternal` 方法获取
 
 https://blog.csdn.net/qq_38410730/article/details/79507465
 
 ### HandlerAdapter
 
-请求经过 `HandlerMapping` 处理后得到处理请求的 `HandlerExecutionChain`，不同的 `HandlerMapping` 映射的 `HandlerExecutionHandlerChain` 中的处理类是不同的，Spring 利用适配器模式通过 `HandlerAdapter` 接口将不同的处理类以统一的方式来处理请求。
+请求经过 `HandlerMapping` 处理后得到处理请求的 `HandlerExecutionChain`，不同的 `HandlerMapping` 映射的 `HandlerExecutionChain` 中的处理类是不同的，Spring 利用适配器模式通过 `HandlerAdapter` 接口将不同的处理类以统一的方式来处理请求。
 
 `HandlerAdapter` 接口定义了三个方法用于适配不同的请求处理链,实现类通过实现接口并重写这三个接口方法实现自定义的适配器.`supports` 方法表示当前的适配器是否支持传入的 handler,`handle` 方法用于适配处理类,`getLastModified` 方法表示上次修改的时间.
 
 ```java
+public interface HandlerAdapter {
+    
+    /**
+     * 当前的 HandlerAdapter 是否支持这个 Handler
+     */
+    boolean supports(Object handler);
+    
+    /**
+     * 适配不同的 HandlerExecutionChain 并将处理后的结果返回
+     */
+    ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception;
 
+    /**
+     * 和 HttpServlet 的 getLastModified 相同，如果不支持则可直接返回 -1
+     */
+    long getLastModified(HttpServletRequest request, Object handler);
+}
 ```
 
 `RequestMappingHandlerAdapter` 是 Spring 中使用的最多的 `HandlerMapping` 实现类,该实现类的 `supports` 只支持 `HandlerMethod` 类型的处理类,而这个处理类是 `@RequestMapping` 注解的映射处理类.

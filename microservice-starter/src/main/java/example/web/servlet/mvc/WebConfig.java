@@ -26,9 +26,4 @@ public class WebConfig implements WebMvcConfigurer {
     public void addReturnValueHandlers(List<HandlerMethodReturnValueHandler> handlers) {
 
     }
-
-    @Bean
-    public void orderedHandlerMapping(){
-
-    }
 }
