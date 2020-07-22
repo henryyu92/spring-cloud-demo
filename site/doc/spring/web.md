@@ -223,7 +223,7 @@ public interface HandlerMapping {
 ```
 Spring 在配置文件中提供了 3 个默认的 `HandlerMapping` 实现类:
 - `BeanNameUrlHandlerMapping`:将名字以 "/" 开头的 bean 映射为对应请求 url 的处理器类
-- `RequestMappingHandlerMapping`:
+- `RequestMappingHandlerMapping`:将 `@RequestMapping` 注解的方法和对应请求的 url 映射
 - `RouterFunctionMapping`:
 
 https://blog.csdn.net/qq_38410730/article/details/79507465
