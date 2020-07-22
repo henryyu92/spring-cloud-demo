@@ -9,6 +9,7 @@
 	<parent>
 		<groupId>org.mooc.cloud</groupId>
 		<artifactId>microservice-dependencies</artifactId>
+		<relativePath>../microservice-dependencies/pom.xml</relativePath>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 

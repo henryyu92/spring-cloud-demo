@@ -1,4 +1,4 @@
-package example.web.servlet.mvc;
+package example.web.servlet.mvc.mapping;
 
 import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 

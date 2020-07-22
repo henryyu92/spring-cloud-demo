@@ -1,4 +1,4 @@
-package example.web.servlet.mvc;
+package example.web.servlet.mvc.adapter;
 
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;

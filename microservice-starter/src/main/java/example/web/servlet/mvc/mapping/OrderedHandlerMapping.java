@@ -1,4 +1,4 @@
-package example.web.servlet.mvc;
+package example.web.servlet.mvc.mapping;
 
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.HandlerExecutionChain;
