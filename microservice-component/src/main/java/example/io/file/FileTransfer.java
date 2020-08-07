@@ -1,9 +1,10 @@
 package example.io.file;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.file.AccessDeniedException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Formatter;
 
 public class FileTransfer {
@@ -12,16 +13,14 @@ public class FileTransfer {
 
     public static void transfer(String src, String dest) throws Exception {
 
-        File sf = new File(src);
-        if (!sf.exists()){
-            throw new FileNotFoundException(formatter.format("file %s not found !", src).toString());
-        }
-        if (!sf.canRead()){
-            throw new AccessDeniedException(formatter.format("file %s can't access", src).toString());
-        }
-        File df = new File(dest);
+        final Path fp = Paths.get(src);
+        final Path dp = Paths.get(dest);
 
-        Files.copy(sf.toPath(), df.toPath());
+        Files.copy(fp, dp);
+
+    }
+
+    public static void transfer(InputStream in, OutputStream out){
 
     }
 
