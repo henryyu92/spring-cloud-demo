@@ -1,17 +1,3 @@
-## Web
-
-- [MVC](#mvc)
-  - [DispatcherServlet](#DispatcherServlet)
-  - [HandlerMapping](#HandlerMapping)
-  - [HandlerAdapter](#HandlerAdapter)
-  - [HandlerMethodArgumentResolver](#HandlerMethodArgumentResolver)
-  - [HandlerMethodReturnValueHandler](#HandlerMethodReturnValueHandler)
-  - [HandlerExceptionResolver](#HandlerExceptionResolver)
-  - [HttpMessageConverter](#HttpMessageConverter)
-  - [WebMvcConfigurer](#WebMvcConfigurer)
-- [WebSocket](#WebSocket)
-- [WebFlux](#WebFlux)
-
 ## MVC
 
 Spring MVC 是基于 Servlet 构建的 Web 框架。Spring MVC 的整体架构是基于前端控制器(DispatcherServlet)设计,HTTP 请求都是由 DispatcherServlet 代理并通过设置的 HandlerMapping 将请求映射到对应的处理器链(HandlerExecutionChain),然后通过 HandlerAdapter 适配的处理器链完成请求的处理,请求处理的结果由 DispatcherServlet 代理给 ViewResolver 渲染后返回,从而完成整个 HTTP 请求.
@@ -257,15 +243,18 @@ public interface HandlerAdapter {
 
 `RequestMappingHandlerAdapter` 是 Spring 中使用的最多的 `HandlerMapping` 实现类,该实现类的 `supports` 只支持 `HandlerMethod` 类型的处理类,而这个处理类是 `@RequestMapping` 注解的映射处理类.
 ```java
+
 ```
 
 `RequestMappingHandlerAdapter` 继承 `AbstractHandlerMethodAdapter` 并实现了 `InitializingBean` 接口,在重写方法 `afterPropertiesSet` 中初始化了 `HandlerMethodArgumentResolver` 和 `HandlerMethodReturnValueHandler` 这两个组件,这两个组件用于处理请求参数和请求返回的结果.
 ```java
+
 ```
 
 `RequestMappingHandlerAdapter` 重载的 `handleInternal` 方法
 
 ```java
+
 ```
 
 https://www.jianshu.com/p/1ccd4b326cff
@@ -282,6 +271,7 @@ https://www.jianshu.com/p/23ad68d8b421
 - `resolveArgument`:用于解析支持的参数到指定的参数类型
 
 ```java
+
 ```
 Spring 提供了默认的 `HandlerMethodArgumentResolver` 的实现类,不同的实现类可以支持将请求参数转换成不同类型的参数:
 - RequestParamMapMethodArgumentResolver 用于处理 @RequestParam 注解的参数
@@ -326,7 +316,6 @@ https://blog.csdn.net/u013887008/article/details/100183087
 ### @ControllerAdvice
 
 https://www.cnblogs.com/lenve/p/10748453.html
-
 
 ## WebSocket
 

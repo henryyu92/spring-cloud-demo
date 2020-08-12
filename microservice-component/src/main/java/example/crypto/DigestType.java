@@ -1,4 +1,4 @@
-package example.crypto.digest;
+package example.crypto;
 
 public enum DigestType {
 
