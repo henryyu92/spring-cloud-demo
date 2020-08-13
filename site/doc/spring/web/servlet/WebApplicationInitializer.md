@@ -1,4 +1,4 @@
-## WebApplicationInitializer
+### WebApplicationInitializer
 
 Servlet 3.0 为了支持可以不使用 `web.xml` 来配置，提供了 `ServletContainerInitializer` 接口，通过 SPI 机制从 `META-INF/services/javax.servlet.ServletContainerInitializer` 中加载并实例化所有实现该接口的类。
 
@@ -44,3 +44,6 @@ public void MyWebApplicationInitializer implements WebApplicationInitializer {
 }
 ```
 
+### WebApplicationContext
+
+Servlet 容器在启动应用时需要创建 `ServletContext` 用于保存上下文信息。
