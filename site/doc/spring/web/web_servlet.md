@@ -1,4 +1,10 @@
-## MVC
+## Web Servlet
+
+Spring 提供了基于 Servlet 的 Web 开发框架`Spring Web MVC` 和 `Spring WebFlux`，使用这些框架开发的 Web 应用程序基于 Servlet API 并且部署在 Servlet 容器中。
+
+## WebMVC
+
+Spring Web MVC 是 Spring 提供的基于 Servlet 的 Web 框架，围绕着一个核心的 Servlet(DispatcherServlet) 设计
 
 Spring MVC 是基于 Servlet 构建的 Web 框架。Spring MVC 的整体架构是基于前端控制器(DispatcherServlet)设计,HTTP 请求都是由 DispatcherServlet 代理并通过设置的 HandlerMapping 将请求映射到对应的处理器链(HandlerExecutionChain),然后通过 HandlerAdapter 适配的处理器链完成请求的处理,请求处理的结果由 DispatcherServlet 代理给 ViewResolver 渲染后返回,从而完成整个 HTTP 请求.
 

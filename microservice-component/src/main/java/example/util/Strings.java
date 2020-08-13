@@ -1,4 +1,4 @@
-package example.string;
+package example.util;
 
 /**
  * String 工具类，参考 go strings 包
