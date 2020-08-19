@@ -407,6 +407,34 @@ Servlet 容器在启动应用时需要创建 `ServletContext` 用于保存上下
 
 ### Annotation
 
+#### @RequestMapping
+
+`@RequestMapping` 注解用于映射请求和处理方法，`@RequestMapping` 支持通配符和正则表达式，也支持 `${}` 。
+
+- `consumes`：请求头中 `Content-Type` 的值，表示请求数据的 MIME 类型
+- `produces`：请求头中 `Accept` 的值，表示请求希望响应的 MIME 类型
+
+```java
+// 手动方式将请求和处理方法映射
+@Configuration
+public class MyConfig {
+
+    @Autowired
+    public void setHandlerMapping(RequestMappingHandlerMapping mapping, UserHandler handler) 
+            throws NoSuchMethodException {
+
+        RequestMappingInfo info = RequestMappingInfo
+                .paths("/user/{id}").methods(RequestMethod.GET).build(); 
+
+        Method method = UserHandler.class.getMethod("getUser", Long.class); 
+
+        mapping.registerMapping(info, handler, method); 
+    }
+}
+```
+
+### DateBind
+
 
 
 https://www.jianshu.com/p/333ed5ee958dhttps://www.jianshu.com/p/333ed5ee958d
