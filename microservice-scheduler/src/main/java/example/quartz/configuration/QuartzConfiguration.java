@@ -1,6 +1,4 @@
-package example.configuration;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
+package example.quartz.configuration;
 
 //@ConfigurationProperties(prefix = "quartz")
 public class QuartzConfiguration {
