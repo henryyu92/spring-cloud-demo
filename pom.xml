@@ -19,15 +19,15 @@
 		<module>microservice-business-payment</module>
 		<module>microservice-registry-eureka</module>
 		<module>microservice-config-server</module>
+		<module>microservice-alibaba</module>
 		<module>microservice-gateway</module>
 		<module>microservice-zuul</module>
 		<module>microservice-hystrix-dashboard</module>
 		<module>microservice-stream</module>
 		<module>microservice-dependencies</module>
 		<module>microservice-admin</module>
-        <module>microservice-starter</module>
 		<module>microservice-scheduler</module>
-		<module>microservice-security</module>
+		<module>microservice-starter</module>
     </modules>
 
 </project>
