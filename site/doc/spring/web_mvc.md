@@ -4,11 +4,25 @@ Spring Web MVC 是 Spring 提供的基于 Servlet 的 Web 框架，使用 Spring
 
 ### Initializer
 
+Servlet 容器在启动应用时会加载 `web.xml` 文件，并根据文件的内容初始化应用的 `Servlet` 及其对应的 `ServletContext`。
+
+```xml
+<!-- 配置 Servlet -->
+<servlet>
+    <servlet-name>springmvc</servlet-name>
+    <servlet-class>org.springframwork.web.servlet.DispatcherServlet</servlet-class>
+</servlet>
+<!-- 配置 Listener -->
+<listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>
+```
+
 #### WebApplicationInitializer
 
-Servlet 3.0 为了支持可以不使用 `web.xml` 来配置，提供了 `ServletContainerInitializer` 接口，通过 SPI 机制从 `META-INF/services/javax.servlet.ServletContainerInitializer` 中加载并实例化所有实现该接口的类。
+Servlet 3.0 为了支持以 Java 编程的方式替代 `web.xml` 来配置，提供了 `ServletContainerInitializer` 接口，通过 SPI 机制加载 `META-INF/services/javax.servlet.ServletContainerInitializer` 文件中配置的实现了该接口的类并实例化。
 
-容器启动时会调用 `ServletContainerInitializer` 实现类的 `onStartup` 方法并传入该实现类的 `@HandlesTypes` 注解中的类。Spring 提供了 `SpringServletContainerInitializer` 类实现了 `ServletContainerInitializer` ，因此在 Servlet 容器启动时会实例化并调用 `onStartup`方法：
+容器启动时会调用加载的 `ServletContainerInitializer` 实现类的 `onStartup` 方法并传入该实现类的 `@HandlesTypes` 注解中的类。Spring 提供了 `SpringServletContainerInitializer` 类实现了 `ServletContainerInitializer` ，因此在 Servlet 容器启动时会实例化并调用 `onStartup`方法：
 
 ```java
 // 遍历所有传入的 Class，只保留类上通过 @HandlesTypes 注解的 WebApplicationInitializer 类
@@ -49,6 +63,8 @@ public void MyWebApplicationInitializer implements WebApplicationInitializer {
     }
 }
 ```
+
+
 
 #### WebApplicationContext
 

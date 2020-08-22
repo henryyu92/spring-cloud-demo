@@ -1,6 +1,7 @@
-package example.web.servlet;
+package example.web.servlet.initialzer;
 
 import org.springframework.web.WebApplicationInitializer;
+import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -19,13 +20,18 @@ public class MyWebApplicationInitializer implements WebApplicationInitializer {
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
 
-        // Load Spring web application configuration
+        // WebApplicationContext
         AnnotationConfigWebApplicationContext ac = new AnnotationConfigWebApplicationContext();
 //        ac.register(AppConfig.class);
+        ContextLoaderListener contextLoaderListener = new ContextLoaderListener(ac);
+        servletContext.addListener(contextLoaderListener);
         ac.refresh();
+
+        servletContext.setInitParameter("", "");
 
         // Create and register the DispatcherServlet
         DispatcherServlet servlet = new DispatcherServlet(ac);
+
         ServletRegistration.Dynamic registration = servletContext.addServlet("app", servlet);
         registration.setLoadOnStartup(1);
         registration.addMapping("/");

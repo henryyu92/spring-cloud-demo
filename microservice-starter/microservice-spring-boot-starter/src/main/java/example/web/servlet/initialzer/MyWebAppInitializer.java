@@ -1,4 +1,4 @@
-package example.web.servlet;
+package example.web.servlet.initialzer;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 import org.springframework.web.servlet.support.RequestContextUtils;
