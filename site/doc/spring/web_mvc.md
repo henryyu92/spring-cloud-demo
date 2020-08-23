@@ -18,6 +18,8 @@ Servlet 容器在启动应用时会加载 `web.xml` 文件，并根据文件的�
 </listener>
 ```
 
+`web.xml` 文件中需要配置应用启动的 Servlet 并指定初始化时对应的 ServletContext 的配置文件，并设置了 `ContextLoaderListener` 来监听 `ServletContext` 的加载事件。
+
 #### WebApplicationInitializer
 
 Servlet 3.0 为了支持以 Java 编程的方式替代 `web.xml` 来配置，提供了 `ServletContainerInitializer` 接口，通过 SPI 机制加载 `META-INF/services/javax.servlet.ServletContainerInitializer` 文件中配置的实现了该接口的类并实例化。
@@ -48,11 +50,7 @@ for (WebApplicationInitializer initializer : initializers) {
 }
 ```
 
-分析 `SpringServletContainerInitializer#onStartup` 方法可以确定该方法实例化所有实现 `WebApplicationInitializer` 接口的类并在排序后依次调用 `onStartup` 方法。
-
-
-
-通过实现 `WebApplicationInitializer` 就可以自定义 Web 应用：
+ `SpringServletContainerInitializer#onStartup` 方法实例化所有实现 `WebApplicationInitializer` 接口的类并在排序后依次调用 `onStartup` 方法。通过实现 `WebApplicationInitializer` 就可以自定义 Web 应用：
 
 ```java
 public void MyWebApplicationInitializer implements WebApplicationInitializer {
@@ -64,11 +62,13 @@ public void MyWebApplicationInitializer implements WebApplicationInitializer {
 }
 ```
 
-
-
 #### WebApplicationContext
 
-Servlet 容器在启动应用时需要创建 `ServletContext` 用于保存上下文信息。
+`DispatcherServlet` 在创建的时候需要参数 `WebApplicationContext`，实现了 `ApplicationContext`
+
+- `XmlWebApplicationContext`
+
+- `AnnotationConfigWebApplicationContext`
 
 ### DispatcherServlet
 
