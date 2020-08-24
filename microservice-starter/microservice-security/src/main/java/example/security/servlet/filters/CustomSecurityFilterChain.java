@@ -1,4 +1,4 @@
-package example.security.servlet.filterchain;
+package example.security.servlet.filters;
 
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;

@@ -4,6 +4,8 @@ Spring Web MVC 是 Spring 提供的基于 Servlet 的 Web 框架，使用 Spring
 
 ### Initializer
 
+Servlet 容器在启动应用时会创建一个 `ServletContext` 用于不同 `Servlet` 共享
+
 Servlet 容器在启动应用时会加载 `web.xml` 文件，并根据文件的内容初始化应用的 `Servlet` 及其对应的 `ServletContext`。
 
 ```xml
