@@ -14,7 +14,26 @@ DelegatingFilterProxy#initBean
    WebSecurityConfiguration#springSecurityFilterChain
 ```
 
+### AutoConfiguration
+
 Spring Security 使用`@EnableWebSecurity` 启动，该注解向容器中注入自动配置类 `WebSecurityConfiguration` 用于创建过滤器链 (SecurityFilterChain) 并完成安全配置工作。
+
+```java
+@Retention(value = java.lang.annotation.RetentionPolicy.RUNTIME)
+@Target(value = { java.lang.annotation.ElementType.TYPE })
+@Documented
+@Import({ WebSecurityConfiguration.class,
+		SpringWebMvcImportSelector.class,
+		OAuth2ImportSelector.class })
+@EnableGlobalAuthentication
+@Configuration
+public @interface EnableWebSecurity {
+
+	boolean debug() default false;
+}
+```
+
+
 
 Spring 上下文会调用 `WebSecurityConfiguration#setFilterChainProxySecurityConfigurer` 方法对 WebSecurity 进行初始化，然后利用 WebSecurity 在 `springSecurityFilterChain` 方法中创建
 
@@ -49,8 +68,6 @@ Spring Security 处理包含大量的 `Filter` 组件外，还提供了一套用
 Authentication 对象中保存了一个 GrantedAuthority 列表，表示请求主体已经获取的授权。GrantedAuthority 对象通过 AuthenticationManager 插入到 Authentication 对象中，并且由 AccessDecisionManager 在做出授权决策时读取。
 
 Spring Security提供了拦截器，用于控制对安全对象（如方法调用或web请求）的访问。AccessDecisionManager将在调用前决定是否允许继续调用。
-
-
 
 
 ### JWT
