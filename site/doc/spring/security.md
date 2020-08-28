@@ -32,7 +32,7 @@ DelegatingFilterProxy#initBean
 
 ![todo]()
 
-在 `ExceptionTranslationFilter#doFilter` 方法中
+在 `ExceptionTranslationFilter#doFilter` 方法中，整个处理逻辑为：
 
 - 直接执行 `chain.doFilter(request, response)` 执行后续的处理
 - 如果后续处理抛出 `AuthenticationException` 则会调用 `sendStartAuthentication` 方法处理异常
@@ -44,7 +44,13 @@ DelegatingFilterProxy#initBean
 - 缓存 `HttpServletRequest` 和 `HttpServletResponse` 到 `RequestCache` 中，因为当后续认证成功后需要从缓存中获取原始的请求和响应
 - 调用 `AuthenticationEntryPoint` 从客户端获取用户认证凭证，例如重定向到登录页面
 
-`accessDeniedHandler#handle` 方法
+`accessDeniedHandler#handle` 方法处理权限不足的异常，
+
+todo
+
+> **Tips**
+>
+> 如果后续处理没有抛出异常，或者抛出的异常不是 `AuthenticationException` 或者 `AccessDeniedException` 则 `ExceptionTranslationFilter` 不会有任何的处理。
 
 ### AutoConfiguration
 
@@ -68,13 +74,27 @@ Spring Boot 在引入`spring-security-starter` 后会自动配置 Spring Securit
 
 在  Spring Security 中，请求经过需要认证的 `Filter` 时会触发认证流程，Spirng Security 提供了用于不同机制的身份认证框架，包含几个核心组件：
 
-- `SecurityContextHolder`
-- `SecurityContext`
-- `Authentication`：表示由 AuthenticationManager 的 authenticate 方法完成认证后的认证请求或者已认证的主体的令牌。一旦身份认证完成之后就会将 Authentication 存储在当前认证机制使用的 SecurityContextHolder 管理的 Thread-Local 的 SecurityContext 中。除非 Authentication 的 authenticated 属性设置为 true，否则后续的安全相关的拦截器会再次认证
+- `SecurityContext`：从 `SecurityContextHolder` 获取，保存了当前已认证的用户的身份信息
+- `Authentication`：用户的认证信息，可以传入 `AuthenticationManager` 用于认证
 
-- `AuthenticationManager`：认证的管理类，所有需要认证的请求都是通过 AuthenticationManager 的 authenticate 方法完成认证，并根据认证的结果调用具体的 Handler 来处理
-- `AuthenticationProvider`：具体实现请求的认证，一个 provider 是一种认证方式的实现，Spring Security 提供了多种认证方式
-- `AuthenticationEntryPoint`：
+- `AuthenticationManager`：认证的管理类，所有需要认证的请求都是通过 `AuthenticationManager` 完成认证，并根据认证的结果调用具体的 Handler 来处理
+- `AuthenticationProvider`：请求的认证的具体实现，由 `ProviderManager` 调用
+
+#### `SecurityContext`
+
+#### `Authentication`
+
+表示由 AuthenticationManager 的 authenticate 方法完成认证后的认证请求或者已认证的主体的令牌。一旦身份认证完成之后就会将 Authentication 存储在当前认证机制使用的 SecurityContextHolder 管理的 Thread-Local 的 SecurityContext 中。除非 Authentication 的 authenticated 属性设置为 true，否则后续的安全相关的拦截器会再次认证
+
+#### `AuthenticationManager`
+
+`ProviderManager` 是 `AuthenticationManager` 的一个实现类
+
+#### `AuthenticaionEntryPoint`
+
+`AuthenticationEntryPoint` 用于发送向客户端请求认证凭证的 HTTP 响应。
+
+#### `AuthenticationProvider`
 
 
 ### Authorization
