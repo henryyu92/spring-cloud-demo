@@ -1,7 +1,7 @@
 package example.util;
 
 import java.time.*;
-import java.time.temporal.ChronoField;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
@@ -63,6 +63,28 @@ public class DateUtil {
 
 
         // DateTimeFormatter
+        LocalDate localDate3 = LocalDate.of(2020, Month.AUGUST, 01);
+        System.out.println(localDate3);
+        System.out.println(localDate3.format(DateTimeFormatter.BASIC_ISO_DATE));
+        System.out.println(localDate3.format(DateTimeFormatter.ISO_LOCAL_DATE));
+
+
+        // ZoneId & ZoneOffset & ZonedDateTime
+        ZoneId zoneId = ZoneId.systemDefault();
+        System.out.println(zoneId);
+        ZoneId zoneId1 = ZoneId.of("Asia/Tokyo");
+        System.out.println(zoneId1);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        System.out.println(localDateTime.atZone(zoneId1));
+        System.out.println(Instant.now().atZone(zoneId1));
+
+        Instant instant = Instant.now();
+        LocalDateTime localDateTime3 = LocalDateTime.ofInstant(instant, zoneId1);
+        System.out.println(LocalDateTime.ofInstant(instant, zoneId));
+        System.out.println(localDateTime3);
+
+        Instant instant1 = localDateTime3.toInstant(ZoneOffset.of("+8"));
+        System.out.println(instant1);
 
     }
 
@@ -76,7 +98,7 @@ public class DateUtil {
     }
 
 
-    // ZoneId & ZoneOffset & ZonedDateTime
+
 
 
 

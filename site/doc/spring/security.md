@@ -193,7 +193,27 @@ Spring Security 中 `Authentication` 有两个主要的作用：
 
 #### UserName/Password
 
+用户名/密码认证是一种常见的认证方式，Spring Security 内置了多个基于用户名/密码认证的机制，包括：
 
+- `Form Login`
+- `Basic Authentication`
+- `Digest Authentication`
+- `In-Memory Authentication`
+- `JDBC Authentication`
+- `LDAP Authentication`
+
+##### `Form Login`
+
+Spring Security 提供了通过 html 的表单提供用户名和密码进行认证，重定向到登录表单页面一般通过以下流程触发：
+
+- 未经认证的用户请求了需要授权的资源
+- `FilterSecurityInterceptor` 鉴定请求未经认证，抛出 `AccessDeniedException`
+- 由于请求未经认证，`ExceptionTranslationFilter` 经由 `LoginUrlAuthenticationEntryPoint` 将请求重定向到登录页面
+- 浏览器请求重定向的登陆了页面，填写用户名和密码后发起登录请求
+
+携带用户名和密码的登录请求会被 `UsernamePasswordAuthenticationFilter` 处理，`UsernamePasswordAuthenticationFilter` 是 `AbstractAuthenticationProcessingFilter` 的子类，其处理流程如下：
+
+- 
 
 
 ### Authorization
