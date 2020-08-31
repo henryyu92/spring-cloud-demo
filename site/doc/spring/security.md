@@ -32,11 +32,7 @@ DelegatingFilterProxy#initBean
 
 #### `ExceptionTranslationFilter`
 
-`ExceptionTranslationFilter`  是插入到 `FilterChainProxy` 的一种过滤器，可以将后级过滤器或者应用程序抛出的 `AccessDeniedException` 和 `AuthenticationException`  翻译成 HTTP 响应。
-
-![todo]()
-
-在 `ExceptionTranslationFilter#doFilter` 方法中，整个处理逻辑为：
+`ExceptionTranslationFilter`  是插入到 `FilterChainProxy` 的一种过滤器，可以将后级过滤器或者应用程序抛出的 `AccessDeniedException` 和 `AuthenticationException`  翻译成 HTTP 响应。其处理逻辑为：
 
 - 直接执行 `chain.doFilter(request, response)` 执行后续的处理
 - 如果后续处理抛出 `AuthenticationException` 则会调用 `sendStartAuthentication` 方法处理异常
@@ -60,6 +56,13 @@ todo
 
 #### `AbstractAuthenticationProcessingFilter`
 
+`AbstractAuthenticationProcessingFilter` 是用户认证过滤器的基类，用户的凭证一般是通过 `AuthenticationEntryPoint` 获得，然后 `AbstractAuthenticationProcessingFilter` 就会验证所有提交的认证请求：
+
+- 用户提交携带凭证的请求时，`AbstractAuthenticationProcessingFilter` 根据待认证的请求创建 `Authentication`，具体类型取决于 `AbstractAuthenticationProcessingFilter` 的实现类，例如 `UsernamePasswordAuthenticatioinFilter` 创建的是从请求中获取的用户名和密码组成的 `UsernamePasswordAuthenticationToken`
+- 创建的 `Authentication` 会被传入 `AuthenticationManager` 用于认证
+- 如果认证失败则会清空 `SecurityContextHolder`，调用 `RememberMeService.loginFail` 方法(如果配置了)，调用 `AuthenticationFailureHandler` 处理器
+- 如果认证成功则
+
 #### `FilterSecurityInterceptor`
 
 `FilterSecurityInterceptor` 是 `FilterChain` 中的一员，用于对 `HttpServletRequest` 进行授权，其处理流程为：
@@ -82,26 +85,6 @@ protected void configure(HttpSecurity http) throws Exception {
         );
 }
 ```
-
-
-
-### AutoConfiguration
-
-Spring Security 使用 `@EnableWebSecurity` 实现自动配置，该注解向容器中注入自动配置类 `WebSecurityConfiguration` 。
-
-
-
-Spring Security 使用`@EnableWebSecurity` 启动，用于创建过滤器链 (SecurityFilterChain) 并完成安全配置工作。
-
-Spring 上下文会调用 `WebSecurityConfiguration#setFilterChainProxySecurityConfigurer` 方法对 WebSecurity 进行初始化，然后利用 WebSecurity 在 `springSecurityFilterChain` 方法中创建
-
-
-
-#### Spring Boot
-
-Spring Boot 在引入`spring-security-starter` 后会自动配置 Spring Security，核心配置为 `SecurityFilterAutoConfiguration`。
-
-
 
 ### Authentication
 
@@ -208,7 +191,7 @@ Spring Security 中 `Authentication` 有两个主要的作用：
 
 `AuthenticationEntryPoint` 用于发送向客户端请求认证凭证的 HTTP 响应。在一些情况中，请求携带了用户名/密码等凭据来请求资源，此时 Spring Security 不需要提供向客户端请求认证凭据的 HTTP 响应；但是在一些没有携带凭据但是请求需要认证的资源时，`AuthenticationEntryPoint` 就用于向客户端请求认证凭据，此时`AuthenticationEntryPoint` 的实现类通常是重定向到登陆页面或者返回带有 `WWW-Authenticate` 头的响应。
 
-#### UserName/Password
+#### UserName/Password Authentication
 
 用户名/密码认证是一种常见的认证方式，Spring Security 内置了多个基于用户名/密码认证的机制，包括：
 
@@ -278,7 +261,21 @@ Spring Security提供了拦截器，用于控制对安全对象（如方法调�
 
 Spring Security 提供了 `AfterInvocationManager` 的实现类 `AfterInvocationProviderManager`，该类包含一个 `AfterInvocationProvider` 列表。每个 `AfterInvocationProvider` 都可以修改方法调用的结果，最终的修改结果作为方法调用的结果返回。
 
+### AutoConfiguration
 
+Spring Security 使用 `@EnableWebSecurity` 实现自动配置，该注解向容器中注入自动配置类 `WebSecurityConfiguration` 。
+
+
+
+Spring Security 使用`@EnableWebSecurity` 启动，用于创建过滤器链 (SecurityFilterChain) 并完成安全配置工作。
+
+Spring 上下文会调用 `WebSecurityConfiguration#setFilterChainProxySecurityConfigurer` 方法对 WebSecurity 进行初始化，然后利用 WebSecurity 在 `springSecurityFilterChain` 方法中创建
+
+
+
+#### Spring Boot
+
+Spring Boot 在引入`spring-security-starter` 后会自动配置 Spring Security，核心配置为 `SecurityFilterAutoConfiguration`。
 
 ### JWT
 
