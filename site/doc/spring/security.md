@@ -60,6 +60,29 @@ todo
 
 #### `AbstractAuthenticationProcessingFilter`
 
+#### `FilterSecurityInterceptor`
+
+`FilterSecurityInterceptor` 是 `FilterChain` 中的一员，用于对 `HttpServletRequest` 进行授权，其处理流程为：
+
+- 从 `SecurityContxtHolder` 中获取 `Authentication`，并且根据传入的 `HttpServletRequest`、`HttpServletResponse` 和 `FilterChain` 构造 `FilterInvocation`
+- 将 `FilterInvocation` 传入 `SecurityMetadataSource` 以获得 `ConfigAttribute`
+- 将 `Authentication`、`FilterInvocation` 和 `ConfigAttribute` 传入 `AccessDecisionManager` 用于授权决策
+  - 如果拒绝授权，则会跑出 `AccessDeniedException`，此时 `ExceptionTranslationFilter` 会处理抛出的异常
+  - 如果授权通过，`FilterSecurityInterceptor` 会完成处理使得 `FilterChain` 能够继续执行后续处理
+
+默认情况下，Spirng Security 的所有授权都需要事先完成认证，如果想要显式的配置则需要在 `WebSecurityConfigAdapter#configure` 中配置：
+
+```java
+protected void configure(HttpSecurity http) throws Exception {
+    http
+        // ...
+        .authorizeRequests(authorize -> authorize
+            // 所有请求都必须认证
+            .anyRequest().authenticated()
+        );
+}
+```
+
 
 
 ### AutoConfiguration
@@ -96,13 +119,11 @@ Spring Boot 在引入`spring-security-starter` 后会自动配置 Spring Securit
 
 #### `SecurityContext`
 
-![security context]()
+`SecurityContext` 由 `SecurityContextHolder` 维护，包含了用户凭据 Authentication 对象。
 
-`SecurityContext` 由 `SecurityContextHolder` 维护，包含了用户凭据 Authentication 对象。Spring Security 并不关心 `SecurityContext` 如何处理用户凭证对象，只要是包含该对象则认为将其认为当前已经认证的用户。
+![security context](../../resources/security_context.png)
 
-
-
-基于 Spring Security 的这种特性，可以直接向其中设置 `Authentication` 对象完成用户认证从而绕过 Spring Security 的认证体系：
+Spring Security 并不关心 `SecurityContext` 如何处理用户凭证对象，只要是包含该对象则认为将其认为当前已经认证的用户。基于 Spring Security 的这种特性，可以直接向其中设置 `Authentication` 对象完成用户认证从而绕过 Spring Security 的认证体系：
 
 ```java
 // 创建一个新的 SecurityContext 而不是使用原有的，避免多线程安全问题
@@ -148,16 +169,12 @@ Spring Security 中 `Authentication` 有两个主要的作用：
 `Authentication` 中包含几个核心属性：
 
 - `principal`：表示请求认证的用户，在使用用户名/密码进行身份认证时通常是一个 `UserDetail` 实例
+
 - `credentials`：表示认证的凭据，通常是密码，一般在用户通过认证之后就会被清除以免造成泄露
-- `authorities`：`GrantedAuthority` 的集合，表示用户被授予的权限，如角色或者作用域
 
+- `authorities`：`GrantedAuthority` 的集合，表示用户被授予的权限。这些权限通常是“角色”，如 `ROLE_ADMINISTRATOR` 或者 `ROLE_HR_SUPERVISOR`，这些角色会用于后续的方法授权、领域对象授权等。一般情况下 `GrantedAuthority` 表示应用程序范围内的权限，而不是表示具体领域对象的权限，在需要控制具体领域对象的权限时应该使用项目具体的权限控制。
 
-
-`GrantedAuthority` 表示认证用户被授予的权限，这些权限通常是“角色”，如 `ROLE_ADMINISTRATOR` 或者 `ROLE_HR_SUPERVISOR`，这些角色会用于后续的方法授权、领域对象授权等。
-
-一般情况下 `GrantedAuthority` 表示应用程序范围内的权限，而不是表示具体领域对象的权限，在需要控制具体领域对象的权限时应该使用项目具体的权限控制。
-
-
+  
 
 `Authentication` 接口有一些实现类，各自应用与不同的场景：
 
@@ -259,9 +276,9 @@ Spring Security提供了拦截器，用于控制对安全对象（如方法调�
 
 `AccessDecisionManager` 由 `AbstractSecuriyInterceptor` 在调用被保护的方法之前调用，当被保护的方法被调用完成之后 `AbstractSecurityInterceptor` 还可以调用 `AfterInvocationMananger` 来修改方法调用的结果。
 
+Spring Security 提供了 `AfterInvocationManager` 的实现类 `AfterInvocationProviderManager`，该类包含一个 `AfterInvocationProvider` 列表。每个 `AfterInvocationProvider` 都可以修改方法调用的结果，最终的修改结果作为方法调用的结果返回。
 
 
-Spring Security 提供了 `AfterInvocationManager` 的实现类 `AfterInvocationProviderManager`，该类包含一个 `AfterInvocationProvider` 列表。每个 `AfterInvocationProvider` 都可以修改方法调用的结果，
 
 ### JWT
 
