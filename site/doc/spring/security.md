@@ -213,7 +213,11 @@ Spring Security 提供了通过 html 的表单提供用户名和密码进行认�
 
 携带用户名和密码的登录请求会被 `UsernamePasswordAuthenticationFilter` 处理，`UsernamePasswordAuthenticationFilter` 是 `AbstractAuthenticationProcessingFilter` 的子类，其处理流程如下：
 
-- 
+
+
+##### `Basic Authentication`
+
+
 
 
 ### Authorization
@@ -226,7 +230,9 @@ Spring Security提供了拦截器，用于控制对安全对象（如方法调�
 
 #### AccessDecisionManager
 
-`AccessDecisionManager` 负责权限控制，由 `AbstractSecurityInterceptor` 在访问被保护的方法之前调用，决定被保护的方法是否允许调用。`AccessDecisionManager` 接口定义了三个方法，其中 `decide` 方法根据传入的参数决定是否授权，参数 `object ` 表示需要被授权检查的方法，如果拒绝访问就会抛出 `AccessDeniedException`
+`AccessDecisionManager` 负责权限控制，由 `AbstractSecurityInterceptor` 在访问被保护的方法之前调用，决定被保护的方法是否允许调用。
+
+`AccessDecisionManager` 接口定义了三个方法，其中 `decide` 方法根据传入的参数决定是否授权，参数 `object ` 表示需要被授权检查的方法，如果拒绝访问就会抛出 `AccessDeniedException`
 
 ##### Vote-Based AccessDecisionManager
 
@@ -247,8 +253,15 @@ Spring Security提供了拦截器，用于控制对安全对象（如方法调�
 实现 `AccessDecisionVoter` 接口可以自定义投票器，Spring Security 内置了两种常见的投票器用于实现特定的投票机制：
 
 - `RoleVoter`：将传入的 `ConfigAttribute` 参数作为角色名，然后根据当前用户的角色投票。如果 `GrantedAuthority` 返回的 字符串对象是以 `ROLE_` 开头并且和 `ConfigAttribute` 参数相匹配则返回 `ACCESS_GRANTED`，如果不匹配则返回 `ACCESS_DENIED`，如果 `ConfigAttribute` 参数中没有以 `ROLE_` 开头的则返回 `ACCESS_ABSTAIN`
+- `AuthenticatedVoter`：用于区分匿名的、完全认证的和 remember me 认证的用户。如果使用 `IS_AUTHENTICATED_ANONYMOUSLY`属性来授予匿名用户权限，则这个属性就会由 `AuthenticatedVoter` 处理
 
-- `AuthenticatedVoter`：
+#### AfterInvocationManager
+
+`AccessDecisionManager` 由 `AbstractSecuriyInterceptor` 在调用被保护的方法之前调用，当被保护的方法被调用完成之后 `AbstractSecurityInterceptor` 还可以调用 `AfterInvocationMananger` 来修改方法调用的结果。
+
+
+
+Spring Security 提供了 `AfterInvocationManager` 的实现类 `AfterInvocationProviderManager`，该类包含一个 `AfterInvocationProvider` 列表。每个 `AfterInvocationProvider` 都可以修改方法调用的结果，
 
 ### JWT
 
