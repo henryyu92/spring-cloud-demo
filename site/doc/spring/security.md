@@ -213,7 +213,17 @@ Spring Security 提供了通过 html 的表单提供用户名和密码进行认�
 
 携带用户名和密码的登录请求会被 `UsernamePasswordAuthenticationFilter` 处理，`UsernamePasswordAuthenticationFilter` 是 `AbstractAuthenticationProcessingFilter` 的子类，其处理流程如下：
 
-
+- 从请求中获取用户名和密码创建`Authentication` 的实现类  `UsernamePasswordAuthenticationToken`
+- 将 `UsernamePasswordAuthenticationToken` 传入 `AuthenticationManager` 用于认证
+- 如果认证失败则
+  - 清理 `SecurityContextHolder`
+  - 如果配置了 `Remember Me`，则调用 `RememberMeService.loginFail` 方法
+  - 调用 `AuthenticationFailureHandler`
+- 如果认证成功则
+  - 通知 `SessionAuthenticationStrategy`
+  - 将 `Authentication` 放入 `SecurityContextHolder`
+  - 如果配置了 `Remember Me` ，则调用 `RememberMeService.loginSuccess` 方法
+  - `ApplicationEventPublisher` 发布 `InteractiveAuthenticationSuccessEvent`
 
 ##### `Basic Authentication`
 
@@ -276,6 +286,10 @@ Spring 上下文会调用 `WebSecurityConfiguration#setFilterChainProxySecurityC
 #### Spring Boot
 
 Spring Boot 在引入`spring-security-starter` 后会自动配置 Spring Security，核心配置为 `SecurityFilterAutoConfiguration`。
+
+
+
+#### SecurityConfigurer
 
 ### JWT
 
