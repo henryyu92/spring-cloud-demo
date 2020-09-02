@@ -16,7 +16,7 @@ DelegatingFilterProxy#initBean
 
 
 
-#### Filter
+#### 过滤器
 
 `Filter` 通过  `SecurityFilterChain` 插入到  `FilterChainProxy` 中，`Filter` 插入的顺序决定了拦截请求的顺序。  `Spring Security` 提供了大量的 `Filter` 组件用于过滤请求：
 
@@ -30,7 +30,7 @@ DelegatingFilterProxy#initBean
 
 
 
-#### `ExceptionTranslationFilter`
+##### `ExceptionTranslationFilter`
 
 `ExceptionTranslationFilter`  是插入到 `FilterChainProxy` 的一种过滤器，可以将后级过滤器或者应用程序抛出的 `AccessDeniedException` 和 `AuthenticationException`  翻译成 HTTP 响应。其处理逻辑为：
 
@@ -54,7 +54,7 @@ todo
 
 
 
-#### `AbstractAuthenticationProcessingFilter`
+##### `AbstractAuthenticationProcessingFilter`
 
 `AbstractAuthenticationProcessingFilter` 是用户认证过滤器的基类，用户的凭证一般是通过 `AuthenticationEntryPoint` 获得，然后 `AbstractAuthenticationProcessingFilter` 就会验证所有提交的认证请求：
 
@@ -63,7 +63,7 @@ todo
 - 如果认证失败则会清空 `SecurityContextHolder`，调用 `RememberMeService.loginFail` 方法(如果配置了)，调用 `AuthenticationFailureHandler` 处理器
 - 如果认证成功则
 
-#### `FilterSecurityInterceptor`
+##### `FilterSecurityInterceptor`
 
 `FilterSecurityInterceptor` 是 `FilterChain` 中的一员，用于对 `HttpServletRequest` 进行授权，其处理流程为：
 
@@ -86,9 +86,11 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 ```
 
-### Authentication
+自定义过滤器
 
-`Authentication` 是验证试图访问特定资源的用户的身份的方法，一旦用户身份得以认证就可以根据身份执行授权。
+### 认证
+
+认证(`Authentication`) 是验证试图访问特定资源的用户的身份的方法，一旦用户身份得以认证就可以根据身份执行授权。
 
 在  Spring Security 中，请求经过需要认证的 `Filter` 时会触发认证流程，Spirng Security 提供了用于不同机制的身份认证框架，包含几个核心组件：
 
@@ -98,9 +100,9 @@ protected void configure(HttpSecurity http) throws Exception {
 - `AuthenticationManager`：认证的管理类，所有需要认证的请求都是通过 `AuthenticationManager` 完成认证，并根据认证的结果调用具体的 Handler 来处理
 - `AuthenticationProvider`：请求认证的具体实现，每一种 `AuthenticationProvider` 对应一种认证方式的实现
 
+#### 组件
 
-
-#### `SecurityContext`
+##### `SecurityContext`
 
 `SecurityContext` 由 `SecurityContextHolder` 维护，包含了用户凭据 Authentication 对象。
 
@@ -140,7 +142,7 @@ SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
 
 
 
-#### `Authentication`
+##### `Authentication`
 
 Spring Security 中 `Authentication` 有两个主要的作用：
 
@@ -167,7 +169,7 @@ Spring Security 中 `Authentication` 有两个主要的作用：
 
 
 
-#### `AuthenticationManager`
+##### `AuthenticationManager`
 
 `AuthenticationManager` 定义了 Spring Security 的过滤器如何执行身份认证。Spring Security 的过滤器通过 `AuthenticationManager` 完成身份认证后会将认证信息 `Authentication` 存放在 `SecurityContext` 中。
 
@@ -187,20 +189,21 @@ Spring Security 中 `Authentication` 有两个主要的作用：
 
 
 
-#### `AuthenticaionEntryPoint`
+##### `AuthenticaionEntryPoint`
 
 `AuthenticationEntryPoint` 用于发送向客户端请求认证凭证的 HTTP 响应。在一些情况中，请求携带了用户名/密码等凭据来请求资源，此时 Spring Security 不需要提供向客户端请求认证凭据的 HTTP 响应；但是在一些没有携带凭据但是请求需要认证的资源时，`AuthenticationEntryPoint` 就用于向客户端请求认证凭据，此时`AuthenticationEntryPoint` 的实现类通常是重定向到登陆页面或者返回带有 `WWW-Authenticate` 头的响应。
 
-#### UserName/Password Authentication
+### 认证机制
+
+Spring Security 内置了用户名/密码方式的认证机制，同时提供了与多种认证机制的集成。
+
+#### 用户名/密码
 
 用户名/密码认证是一种常见的认证方式，Spring Security 内置了多个基于用户名/密码认证的机制，包括：
 
 - `Form Login`
 - `Basic Authentication`
 - `Digest Authentication`
-- `In-Memory Authentication`
-- `JDBC Authentication`
-- `LDAP Authentication`
 
 ##### `Form Login`
 
@@ -225,12 +228,36 @@ Spring Security 提供了通过 html 的表单提供用户名和密码进行认�
   - 如果配置了 `Remember Me` ，则调用 `RememberMeService.loginSuccess` 方法
   - `ApplicationEventPublisher` 发布 `InteractiveAuthenticationSuccessEvent`
 
-##### `Basic Authentication`
+##### `Basic` 认证
 
+`Basic` 认证是一种比较简单的认证方式，客户端通过明文(Base64 编码)传输用户名和密码到服务端进行认证，通常需要和 HTTP 一起来使用保证信息传输安全。
 
+Spring Security 通过 `BasicAuthenticationFilter` 实现了 `Basic` 认证，其认证流程为：
 
+- 当携带用户名和密码的请求经过 `BasicAuthenticationFilter` 时，请求头中的用户名和密码会被获取用于创建 `Authentication` 的实现类 `UsernamPasswordAuthenticationToken`
+- `UsernamePasswordAuthenticationToken` 被传入 `AuthenticationManager` 用于认证
+- 如果认证失败则
+  - 清理 `SecurityContextHolder`
+  - 如果设置了 `remember me` 则调用 `RememberMeService.loginFail`
+  - `BasicAuthenticationEntryPoint`  返回带有 `WWW-Authenticate` 头的响应，使客户端再次发送请求
+- 如果认证成功则
+  - 将 `Authentication` 放入 `SecurityContextHolder`
+  - 如果设置了 `remember me` 则调用 `RememberMeService.loginSuccess`
+  - 调用 `FilterChain.doFilter(request, response)` 方法处理后续的逻辑
 
-### Authorization
+Spring Security 默认开启了 `Basic` 认证，但是一旦提供了任何基于 Servlet 的配置，就必须显式地提供 `Basic` 认证。
+
+##### `Digest` 认证
+
+摘要(`Digest`) 认证是为了解决 `Basic` 认证直接使用明文传输引起安全问题而设计的。
+
+#### JWT
+
+#### OAuth
+
+### 授权
+
+授权(`Authorization`)
 
 `Authentication` 对象中保存了 `GrantedAuthority` 列表，表示请求主体已经获取的授权。`GrantedAuthority` 对象通过 `AuthenticationManager` 插入到 `Authentication` 对象中，并且由 `AccessDecisionManager` 在做出授权决策时读取。
 
@@ -271,7 +298,7 @@ Spring Security提供了拦截器，用于控制对安全对象（如方法调�
 
 Spring Security 提供了 `AfterInvocationManager` 的实现类 `AfterInvocationProviderManager`，该类包含一个 `AfterInvocationProvider` 列表。每个 `AfterInvocationProvider` 都可以修改方法调用的结果，最终的修改结果作为方法调用的结果返回。
 
-### AutoConfiguration
+### 自动配置
 
 Spring Security 使用 `@EnableWebSecurity` 实现自动配置，该注解向容器中注入自动配置类 `WebSecurityConfiguration` 。
 
@@ -291,6 +318,6 @@ Spring Boot 在引入`spring-security-starter` 后会自动配置 Spring Securit
 
 #### SecurityConfigurer
 
-### JWT
+#### WebSecurity
 
-### OAuth
+#### HtppSecurity
