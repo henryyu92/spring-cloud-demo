@@ -247,6 +247,12 @@ Spring Security 通过 `BasicAuthenticationFilter` 实现了 `Basic` 认证，�
 
 Spring Security 默认开启了 `Basic` 认证，但是一旦提供了任何基于 Servlet 的配置，就必须显式地提供 `Basic` 认证。
 
+```java
+
+```
+
+
+
 ##### `Digest` 认证
 
 摘要(`Digest`) 认证是为了解决 `Basic` 认证直接使用明文传输引起安全问题而设计的。
