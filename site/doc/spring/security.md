@@ -211,7 +211,7 @@ Spring Security 内置了用户名/密码方式的认证机制，同时提供了
 - `Form Login`
 - `Basic Authentication`
 - `Digest Authentication`
-
+- ...
 ##### `Form Login`
 
 Spring Security 提供了通过 html 的表单提供用户名和密码进行认证，重定向到登录表单页面一般通过以下流程触发：
@@ -266,6 +266,8 @@ Spring Security 默认开启了 `Basic` 认证，但是一旦提供了任何基�
 
 授权(`Authorization`)
 
+
+
 `Authentication` 对象中保存了 `GrantedAuthority` 列表，表示请求主体已经获取的授权。`GrantedAuthority` 对象通过 `AuthenticationManager` 插入到 `Authentication` 对象中，并且由 `AccessDecisionManager` 在做出授权决策时读取。
 
 
@@ -278,7 +280,7 @@ Spring Security提供了拦截器，用于控制对安全对象（如方法调�
 
 `AccessDecisionManager` 接口定义了三个方法，其中 `decide` 方法根据传入的参数决定是否授权，参数 `object ` 表示需要被授权检查的方法，如果拒绝访问就会抛出 `AccessDeniedException`
 
-##### Vote-Based AccessDecisionManager
+#### Vote-Based AccessDecisionManager
 
 自定义 `AccessDecisionManager` 的实现类可以实现不同的授权机制，Spring Security 提供了一些基于投票(Vote) 机制的 `AccessDecisionManager` 实现类：
 
