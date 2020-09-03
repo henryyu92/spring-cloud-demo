@@ -187,6 +187,13 @@ Spring Security 中 `Authentication` 有两个主要的作用：
 - `JwtAuthenticationProvider`
 - ...
 
+`DaoAuthenticationProvider` 是 Spring Security 内置的认证实现，它利用 `UserDetailService` 和 `PasswordEncoder` 来验证用户名和密码。`DaoAuthenticationProvider` 的工作流程如下：
+
+- 请求经过 `Filter` 拦截后获取到用户名和密码构造 `UsernamePasswordAuthenticationToken`后作为参数传入 `AuthenticationManager` 用于认证
+- `ProviderManager` 使用配置的 `DaoAuthenticationProvider` 来实现具体认证，`DaoAuthenticationProvider` 通过 `UserDetailService` 获取 `UserDetails`
+- `DaoAuthenticationProvider` 使用 `PasswordEncoder` 来验证 `Authentication` 中的密码和 `UserDetails` 中的密码是否匹配
+- 如果认证成功(密码匹配)，则 `UsernamePasswordAuthenticationToken` 作为 `Authentication` 返回，并且 `UserDetails` 作为 `Authentication` 的 `principal`。然后 `UsernamePasswordAuthenticationToken` 放入 `SecurityContextHolder`
+
 
 
 ##### `AuthenticaionEntryPoint`
@@ -250,12 +257,6 @@ Spring Security 默认开启了 `Basic` 认证，但是一旦提供了任何基�
 ```java
 
 ```
-
-
-
-##### `Digest` 认证
-
-摘要(`Digest`) 认证是为了解决 `Basic` 认证直接使用明文传输引起安全问题而设计的。
 
 #### JWT
 
