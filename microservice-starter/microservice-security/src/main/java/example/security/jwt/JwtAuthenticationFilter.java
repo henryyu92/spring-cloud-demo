@@ -1,4 +1,4 @@
-package example.security.servlet.jwt;
+package example.security.jwt;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InsufficientAuthenticationException;

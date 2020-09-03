@@ -1,4 +1,4 @@
-package example.security.servlet.jwt;
+package example.security.jwt;
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
