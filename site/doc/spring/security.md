@@ -262,6 +262,13 @@ Spring Security 默认开启了 `Basic` 认证，但是一旦提供了任何基�
 
 #### OAuth
 
+
+
+https://www.cnblogs.com/bug9/p/11584816.html
+
+##### 授权服务器
+##### 资源服务器
+
 ### 授权
 
 授权(`Authorization`)
