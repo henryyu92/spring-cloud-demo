@@ -1,5 +1,7 @@
 package example.util;
 
+import java.util.StringJoiner;
+
 /**
  * String 工具类，参考 go strings 包
  */
@@ -28,4 +30,16 @@ public final class Strings {
         }
         return builder.toString();
     }
+
+
+    public static String toDelimitedString(String sep, String... elements){
+        StringJoiner joiner = new StringJoiner(sep);
+        for (String element : elements) {
+            if (hasLength(element)) {
+                joiner.add(element);
+            }
+        }
+        return joiner.toString();
+    }
+
 }
