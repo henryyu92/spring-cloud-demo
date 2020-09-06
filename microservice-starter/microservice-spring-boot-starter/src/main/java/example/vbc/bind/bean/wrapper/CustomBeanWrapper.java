@@ -1,4 +1,4 @@
-package example.vbc.validation.bean.wrapper;
+package example.vbc.bind.bean.wrapper;
 
 import org.springframework.beans.*;
 import org.springframework.core.MethodParameter;

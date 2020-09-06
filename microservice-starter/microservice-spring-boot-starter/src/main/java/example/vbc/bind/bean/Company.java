@@ -1,4 +1,4 @@
-package example.vbc.validation.bean;
+package example.vbc.bind.bean;
 
 public class Company {
 

@@ -1,7 +1,7 @@
-package example.vbc.validation.bean.wrapper;
+package example.vbc.bind.bean.wrapper;
 
-import example.vbc.validation.bean.Company;
-import example.vbc.validation.bean.Employee;
+import example.vbc.bind.bean.Company;
+import example.vbc.bind.bean.Employee;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyValue;
