@@ -33,25 +33,7 @@ public class EmployeePropertyEditor extends PropertyEditorSupport {
         return super.getAsText();
     }
 
-    // {name:"hello", salary: 12.0}
     private Employee parse(String text) throws NoSuchMethodException {
-        Employee employee = new Employee();
-        String[] split = text.split(",");
-        for (String field : split){
-            String[] kv = field.split(":");
-            String methodName = "Set" + kv[0].trim().substring(0,1).toUpperCase() + kv[0].trim().substring(1);
-            Arrays.stream(Employee.class.getMethods()).forEach(method -> {
-                if (methodName.equals(method.getName())){
-                    try {
-                        method.invoke(employee, kv[1]);
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
-        return employee;
+        return new Employee();
     }
 }
