@@ -18,8 +18,14 @@ import java.util.Set;
 /**
  * 自定义注解绑定 Formatter 需要实现 AnnotationFormatterFactory
  *
+ *  org.springframework.format.annotation 包下有多个注解实现
+ *
  */
 public class NumberFormatAnnotationFormatterFactory implements AnnotationFormatterFactory<NumberFormat> {
+
+    /**
+     * @NumberFormat 注解可以用于的类型
+     */
     @Override
     public Set<Class<?>> getFieldTypes() {
         return new HashSet<>(Arrays.asList(
