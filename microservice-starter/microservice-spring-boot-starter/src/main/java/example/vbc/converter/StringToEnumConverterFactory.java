@@ -23,4 +23,21 @@ public final class StringToEnumConverterFactory implements ConverterFactory<Stri
         }
     }
 
+
+    private static final class StringToEnumConverterFactoryTest{
+
+        private enum  TestEnum{
+            ONE, TOW;
+
+        }
+
+        public static void main(String[] args) {
+
+            final StringToEnumConverterFactory factory = new StringToEnumConverterFactory();
+            final Converter<String, TestEnum> converter = factory.getConverter(TestEnum.class);
+            final TestEnum hello = converter.convert("ONE");
+            System.out.println(hello);
+        }
+    }
+
 }

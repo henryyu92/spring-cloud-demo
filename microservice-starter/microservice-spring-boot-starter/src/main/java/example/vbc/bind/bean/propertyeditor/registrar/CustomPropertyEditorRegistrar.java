@@ -13,6 +13,8 @@ import org.springframework.beans.PropertyEditorRegistry;
  *  向 Spring 容器注入 PropertyEditor 的另一种机制时创建和使用 PropertyEditorRegistrar，通过 CustomEditorConfigurer 接口的
  *  setPropertyEditorRegistrars 方法加入到其中
  *
+ *  PropertyEditorRegistrySupport 是 PropertyEditorRegistry 的实现类，createDefaultEditors 方法中
+ *
  */
 public final class CustomPropertyEditorRegistrar implements PropertyEditorRegistrar {
     @Override

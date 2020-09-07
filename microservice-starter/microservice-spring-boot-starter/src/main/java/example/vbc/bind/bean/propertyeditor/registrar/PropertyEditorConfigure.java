@@ -16,6 +16,7 @@ public class PropertyEditorConfigure {
         return new ExoticTypeEditor();
     }
 
+    @Bean
     public CustomPropertyEditorRegistrar customPropertyEditorRegistrar(){
         return new CustomPropertyEditorRegistrar();
     }

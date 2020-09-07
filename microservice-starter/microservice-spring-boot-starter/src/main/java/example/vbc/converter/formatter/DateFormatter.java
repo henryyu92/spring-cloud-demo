@@ -1,4 +1,4 @@
-package example.vbc.converter;
+package example.vbc.converter.formatter;
 
 import org.springframework.format.Formatter;
 
@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class DateFormatter implements Formatter<Date> {
-    private String pattern;
+    private final String pattern;
 
     public DateFormatter(String pattern) {
         this.pattern = pattern;
