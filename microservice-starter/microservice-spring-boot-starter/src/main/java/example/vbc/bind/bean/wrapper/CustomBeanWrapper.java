@@ -13,13 +13,12 @@ import java.util.Map;
 /**
  * BeanWrapper 包装了 bean，通过 BeanWrapper 对包装的 bean 进行操作
  *
- * BeanWrapper 提供了设置和获取 bean 属性值、属性描述符、查询可读写属性的方法
- * BeanWrapper 支持无限嵌套的属性
- * BeanWrapper 支持 bean 的 PropertyChangedListener 和 VetoableChangeListener
- * BeanWrapper 支持设置索引属性
- * BeanWrapper 通常由 DataBinder 和 BeanFactory 使用
+ * BeanWrapper 提供了设置和获取 bean 属性值、属性描述符、查询可读写属性的方法并且支持无限嵌套的属性
  *
- * BeanWrapper 的实现类为 BeanWrapperImpl
+ * BeanWrapper 支持 bean 的 PropertyChangedListener 和 VetoableChangeListener
+ *
+ * BeanWrapper 通常由 DataBinder 和 BeanFactory 使用，BeanWrapper 的实现类为 BeanWrapperImpl
+ *
  */
 public class CustomBeanWrapper implements BeanWrapper {
     @Override
