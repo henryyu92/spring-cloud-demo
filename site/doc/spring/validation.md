@@ -9,3 +9,7 @@ Spring 的参数校验主要由 `Validator` 和 `DataBinder` 构成，
 ## 类型转换
 
 `core.convert` 包定义了一个通用的类型转换系统，提供了一个统一的 `ConversionService` API 用于实现从一个类型转换到另一个类型，Spring 容器使用这个系统来绑定 bean 的属性，Spring 的表达式语言(SpEL) 和 `DataBinder` 都是使用这个系统来绑定字段值。
+
+### 自动配置
+
+SpringBoot 自动配置文件 `spring.factories` 中配置 Spring Boot 应用启动时加载的 Web 自动配置类 `WebMvcAutoConfiguration`，类上的注解 `@AutoConfigureAfter` 表明在配置该类之前需要配置 `ValidationAutoConfiguration`。
