@@ -13,3 +13,35 @@ Spring 的参数校验主要由 `Validator` 和 `DataBinder` 构成，
 ### 自动配置
 
 SpringBoot 自动配置文件 `spring.factories` 中配置 Spring Boot 应用启动时加载的 Web 自动配置类 `WebMvcAutoConfiguration`，类上的注解 `@AutoConfigureAfter` 表明在配置该类之前需要配置 `ValidationAutoConfiguration`。
+
+
+
+```flow
+st=>start: Start
+op=>operation: Your OPeration
+cond=>condition: Yes or No?
+e=>end
+st->op->cond
+cond(yes)->e
+cond(no)->op
+```
+
+```sequence
+TiTle:时序图示例
+客户端->服务端:我想访问你 SYN
+服务端->客户端:我收到请求，开始通信吧 ACK+SYN
+客户端->服务端:我收到你的确认啦 ACK
+客户端-->服务端:虚线实心箭头
+服务端->>客户端:实线小箭头
+客户端-->>服务端:虚线小箭头
+Note right of 服务端:我是一个服务端
+Note left of 客户端:我是一个客户端
+Note over 服务端,客户端: TCP 三次握手
+participant 观察者
+```
+
+https://blog.csdn.net/kl28978113/article/details/93617103
+
+
+
+https://segmentfault.com/a/1190000006247465

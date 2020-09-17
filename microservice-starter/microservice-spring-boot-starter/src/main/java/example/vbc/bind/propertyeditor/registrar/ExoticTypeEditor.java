@@ -1,4 +1,4 @@
-package example.vbc.bind.bean.propertyeditor.registrar;
+package example.vbc.bind.propertyeditor.registrar;
 
 import java.beans.PropertyEditorSupport;
 

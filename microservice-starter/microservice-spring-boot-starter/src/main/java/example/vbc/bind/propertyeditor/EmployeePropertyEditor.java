@@ -1,10 +1,8 @@
-package example.vbc.bind.bean.propertyeditor;
+package example.vbc.bind.propertyeditor;
 
-import example.vbc.bind.bean.Employee;
+import example.vbc.bind.Employee;
 
 import java.beans.PropertyEditorSupport;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 
 /**
  * Spring 使用 PropertyEditor 来实现对象和字符串之间的转换

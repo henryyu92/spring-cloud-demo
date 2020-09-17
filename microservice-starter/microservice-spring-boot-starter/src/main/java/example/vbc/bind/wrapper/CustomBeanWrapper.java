@@ -1,4 +1,4 @@
-package example.vbc.bind.bean.wrapper;
+package example.vbc.bind.wrapper;
 
 import org.springframework.beans.*;
 import org.springframework.core.MethodParameter;

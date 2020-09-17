@@ -1,4 +1,4 @@
-package example.vbc.bind.bean;
+package example.vbc.bind;
 
 public class Employee {
 

@@ -1,6 +1,6 @@
-package example.vbc.bind.bean.propertyeditor;
+package example.vbc.bind.propertyeditor;
 
-import example.vbc.bind.bean.Employee;
+import example.vbc.bind.Employee;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 
 import java.beans.IntrospectionException;
