@@ -1,4 +1,4 @@
-package example.vbc.converter;
+package example.vbc.convert.converter;
 
 import org.springframework.core.CollectionFactory;
 import org.springframework.core.convert.ConversionService;

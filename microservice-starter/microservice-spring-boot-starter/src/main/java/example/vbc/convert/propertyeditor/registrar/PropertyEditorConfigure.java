@@ -1,4 +1,4 @@
-package example.vbc.bind.propertyeditor.registrar;
+package example.vbc.convert.propertyeditor.registrar;
 
 import org.springframework.beans.factory.config.CustomEditorConfigurer;
 import org.springframework.context.annotation.Bean;

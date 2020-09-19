@@ -1,4 +1,4 @@
-package example.vbc.bind.propertyeditor;
+package example.vbc.convert.propertyeditor;
 
 import example.vbc.bind.Employee;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;

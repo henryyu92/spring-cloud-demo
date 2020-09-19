@@ -1,4 +1,4 @@
-package example.vbc.converter.formatter;
+package example.vbc.convert.formatter;
 
 import org.springframework.format.AnnotationFormatterFactory;
 import org.springframework.format.Formatter;

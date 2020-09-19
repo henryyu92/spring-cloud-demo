@@ -1,4 +1,4 @@
-package example.vbc.converter;
+package example.vbc.convert.converter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,17 +1,40 @@
 package example.util;
 
-import java.time.*;
+import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 
-import static java.time.temporal.ChronoField.*;
+import static java.time.temporal.ChronoField.CLOCK_HOUR_OF_DAY;
+import static java.time.temporal.ChronoField.DAY_OF_MONTH;
+import static java.time.temporal.ChronoField.DAY_OF_YEAR;
+import static java.time.temporal.ChronoField.HOUR_OF_DAY;
+import static java.time.temporal.ChronoField.MONTH_OF_YEAR;
+import static java.time.temporal.ChronoField.YEAR;
 
 public class DateUtil {
 
     private static TemporalAdjuster nextDay = (temporal) -> temporal.with(DAY_OF_YEAR, temporal.range(DAY_OF_YEAR).getMaximum());
     private static TemporalAdjuster nextDayTime = (temporal) ->temporal.with(DAY_OF_YEAR, temporal.range(DAY_OF_YEAR).getMaximum());
+
+
+    public static LocalDateTime startTimeOfDay(LocalDate date){
+        return date.atTime(LocalTime.of(0, 0, 0, 0));
+    }
+
+    public static LocalDateTime endTimeOfDay(LocalDate date){
+        return date.atTime(23, 59, 59, 999_999_999);
+    }
 
     public static void main(String[] args) {
 
