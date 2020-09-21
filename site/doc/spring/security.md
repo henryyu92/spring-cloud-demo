@@ -2,21 +2,11 @@
 
 Spring Security 使用标准的 Servlet Filter 与 Servlet 容器集成，也就是说 Spring Security 可以和任何运行在 Servlet 容器中的应用程序一起工作。
 
-### FilterChain
+### 过滤器链
 
 Spring 提供了 `DelegatingFilterProxy` 作为 Servlet 容器的和 Spring 的 `ApplicationContext` 之间的桥梁。`DelegatignFilterProxy` 实现了 Servlet 的 `Filter` 接口，在 `doFilter` 方法中将请求代理给  `FilterChainProxy` 处理，`FilterChainProxy` 是 Spring 提供的一个由容器管理的特殊的 `Filter`，容器在初始化时创建名为 `springSecurityFilterChain` 的 `FilterChainProxy`。
 
 ![FilterChain](../../resources/security_chain.png)
-
-```java
-DelegatingFilterProxy#initBean
-    
-   WebSecurityConfiguration#springSecurityFilterChain
-```
-
-
-
-#### 过滤器
 
 `Filter` 通过  `SecurityFilterChain` 插入到  `FilterChainProxy` 中，`Filter` 插入的顺序决定了拦截请求的顺序。  `Spring Security` 提供了大量的 `Filter` 组件用于过滤请求：
 
@@ -30,7 +20,7 @@ DelegatingFilterProxy#initBean
 
 
 
-##### `ExceptionTranslationFilter`
+#### `ExceptionTranslationFilter`
 
 `ExceptionTranslationFilter`  是插入到 `FilterChainProxy` 的一种过滤器，可以将后级过滤器或者应用程序抛出的 `AccessDeniedException` 和 `AuthenticationException`  翻译成 HTTP 响应。其处理逻辑为：
 
@@ -52,9 +42,7 @@ todo
 >
 > 如果后续处理没有抛出异常，或者抛出的异常不是 `AuthenticationException` 或者 `AccessDeniedException` 则 `ExceptionTranslationFilter` 不会有任何的处理。
 
-
-
-##### `AbstractAuthenticationProcessingFilter`
+#### `AbstractAuthenticationProcessingFilter`
 
 `AbstractAuthenticationProcessingFilter` 是用户认证过滤器的基类，用户的凭证一般是通过 `AuthenticationEntryPoint` 获得，然后 `AbstractAuthenticationProcessingFilter` 就会验证所有提交的认证请求：
 
@@ -63,7 +51,7 @@ todo
 - 如果认证失败则会清空 `SecurityContextHolder`，调用 `RememberMeService.loginFail` 方法(如果配置了)，调用 `AuthenticationFailureHandler` 处理器
 - 如果认证成功则
 
-##### `FilterSecurityInterceptor`
+#### `FilterSecurityInterceptor`
 
 `FilterSecurityInterceptor` 是 `FilterChain` 中的一员，用于对 `HttpServletRequest` 进行授权，其处理流程为：
 
@@ -86,7 +74,7 @@ protected void configure(HttpSecurity http) throws Exception {
 }
 ```
 
-##### 自定义过滤器
+#### 自定义过滤器
 
 ### 认证
 
@@ -100,9 +88,7 @@ protected void configure(HttpSecurity http) throws Exception {
 - `AuthenticationManager`：认证的管理类，所有需要认证的请求都是通过 `AuthenticationManager` 完成认证，并根据认证的结果调用具体的 Handler 来处理
 - `AuthenticationProvider`：请求认证的具体实现，每一种 `AuthenticationProvider` 对应一种认证方式的实现
 
-#### 组件
-
-##### `SecurityContext`
+#### `SecurityContext`
 
 `SecurityContext` 由 `SecurityContextHolder` 维护，包含了用户凭据 Authentication 对象。
 
@@ -142,7 +128,7 @@ SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);
 
 
 
-##### `Authentication`
+#### `Authentication`
 
 Spring Security 中 `Authentication` 有两个主要的作用：
 
@@ -169,7 +155,7 @@ Spring Security 中 `Authentication` 有两个主要的作用：
 
 
 
-##### `AuthenticationManager`
+#### `AuthenticationManager`
 
 `AuthenticationManager` 定义了 Spring Security 的过滤器如何执行身份认证。Spring Security 的过滤器通过 `AuthenticationManager` 完成身份认证后会将认证信息 `Authentication` 存放在 `SecurityContext` 中。
 
@@ -196,7 +182,7 @@ Spring Security 中 `Authentication` 有两个主要的作用：
 
 
 
-##### `AuthenticaionEntryPoint`
+#### `AuthenticaionEntryPoint`
 
 `AuthenticationEntryPoint` 用于发送向客户端请求认证凭证的 HTTP 响应。在一些情况中，请求携带了用户名/密码等凭据来请求资源，此时 Spring Security 不需要提供向客户端请求认证凭据的 HTTP 响应；但是在一些没有携带凭据但是请求需要认证的资源时，`AuthenticationEntryPoint` 就用于向客户端请求认证凭据，此时`AuthenticationEntryPoint` 的实现类通常是重定向到登陆页面或者返回带有 `WWW-Authenticate` 头的响应。
 
@@ -235,7 +221,7 @@ Spring Security 提供了通过 html 的表单提供用户名和密码进行认�
   - 如果配置了 `Remember Me` ，则调用 `RememberMeService.loginSuccess` 方法
   - `ApplicationEventPublisher` 发布 `InteractiveAuthenticationSuccessEvent`
 
-##### `Basic` 认证
+##### `Basic` 
 
 `Basic` 认证是一种比较简单的认证方式，客户端通过明文(Base64 编码)传输用户名和密码到服务端进行认证，通常需要和 HTTP 一起来使用保证信息传输安全。
 
@@ -258,9 +244,52 @@ Spring Security 默认开启了 `Basic` 认证，但是一旦提供了任何基�
 
 ```
 
-#### JWT
+### 授权
 
-#### OAuth2
+授权(`Authorization`)
+
+
+
+`Authentication` 对象中保存了 `GrantedAuthority` 列表，表示请求主体已经获取的授权。`GrantedAuthority` 对象通过 `AuthenticationManager` 插入到 `Authentication` 对象中，并且由 `AccessDecisionManager` 在做出授权决策时读取。
+
+
+
+Spring Security提供了拦截器，用于控制对安全对象（如方法调用或web请求）的访问。AccessDecisionManager将在调用前决定是否允许继续调用。
+
+#### AccessDecisionManager
+
+`AccessDecisionManager` 负责权限控制，由 `AbstractSecurityInterceptor` 在访问被保护的方法之前调用，决定被保护的方法是否允许调用。
+
+`AccessDecisionManager` 接口定义了三个方法，其中 `decide` 方法根据传入的参数决定是否授权，参数 `object ` 表示需要被授权检查的方法，如果拒绝访问就会抛出 `AccessDeniedException`
+
+#### Vote-Based AccessDecisionManager
+
+自定义 `AccessDecisionManager` 的实现类可以实现不同的授权机制，Spring Security 提供了一些基于投票(Vote) 机制的 `AccessDecisionManager` 实现类：
+
+- `AffirmativeBased`：只要收到一个 `ACCESS_GRANTED` 的投票则会授予访问权限，如果全部都是 `ACCESS_ABSTAIN`  则会根据参数 `allowIfAllAbstainDecisions` 来确定是否授予权限，默认为 `false` 
+- `ConsensusBased`：如果收到的 `ACCESS_GRANTED` 投票数大于等于 `ACCESS_DENIED` 投票数则会授予权限，如果全部都是 `ACCESS_ABSTAIN`  则会根据参数 `allowIfAllAbstainDecisions` 来确定
+- `UnanimousBased`：只要收到一个 `ACCESS_DENIED` 投票则不予授权，如果全部为 `ACCESS_ABSTAIN` 则根据参数 `allowIfAllAbstainDecisions` 来确定
+
+`Vote-Based` 机制的授权机制包括一系列的 `AccessDecisionVoter` 实现类，`AccessDecisionManager` 根据这些 `AccessDecisionVoter` 的投票结果来决定是否抛出 `AccessDeniedException`。
+
+`AccessDecisionVoter` 接口定义了三个方法，其中 `vote` 方法表示进行投票，方法返回值是 `int` 类型，取值是 `AccessDecisionVoter` 的静态属性 `ACCESS_ABSTAIN`、`ACCESS_DENIED` 、`ACCESS_GRANTED` 之一。当表决器不能做出决定时返回 `ACCESS_ABSTAIN`，否则返回 `ACCESS_DENIED`  或者 `ACCESS_GRANTED` 。
+
+#### AccessDecisionVoter
+
+`AccessDecisionVoter` 接口是授权时的投票器，`AccessDecisionManager` 根据这些投票的结果确定是否授予权限。
+
+实现 `AccessDecisionVoter` 接口可以自定义投票器，Spring Security 内置了两种常见的投票器用于实现特定的投票机制：
+
+- `RoleVoter`：将传入的 `ConfigAttribute` 参数作为角色名，然后根据当前用户的角色投票。如果 `GrantedAuthority` 返回的 字符串对象是以 `ROLE_` 开头并且和 `ConfigAttribute` 参数相匹配则返回 `ACCESS_GRANTED`，如果不匹配则返回 `ACCESS_DENIED`，如果 `ConfigAttribute` 参数中没有以 `ROLE_` 开头的则返回 `ACCESS_ABSTAIN`
+- `AuthenticatedVoter`：用于区分匿名的、完全认证的和 remember me 认证的用户。如果使用 `IS_AUTHENTICATED_ANONYMOUSLY`属性来授予匿名用户权限，则这个属性就会由 `AuthenticatedVoter` 处理
+
+#### AfterInvocationManager
+
+`AccessDecisionManager` 由 `AbstractSecuriyInterceptor` 在调用被保护的方法之前调用，当被保护的方法被调用完成之后 `AbstractSecurityInterceptor` 还可以调用 `AfterInvocationMananger` 来修改方法调用的结果。
+
+Spring Security 提供了 `AfterInvocationManager` 的实现类 `AfterInvocationProviderManager`，该类包含一个 `AfterInvocationProvider` 列表。每个 `AfterInvocationProvider` 都可以修改方法调用的结果，最终的修改结果作为方法调用的结果返回。
+
+### OAuth2
 
 OAuth2(开放授权) 是一个开放标准，该标准允许用户让第三方应用访问该用户在某一网站上存储的私密资源，在这个过程中无需将用户名和密码提供给第三方应用。
 
@@ -321,52 +350,8 @@ https://www.hangge.com/blog/cache/detail_2683.html
 https://www.cnblogs.com/bug9/p/11584816.html
 
 ##### 授权服务器
+
 ##### 资源服务器
-
-### 授权
-
-授权(`Authorization`)
-
-
-
-`Authentication` 对象中保存了 `GrantedAuthority` 列表，表示请求主体已经获取的授权。`GrantedAuthority` 对象通过 `AuthenticationManager` 插入到 `Authentication` 对象中，并且由 `AccessDecisionManager` 在做出授权决策时读取。
-
-
-
-Spring Security提供了拦截器，用于控制对安全对象（如方法调用或web请求）的访问。AccessDecisionManager将在调用前决定是否允许继续调用。
-
-#### AccessDecisionManager
-
-`AccessDecisionManager` 负责权限控制，由 `AbstractSecurityInterceptor` 在访问被保护的方法之前调用，决定被保护的方法是否允许调用。
-
-`AccessDecisionManager` 接口定义了三个方法，其中 `decide` 方法根据传入的参数决定是否授权，参数 `object ` 表示需要被授权检查的方法，如果拒绝访问就会抛出 `AccessDeniedException`
-
-#### Vote-Based AccessDecisionManager
-
-自定义 `AccessDecisionManager` 的实现类可以实现不同的授权机制，Spring Security 提供了一些基于投票(Vote) 机制的 `AccessDecisionManager` 实现类：
-
-- `AffirmativeBased`：只要收到一个 `ACCESS_GRANTED` 的投票则会授予访问权限，如果全部都是 `ACCESS_ABSTAIN`  则会根据参数 `allowIfAllAbstainDecisions` 来确定是否授予权限，默认为 `false` 
-- `ConsensusBased`：如果收到的 `ACCESS_GRANTED` 投票数大于等于 `ACCESS_DENIED` 投票数则会授予权限，如果全部都是 `ACCESS_ABSTAIN`  则会根据参数 `allowIfAllAbstainDecisions` 来确定
-- `UnanimousBased`：只要收到一个 `ACCESS_DENIED` 投票则不予授权，如果全部为 `ACCESS_ABSTAIN` 则根据参数 `allowIfAllAbstainDecisions` 来确定
-
-`Vote-Based` 机制的授权机制包括一系列的 `AccessDecisionVoter` 实现类，`AccessDecisionManager` 根据这些 `AccessDecisionVoter` 的投票结果来决定是否抛出 `AccessDeniedException`。
-
-`AccessDecisionVoter` 接口定义了三个方法，其中 `vote` 方法表示进行投票，方法返回值是 `int` 类型，取值是 `AccessDecisionVoter` 的静态属性 `ACCESS_ABSTAIN`、`ACCESS_DENIED` 、`ACCESS_GRANTED` 之一。当表决器不能做出决定时返回 `ACCESS_ABSTAIN`，否则返回 `ACCESS_DENIED`  或者 `ACCESS_GRANTED` 。
-
-#### AccessDecisionVoter
-
-`AccessDecisionVoter` 接口是授权时的投票器，`AccessDecisionManager` 根据这些投票的结果确定是否授予权限。
-
-实现 `AccessDecisionVoter` 接口可以自定义投票器，Spring Security 内置了两种常见的投票器用于实现特定的投票机制：
-
-- `RoleVoter`：将传入的 `ConfigAttribute` 参数作为角色名，然后根据当前用户的角色投票。如果 `GrantedAuthority` 返回的 字符串对象是以 `ROLE_` 开头并且和 `ConfigAttribute` 参数相匹配则返回 `ACCESS_GRANTED`，如果不匹配则返回 `ACCESS_DENIED`，如果 `ConfigAttribute` 参数中没有以 `ROLE_` 开头的则返回 `ACCESS_ABSTAIN`
-- `AuthenticatedVoter`：用于区分匿名的、完全认证的和 remember me 认证的用户。如果使用 `IS_AUTHENTICATED_ANONYMOUSLY`属性来授予匿名用户权限，则这个属性就会由 `AuthenticatedVoter` 处理
-
-#### AfterInvocationManager
-
-`AccessDecisionManager` 由 `AbstractSecuriyInterceptor` 在调用被保护的方法之前调用，当被保护的方法被调用完成之后 `AbstractSecurityInterceptor` 还可以调用 `AfterInvocationMananger` 来修改方法调用的结果。
-
-Spring Security 提供了 `AfterInvocationManager` 的实现类 `AfterInvocationProviderManager`，该类包含一个 `AfterInvocationProvider` 列表。每个 `AfterInvocationProvider` 都可以修改方法调用的结果，最终的修改结果作为方法调用的结果返回。
 
 ### 自动配置
 
