@@ -1,13 +1,57 @@
 ## 数据绑定
 
-## 类型转换
+数据绑定用于将用户的输入动态的绑定到程序的领域模型(domain model)，也就是允许在目标对象中设置属性值。Spring 提供了 `DataBinder` 实现数据绑，并且提供了字段校验、格式化和绑定结果分析。
 
-### PropertyEditor
+```java
+public static void dataBind(){
+
+    final MutablePropertyValues mpv = new MutablePropertyValues();
+    mpv.add("name", "Joe");
+    mpv.add("salary", "200");
+
+    Employee employee = new Employee();
+    final DataBinder binder = new DataBinder(employee);
+
+    binder.bind(mpv);
+
+    System.out.println(employee);
+}
+```
+
+`DataBinder` 提供了绑定结果分析的功能，使用 `DataBinder#getBindingResult` 可以获取绑定的结果对象 `BindingResult`，其中包含绑定失败的错误信息：
+
+```java
+public static void dataBindAndResult(){
+
+    final MutablePropertyValues mpv = new MutablePropertyValues();
+    mpv.add("name", "Joe");
+    mpv.add("salary", "200x");	// 转换错误
+
+    Employee employee = new Employee();
+    final DataBinder binder = new DataBinder(employee);
+
+    binder.bind(mpv);
+    final BindingResult result = binder.getBindingResult();
+    result.getAllErrors().forEach(System.out::println);
+    
+    // Employee{name='Joe', salary=0.0}
+    System.out.println(employee);
+}
+```
+
+`DataBinder` 在绑定失败时并不会抛出异常，而是指定为目标对象的默认值，因此使用 `DataBinder` 时需要手动检测 `BindingResult` 中是否存在 `Error` 并切在绑定失败时手动抛出异常。
+
+`BeanWrapper` 
+
+
+
+## 类型转换
 
 ### Converter
 
 ### Formatter
 `core.convert` 包定义了一个通用的类型转换系统，提供了一个统一的 `ConversionService` API 用于实现从一个类型转换到另一个类型，Spring 容器使用这个系统来绑定 bean 的属性，Spring 的表达式语言(SpEL) 和 `DataBinder` 都是使用这个系统来绑定字段值。
+
 ## 数据校验
 
 Spring 提供了 Validator 框架用于参数的校验，它可以使得参数的校验可以在应用的每一层，并且可以和任何的 validator 插件组合。
