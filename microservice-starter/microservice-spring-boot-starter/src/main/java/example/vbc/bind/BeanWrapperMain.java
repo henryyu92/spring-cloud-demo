@@ -1,11 +1,12 @@
-package example.vbc.bind.wrapper;
+package example.vbc.bind;
 
-import example.vbc.bind.Employee;
-import example.vbc.bind.Company;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyValue;
 
+/**
+ * BeanWrapper
+ */
 public class BeanWrapperMain {
 
     public static void main(String[] args) {

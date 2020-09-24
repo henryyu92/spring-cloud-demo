@@ -4,8 +4,6 @@ import org.springframework.beans.MutablePropertyValues;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 
-import java.util.Objects;
-
 /**
  * DataBinder 可以为目标对象设置属性值，并支持字段校验、格式化和绑定结果分析，绑定过程也可以自定义实现
  */

@@ -1,4 +1,4 @@
-package example.vbc.convert.propertyeditor.registrar;
+package example.vbc.bind.propertyeditor.registrar;
 
 import org.springframework.beans.PropertyEditorRegistrar;
 import org.springframework.beans.PropertyEditorRegistry;

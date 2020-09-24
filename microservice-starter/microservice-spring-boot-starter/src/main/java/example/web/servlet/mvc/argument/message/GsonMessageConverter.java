@@ -1,4 +1,4 @@
-package example.web.servlet.mvc;
+package example.web.servlet.mvc.argument.message;
 
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;

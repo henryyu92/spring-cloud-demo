@@ -1,4 +1,4 @@
-package example.web.servlet.mvc;
+package example.web.servlet.mvc.argument;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;

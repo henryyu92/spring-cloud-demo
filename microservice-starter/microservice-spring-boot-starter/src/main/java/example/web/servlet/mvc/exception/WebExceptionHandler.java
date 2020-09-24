@@ -1,5 +1,6 @@
-package example.web.servlet.mvc;
+package example.web.servlet.mvc.exception;
 
+import example.web.servlet.mvc.ServiceException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 

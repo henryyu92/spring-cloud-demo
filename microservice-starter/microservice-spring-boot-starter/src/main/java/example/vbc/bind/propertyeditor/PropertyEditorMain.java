@@ -1,4 +1,4 @@
-package example.vbc.convert.propertyeditor;
+package example.vbc.bind.propertyeditor;
 
 public class PropertyEditorMain {
 

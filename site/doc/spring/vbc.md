@@ -18,7 +18,7 @@ public static void dataBind(){
 }
 ```
 
-`DataBinder` 提供了绑定结果分析的功能，使用 `DataBinder#getBindingResult` 可以获取绑定的结果对象 `BindingResult`，其中包含绑定失败的错误信息：
+`DataBinder` 提供了绑定结果分析的功能，使用 `DataBinder#getBindingResult` 可以获取绑定的结果对象 `BindingResult`，其中包含绑定失败的错误信息。`DataBinder` 在绑定失败时并不会抛出异常，而是指定为目标对象的默认值，因此使用 `DataBinder` 时需要手动检测 `BindingResult` 中是否存在 `Error` 并处理：
 
 ```java
 public static void dataBindAndResult(){
@@ -39,11 +39,13 @@ public static void dataBindAndResult(){
 }
 ```
 
-`DataBinder` 在绑定失败时并不会抛出异常，而是指定为目标对象的默认值，因此使用 `DataBinder` 时需要手动检测 `BindingResult` 中是否存在 `Error` 并切在绑定失败时手动抛出异常。
-
-`BeanWrapper` 
 
 
+#### `BeanWrapper`
+
+#### `PropertyEditor`
+
+Spring 的 `DataBinder` 和 `BeanWrapper` 都是基于 `PropertyEditorSupport` 实现解析和格式化属性值，`PropertyEditorSupport` 是 JavaBeans 规范的一部分。 
 
 ## 类型转换
 
