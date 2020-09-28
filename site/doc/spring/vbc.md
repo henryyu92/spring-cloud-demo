@@ -32,6 +32,8 @@ public static void dataBindAndResult(){
 
     binder.bind(mpv);
     final BindingResult result = binder.getBindingResult();
+    
+    // print bind error
     result.getAllErrors().forEach(System.out::println);
     
     // Employee{name='Joe', salary=0.0}
@@ -43,11 +45,15 @@ public static void dataBindAndResult(){
 
 #### `BeanWrapper`
 
+
+
 #### `PropertyEditor`
 
-Spring 的 `DataBinder` 和 `BeanWrapper` 都是基于 `PropertyEditorSupport` 实现解析和格式化属性值，`PropertyEditorSupport` 是 JavaBeans 规范的一部分。 
+`DataBinder` 和 `BeanWrapper` 使用 `PropertyEditorSupport` 实现解析和格式化属性值，`PropertyEditorSupport` 是 JavaBeans 规范的一部分。 
 
 ## 类型转换
+
+Spring 的 `core.convert` 包提供了一套通用类型的转换，并且提供了 `format` 包用于格式话数据，使用这些包提供的工具类可以替代 `PropertyEditor` 的实现。
 
 ### Converter
 

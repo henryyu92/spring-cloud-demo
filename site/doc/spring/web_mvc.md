@@ -453,7 +453,7 @@ public class MyConfig {
 }
 ```
 
-### DateBind
+### DataBind
 
 #### Validation
 

@@ -1,4 +1,4 @@
-package example.container.listener;
+package example.listener;
 
 import org.springframework.context.ApplicationEvent;
 
