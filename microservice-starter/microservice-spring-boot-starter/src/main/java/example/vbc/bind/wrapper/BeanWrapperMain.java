@@ -1,8 +1,13 @@
-package example.vbc.bind;
+package example.vbc.bind.wrapper;
 
+import example.vbc.bind.Company;
+import example.vbc.bind.Employee;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyValue;
+
+import java.beans.PropertyChangeSupport;
+import java.beans.VetoableChangeSupport;
 
 /**
  * BeanWrapper
@@ -30,5 +35,19 @@ public class BeanWrapperMain {
         System.out.println(company.getPropertyValue("name"));
         System.out.println(company.getPropertyValue("managingDirector.name"));
 
+
+        addChangeListener(new Company());
+    }
+
+    public static void addChangeListener(Object target){
+        BeanWrapper wrapper = new BeanWrapperImpl(target);
+
+        PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(wrapper);
+        propertyChangeSupport.addPropertyChangeListener("name",
+                new BeansListener.BeanWrapperPropertyChangeListener());
+
+        VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(wrapper);
+        vetoableChangeSupport.addVetoableChangeListener(
+                new BeansListener.BeanWrapperVetoableChangeListener());
     }
 }

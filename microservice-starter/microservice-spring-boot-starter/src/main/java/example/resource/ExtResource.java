@@ -1,4 +1,4 @@
-package example.container.resource;
+package example.resource;
 
 
 import org.springframework.core.io.AbstractResource;

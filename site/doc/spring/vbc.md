@@ -41,19 +41,80 @@ public static void dataBindAndResult(){
 }
 ```
 
-
-
 #### `BeanWrapper`
 
+`BeanWrapper` 包装了目标 `bean` 并且提供了设置和读取属性值、获取属性的描述符以及获取属性是否可读写的功能，`BeanWrapper`支持目标对象无限深度的嵌套属性的设置。
 
+`BeanWrapper` 还支持添加 JavaBeans 标准的 `PropertyChangeListener` 和 `VetoableChangeListener` 而不需要目标类支持。
+
+`BeanWrapper` 接口以及其默认实现类 `BeanWrapperImpl`是 Spring 的基础设施，一般不会直接在应用程序中使用，而是通过 `BeanFactory` 或者 `DataBinder` 来隐式的调用。
+
+```java
+// BeanWrapper 包装 bean
+BeanWrapper company = new BeanWrapperImpl(new Company());
+// 设置属性值
+company.setPropertyValue("name", "Some Company Inc.");
+// 设置嵌套属性值
+company.setPropertyValue("managingDirector.name", "Jim Stravinsky");
+// 设置索引属性值
+company.setPropertyValue("employees[1].name", "Someone");
+
+// BeanWrapper 设置 Listener 监听绑定属性数据的变化
+BeanWrapper wrapper = new BeanWrapperImpl(target);
+        
+PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(wrapper);
+propertyChangeSupport.addPropertyChangeListener("name", 
+        new BeansListener.BeanWrapperPropertyChangeListener());
+
+VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(wrapper);
+vetoableChangeSupport.addVetoableChangeListener(
+        new BeansListener.BeanWrapperVetoableChangeListener());
+```
 
 #### `PropertyEditor`
 
-`DataBinder` 和 `BeanWrapper` 使用 `PropertyEditorSupport` 实现解析和格式化属性值，`PropertyEditorSupport` 是 JavaBeans 规范的一部分。 
+``PropertyEditors` 是 JavaBeans 规范的一部分，可以实现对象和字符串之间的转换，`DataBinder` 和 `BeanWrapper` 使用 `PropertyEditorSupport` 实现解析和格式化属性值。 
+
+Spring 通过使用 `PropertyEditor` 实现 bean 的属性设置，使用 XML 文件声明 bean 的属性时，通过属性的类型获取对应的 `propertyEditor` 实现类将设置的属性字符串解析为对应的数据类型值
+
+实现自定义的 `PropertyEditor` 并注册到 `BeanWrapper` 或者注册到 IoC 容器中就可以实现自定义的数据类型转换。Spring 内置了大量的 `PropertyEditor` 的实现类，其中大多数都注册到了 `BeanWrapperImpl`
+
+- `CustomBooleanEditor`：将字符串转换为 Boolean 对象
+- `CustomDateEditor`：按照指定的 `DataFormat` 将字符串转换为 `Date` 对象
+- `CustomNumberEditor`
+- `CustomCollectionEditor`
+
+`PropertyEditorSupport` 是 `PropertyEditor` 的实现类，通过继承 `PropertyEditorSupport` 可以构建自定义的属性编辑器：
+
+```java
+
+```
+
+JavaBean 规范使用 `PropertyEditorManager` 为指定类型设置 `PropertyEditor` 的搜索路径，`PropertyEditorManager` 的默认搜索路径为 `sun.beans.editors`
+
+```java
+// 获取默认的搜索路径
+String[] searchPath = PropertyEditorManager.getEditorSearchPath();
+
+// 获取类型对应的 PropertyEditor
+PropertyEditor editor = PropertyEditorManager.findEditor(Boolean.class);
+
+// 注册自定义类型的 PropertyEditor
+PropertyEditorManager.registerEditor(LocalDate.class, CustomLocalDateEditor.class);
+PropertyEditor editor = PropertyEditorManager.findEditor(LocalDate.class);
+
+// 自定义搜索路径
+PropertyEditorManager.setEditorSearchPath(new String[]{"example.vbc.bind.propertyeditor"});
+// 如果类定义和 PropertyEditor 名称相同且在同一个包下，则可以直接搜索而不需要中注册
+PropertyEditor editor = PropertyEditorManager.findEditor(Hello.class);
+
+```
+
+
 
 ## 类型转换
 
-Spring 的 `core.convert` 包提供了一套通用类型的转换，并且提供了 `format` 包用于格式话数据，使用这些包提供的工具类可以替代 `PropertyEditor` 的实现。
+Spring 的 `core.convert` 包提供了一套通用类型的转换，并且提供了 `format` 包用于格式化数据，使用这些包提供的工具类可以替代 `PropertyEditor` 的实现。
 
 ### Converter
 

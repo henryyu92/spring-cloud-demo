@@ -1,7 +1,7 @@
 package example.container.context;
 
 import example.container.definition.ExBeanDefinitionReader;
-import example.container.resource.ExtResource;
+import example.resource.ExtResource;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 /**
