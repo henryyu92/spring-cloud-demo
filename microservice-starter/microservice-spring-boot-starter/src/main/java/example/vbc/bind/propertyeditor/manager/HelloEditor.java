@@ -1,4 +1,4 @@
-package example.vbc.bind.propertyeditor;
+package example.vbc.bind.propertyeditor.manager;
 
 import java.beans.PropertyEditorSupport;
 

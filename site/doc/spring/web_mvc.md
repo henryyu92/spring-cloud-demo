@@ -4,9 +4,7 @@ Spring Web MVC 是 Spring 提供的基于 Servlet 的 Web 框架，使用 Spring
 
 ### Initializer
 
-Servlet 容器在启动应用时会创建一个 `ServletContext` 用于不同 `Servlet` 共享
-
-Servlet 容器在启动应用时会加载 `web.xml` 文件，并根据文件的内容初始化应用的 `Servlet` 及其对应的 `ServletContext`。
+Servlet 容器在启动应用时会创建一个 `ServletContext` 用于不同 `Servlet` 共享。Servlet 容器在启动应用时会加载 `web.xml` 文件，并根据文件的内容初始化应用的 `Servlet` 及其对应的 `ServletContext`。
 
 ```xml
 <!-- 配置 Servlet -->
@@ -354,6 +352,14 @@ Spring 提供了默认的 `HandlerMethodArgumentResolver` 的实现类,不同的
 
 #### HandlerMethodReturnValueHandler
 
+#### HttpMessageConverter
+
+`HttpMessageConverter` 接口是 Spring MVC 中用于将 HTTP 中的字节流数据和应用程序中的对象进行转换.
+
+Spring 提供了常用的数据格式的转换:
+
+- ProtobufHttpMessageConverter
+
 #### HandlerExceptionResolver
 
 在 HandlerMapping 映射的过程中获取在请求的处理过程抛出的异常会被 DispatcherServlet 捕获到并交给 HandlerExceptionResolver 来处理。Spring 提供了多种 HandlerExceptionResolver 的实现：
@@ -387,15 +393,6 @@ public class ErrorController {
 > </error-page>
 > ```
 >
-> 
-
-
-#### HttpMessageConverter
-
-`HttpMessageConverter` 接口是 Spring MVC 中用于将 HTTP 中的字节流数据和应用程序中的对象进行转换.
-
-Spring 提供了常用的数据格式的转换:
-- ProtobufHttpMessageConverter
 
 #### ViewResolver
 
@@ -423,7 +420,7 @@ WebMvcConfigure 接口是 Spring 提供的通过代码方式配置 MVC 的入口
 
 `ForwardedHeaderFilter` 是一个 Servlet Filter 用于基于 `Forward` 头修改 `Origin` 头，并且移除掉一些有影响的头，这个过滤器需要在过滤器链的最前面
 
-### Annotation
+### 注解
 
 #### @ControllerAdvice
 
@@ -453,10 +450,10 @@ public class MyConfig {
 }
 ```
 
-### DataBind
+### 自动配置
 
-#### Validation
+SpringBoot 自动配置文件 `spring.factories` 中配置 Spring Boot 应用启动时加载的 Web 自动配置类 `WebMvcAutoConfiguration`，类上的注解 `@AutoConfigureAfter` 表明在配置该类之前需要配置 `ValidationAutoConfiguration`。
 
-#### Formatter
 
-#### Converter
+
+## WebSocket

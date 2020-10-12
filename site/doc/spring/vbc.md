@@ -41,41 +41,13 @@ public static void dataBindAndResult(){
 }
 ```
 
-#### `BeanWrapper`
+https://www.cnblogs.com/yourbatman/p/11212092.html
 
-`BeanWrapper` 包装了目标 `bean` 并且提供了设置和读取属性值、获取属性的描述符以及获取属性是否可读写的功能，`BeanWrapper`支持目标对象无限深度的嵌套属性的设置。
+### `DataBinder`
 
-`BeanWrapper` 还支持添加 JavaBeans 标准的 `PropertyChangeListener` 和 `VetoableChangeListener` 而不需要目标类支持。
+### `PropertyEditor`
 
-`BeanWrapper` 接口以及其默认实现类 `BeanWrapperImpl`是 Spring 的基础设施，一般不会直接在应用程序中使用，而是通过 `BeanFactory` 或者 `DataBinder` 来隐式的调用。
-
-```java
-// BeanWrapper 包装 bean
-BeanWrapper company = new BeanWrapperImpl(new Company());
-// 设置属性值
-company.setPropertyValue("name", "Some Company Inc.");
-// 设置嵌套属性值
-company.setPropertyValue("managingDirector.name", "Jim Stravinsky");
-// 设置索引属性值
-company.setPropertyValue("employees[1].name", "Someone");
-
-// BeanWrapper 设置 Listener 监听绑定属性数据的变化
-BeanWrapper wrapper = new BeanWrapperImpl(target);
-        
-PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(wrapper);
-propertyChangeSupport.addPropertyChangeListener("name", 
-        new BeansListener.BeanWrapperPropertyChangeListener());
-
-VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(wrapper);
-vetoableChangeSupport.addVetoableChangeListener(
-        new BeansListener.BeanWrapperVetoableChangeListener());
-```
-
-#### `PropertyEditor`
-
-``PropertyEditors` 是 JavaBeans 规范的一部分，可以实现对象和字符串之间的转换，`DataBinder` 和 `BeanWrapper` 使用 `PropertyEditorSupport` 实现解析和格式化属性值。 
-
-Spring 通过使用 `PropertyEditor` 实现 bean 的属性设置，使用 XML 文件声明 bean 的属性时，通过属性的类型获取对应的 `propertyEditor` 实现类将设置的属性字符串解析为对应的数据类型值
+``PropertyEditors` 是 JavaBeans 规范的一部分，可以实现对象和字符串之间的转换。`DataBinder` 和 `BeanWrapper` 使用 `PropertyEditorSupport` 实现解析和格式化属性值。 
 
 实现自定义的 `PropertyEditor` 并注册到 `BeanWrapper` 或者注册到 IoC 容器中就可以实现自定义的数据类型转换。Spring 内置了大量的 `PropertyEditor` 的实现类，其中大多数都注册到了 `BeanWrapperImpl`
 
@@ -83,6 +55,7 @@ Spring 通过使用 `PropertyEditor` 实现 bean 的属性设置，使用 XML �
 - `CustomDateEditor`：按照指定的 `DataFormat` 将字符串转换为 `Date` 对象
 - `CustomNumberEditor`
 - `CustomCollectionEditor`
+- ...
 
 `PropertyEditorSupport` 是 `PropertyEditor` 的实现类，通过继承 `PropertyEditorSupport` 可以构建自定义的属性编辑器：
 
@@ -90,7 +63,7 @@ Spring 通过使用 `PropertyEditor` 实现 bean 的属性设置，使用 XML �
 
 ```
 
-JavaBean 规范使用 `PropertyEditorManager` 为指定类型设置 `PropertyEditor` 的搜索路径，`PropertyEditorManager` 的默认搜索路径为 `sun.beans.editors`
+JavaBean 规范使用 `PropertyEditorManager` 为指定类型设置 `PropertyEditor` 的搜索路径，`PropertyEditorManager` 的默认搜索路径为 `sun.beans.editors`。如果 `PropertyEditor` 类与所处理的类在同一个包中并且名字相同，则 JavaBeans 规范会自动发现 `PropertyEditor`类。
 
 ```java
 // 获取默认的搜索路径
@@ -110,15 +83,71 @@ PropertyEditor editor = PropertyEditorManager.findEditor(Hello.class);
 
 ```
 
-
+`JavaBeans` 规范还提供了标准的 `BeanInfo` 机制
 
 ## 类型转换
 
-Spring 的 `core.convert` 包提供了一套通用类型的转换，并且提供了 `format` 包用于格式化数据，使用这些包提供的工具类可以替代 `PropertyEditor` 的实现。
+Spring 在 `core.convert` 包中定义了通用的类型转换系统，在 Spring 容器中可以使用该系统代替 `PropertyEditor` 实现将字符串转换为所需的数据类型。
 
-### Converter
+### `Converter`
 
-### Formatter
+`Converter`  接口是 Spring 提供的实现简单且强类型转换逻辑的 `SPI` ，实现类型转换需要实现该接口并重写类型转换逻辑，如果需要转换数组或者集合则需要注册代理的转换器(`DefaultConversion` 默认会注册)。
+
+```java
+
+```
+
+`Converter` 调用的过程中有可能抛出三种异常：
+
+- `IllegalArgumentException`：需要转换的实例为 null 或者实例类型不能转换成目标类型
+- `ConversionFailedException`：定义的 `Converter` 实现类在转换的过程中异常
+- `ConverterNotFoundException`：没有定义实例类型和目标类型之间的 `Converter`
+
+`Converter` 在调用的过程中没有并发控制，因此需要保证定义的 `Converter` 实现类是无状态的。Spring 在 `core.convert.support` 包中定义了大量的基础类型转换实现类，并由 `DefaultConversionService` 默认注册：
+
+```java
+public static void addDefaultConverters(ConverterRegistry converterRegistry) {
+    addScalarConverters(converterRegistry);
+    addCollectionConverters(converterRegistry);
+
+    converterRegistry.addConverter(new ByteBufferConverter((ConversionService) converterRegistry));
+    converterRegistry.addConverter(new StringToTimeZoneConverter());
+    converterRegistry.addConverter(new ZoneIdToTimeZoneConverter());
+    converterRegistry.addConverter(new ZonedDateTimeToCalendarConverter());
+
+    converterRegistry.addConverter(new ObjectToObjectConverter());
+    converterRegistry.addConverter(new IdToEntityConverter((ConversionService) converterRegistry));
+    converterRegistry.addConverter(new FallbackObjectToStringConverter());
+    converterRegistry.addConverter(new ObjectToOptionalConverter((ConversionService) converterRegistry));
+}
+```
+
+
+
+#### `ConverterFactory`
+
+`Converter` 接口只能在特定类型之间进行转换，在对具有相同父类或者接口进行转换时，使用 Spring 提供的 `ConverterFactory` 接口能够更加方便的管理类型的转换。
+
+```java
+public interface ConverterFactory<S, R> {
+    <T extends R> Converter<S, T> getConverter(Class<T> targetType);
+}
+```
+
+Spring 提供了默认的 `ConverterFactory` 用于数字、字符串、枚举类型之间的转换，然后包装成 `ConverterFactoryAdapter` 由 `DefaultConversionService` 注册：
+
+```java
+addConverter(new ConverterFactoryAdapter(factory,
+		new ConvertiblePair(typeInfo[0].toClass(), typeInfo[1].toClass())));
+```
+
+
+
+#### `GenericConverter`
+
+#### `ConversionService`
+
+### `Formatter`
 `core.convert` 包定义了一个通用的类型转换系统，提供了一个统一的 `ConversionService` API 用于实现从一个类型转换到另一个类型，Spring 容器使用这个系统来绑定 bean 的属性，Spring 的表达式语言(SpEL) 和 `DataBinder` 都是使用这个系统来绑定字段值。
 
 ## 数据校验
@@ -127,9 +156,9 @@ Spring 提供了 Validator 框架用于参数的校验，它可以使得参数�
 
 Spring 的参数校验主要由 `Validator` 和 `DataBinder` 构成，
 
-## 自动配置
+### `Validator`
 
-SpringBoot 自动配置文件 `spring.factories` 中配置 Spring Boot 应用启动时加载的 Web 自动配置类 `WebMvcAutoConfiguration`，类上的注解 `@AutoConfigureAfter` 表明在配置该类之前需要配置 `ValidationAutoConfiguration`。
+
 
 
 

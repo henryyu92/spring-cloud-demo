@@ -39,6 +39,13 @@ public class BeanWrapperMain {
         addChangeListener(new Company());
     }
 
+    /**
+     *  BeanWrapper 为包装类设置属性值
+     */
+    private static void addProperty(String propertyName, String propertyValue){
+
+    }
+
     public static void addChangeListener(Object target){
         BeanWrapper wrapper = new BeanWrapperImpl(target);
 

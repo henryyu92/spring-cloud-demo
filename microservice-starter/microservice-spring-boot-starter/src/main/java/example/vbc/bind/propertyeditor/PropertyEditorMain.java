@@ -1,5 +1,7 @@
 package example.vbc.bind.propertyeditor;
 
+import example.vbc.bind.propertyeditor.manager.Hello;
+
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.time.LocalDate;
