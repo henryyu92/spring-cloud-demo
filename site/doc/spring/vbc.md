@@ -205,7 +205,11 @@ Spring 提供了 `Validator` 框架用于参数的校验，它可以使得参数
 
 ### `Validator`
 
+### `ValidatorFactory`
 
+### `LocalValidatorFactoryBean`
+
+### `MethodValidationPostProcessor`
 
 ## 自动配置
 
