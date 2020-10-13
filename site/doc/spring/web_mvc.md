@@ -450,10 +450,6 @@ public class MyConfig {
 }
 ```
 
-### 自动配置
-
-SpringBoot 自动配置文件 `spring.factories` 中配置 Spring Boot 应用启动时加载的 Web 自动配置类 `WebMvcAutoConfiguration`，类上的注解 `@AutoConfigureAfter` 表明在配置该类之前需要配置 `ValidationAutoConfiguration`。
-
 
 
 ## WebSocket
