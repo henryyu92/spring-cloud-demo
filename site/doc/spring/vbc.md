@@ -124,7 +124,7 @@ public static void addDefaultConverters(ConverterRegistry converterRegistry) {
 
 
 
-#### `ConverterFactory`
+### `ConverterFactory`
 
 `Converter` 接口只能在特定类型之间进行转换，在对具有相同父类或者接口进行转换时，使用 Spring 提供的 `ConverterFactory` 接口能够更加方便的管理类型的转换。
 
@@ -143,18 +143,65 @@ addConverter(new ConverterFactoryAdapter(factory,
 
 
 
-#### `GenericConverter`
+### `GenericConverter`
 
-#### `ConversionService`
+`GenericConverter` 可以实现更加复杂的转换，支持多个类型间的转换并提供类型上下文用于类型转换逻辑，是 Spring 提供的最复杂的类型转换 `SPI`。`GenericConverter` 接口定义了两个方法：
+
+```java
+// 返回当前 converter 支持转换的源类型和目标类型
+Set<ConvertiblePair> getConvertibleTypes();
+
+// 类型转换逻辑，TypeDescriptor 描述了源类型和目标类型
+Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType);
+```
+
+`DefaultConversionService` 注册的 Spring 默认提供的集合间的转换器，实现了 `GenericConverter` 接口：
+
+```java
+public static void addCollectionConverters(ConverterRegistry converterRegistry) {
+    ConversionService conversionService = (ConversionService) converterRegistry;
+
+    converterRegistry.addConverter(new ArrayToCollectionConverter(conversionService));
+    converterRegistry.addConverter(new CollectionToArrayConverter(conversionService));
+
+    converterRegistry.addConverter(new ArrayToArrayConverter(conversionService));
+    converterRegistry.addConverter(new CollectionToCollectionConverter(conversionService));
+    converterRegistry.addConverter(new MapToMapConverter(conversionService));
+
+    converterRegistry.addConverter(new ArrayToStringConverter(conversionService));
+    converterRegistry.addConverter(new StringToArrayConverter(conversionService));
+
+    converterRegistry.addConverter(new ArrayToObjectConverter(conversionService));
+    converterRegistry.addConverter(new ObjectToArrayConverter(conversionService));
+
+    converterRegistry.addConverter(new CollectionToStringConverter(conversionService));
+    converterRegistry.addConverter(new StringToCollectionConverter(conversionService));
+
+    converterRegistry.addConverter(new CollectionToObjectConverter(conversionService));
+    converterRegistry.addConverter(new ObjectToCollectionConverter(conversionService));
+
+    converterRegistry.addConverter(new StreamConverter(conversionService));
+}
+```
+
+
+
+### `ConditionalGenericConverter`
+
+`ConditionalGenericConverter` 接口提供了
+
+### `ConversionService`
+
+
+
+## 格式化
 
 ### `Formatter`
 `core.convert` 包定义了一个通用的类型转换系统，提供了一个统一的 `ConversionService` API 用于实现从一个类型转换到另一个类型，Spring 容器使用这个系统来绑定 bean 的属性，Spring 的表达式语言(SpEL) 和 `DataBinder` 都是使用这个系统来绑定字段值。
 
 ## 数据校验
 
-Spring 提供了 Validator 框架用于参数的校验，它可以使得参数的校验可以在应用的每一层，并且可以和任何的 validator 插件组合。
-
-Spring 的参数校验主要由 `Validator` 和 `DataBinder` 构成，
+Spring 提供了 `Validator` 框架用于参数的校验，它可以使得参数的校验可以在应用的每一层，并且可以和任何的 `validator` 插件组合。
 
 ### `Validator`
 
