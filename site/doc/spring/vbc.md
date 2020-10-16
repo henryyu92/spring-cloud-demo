@@ -188,11 +188,22 @@ public static void addCollectionConverters(ConverterRegistry converterRegistry) 
 
 ### `ConditionalGenericConverter`
 
-`ConditionalGenericConverter` 接口提供了
+`ConditionalGenericConverter` 接口继承了 `GenericConvertion` 和 `ConditionalConverter`，可以在特定情况下才进行类型转换：
+
+```java
+public interface ConditionalConverter{
+    boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType);
+}
+
+public interface ConditionalGenericConverter extends GenericConverter, ConditionalConverter {
+}
+```
+
+
 
 ### `ConversionService`
 
-
+`ConversionService` 接口是整个类型转换系统的入口，通过统一的 `API`实现运行时的类型转换逻辑。 
 
 ## 格式化
 
