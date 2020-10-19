@@ -91,36 +91,19 @@ Spring 在 `core.convert` 包中定义了通用的类型转换系统，在 Sprin
 
 ### `Converter`
 
-`Converter`  接口是 Spring 提供的实现简单且强类型转换逻辑的 `SPI` ，实现类型转换需要实现该接口并重写类型转换逻辑，如果需要转换数组或者集合则需要注册代理的转换器(`DefaultConversion` 默认会注册)。
+`Converter`  接口是 Spring 提供的实现简单的强类型转换逻辑的 `SPI` ，实现类型转换需要实现该接口并重写类型转换逻辑。Spring 在 `core.convert.support` 包中定义了多种类型转换实现，并通过 `DefaultConversionService` 注册。
 
 ```java
-
+public interface Converter<S, T> {
+    T convert(S source);
+}
 ```
 
-`Converter` 调用的过程中有可能抛出三种异常：
+`Converter` 调用时不能保证参数对象为非空，也不能保证对象是否可以转换，因此在调用的过程中有可能抛出三种异常：
 
 - `IllegalArgumentException`：需要转换的实例为 null 或者实例类型不能转换成目标类型
 - `ConversionFailedException`：定义的 `Converter` 实现类在转换的过程中异常
 - `ConverterNotFoundException`：没有定义实例类型和目标类型之间的 `Converter`
-
-`Converter` 在调用的过程中没有并发控制，因此需要保证定义的 `Converter` 实现类是无状态的。Spring 在 `core.convert.support` 包中定义了大量的基础类型转换实现类，并由 `DefaultConversionService` 默认注册：
-
-```java
-public static void addDefaultConverters(ConverterRegistry converterRegistry) {
-    addScalarConverters(converterRegistry);
-    addCollectionConverters(converterRegistry);
-
-    converterRegistry.addConverter(new ByteBufferConverter((ConversionService) converterRegistry));
-    converterRegistry.addConverter(new StringToTimeZoneConverter());
-    converterRegistry.addConverter(new ZoneIdToTimeZoneConverter());
-    converterRegistry.addConverter(new ZonedDateTimeToCalendarConverter());
-
-    converterRegistry.addConverter(new ObjectToObjectConverter());
-    converterRegistry.addConverter(new IdToEntityConverter((ConversionService) converterRegistry));
-    converterRegistry.addConverter(new FallbackObjectToStringConverter());
-    converterRegistry.addConverter(new ObjectToOptionalConverter((ConversionService) converterRegistry));
-}
-```
 
 
 
@@ -155,40 +138,11 @@ Set<ConvertiblePair> getConvertibleTypes();
 Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType);
 ```
 
-`DefaultConversionService` 注册的 Spring 默认提供的集合间的转换器，实现了 `GenericConverter` 接口：
-
-```java
-public static void addCollectionConverters(ConverterRegistry converterRegistry) {
-    ConversionService conversionService = (ConversionService) converterRegistry;
-
-    converterRegistry.addConverter(new ArrayToCollectionConverter(conversionService));
-    converterRegistry.addConverter(new CollectionToArrayConverter(conversionService));
-
-    converterRegistry.addConverter(new ArrayToArrayConverter(conversionService));
-    converterRegistry.addConverter(new CollectionToCollectionConverter(conversionService));
-    converterRegistry.addConverter(new MapToMapConverter(conversionService));
-
-    converterRegistry.addConverter(new ArrayToStringConverter(conversionService));
-    converterRegistry.addConverter(new StringToArrayConverter(conversionService));
-
-    converterRegistry.addConverter(new ArrayToObjectConverter(conversionService));
-    converterRegistry.addConverter(new ObjectToArrayConverter(conversionService));
-
-    converterRegistry.addConverter(new CollectionToStringConverter(conversionService));
-    converterRegistry.addConverter(new StringToCollectionConverter(conversionService));
-
-    converterRegistry.addConverter(new CollectionToObjectConverter(conversionService));
-    converterRegistry.addConverter(new ObjectToCollectionConverter(conversionService));
-
-    converterRegistry.addConverter(new StreamConverter(conversionService));
-}
-```
-
 
 
 ### `ConditionalGenericConverter`
 
-`ConditionalGenericConverter` 接口继承了 `GenericConvertion` 和 `ConditionalConverter`，可以在特定情况下才进行类型转换：
+`ConditionalGenericConverter` 接口继承了 `GenericConvertion` 和 `ConditionalConverter`，可以在满足特定情况下才进行类型转换：
 
 ```java
 public interface ConditionalConverter{
@@ -205,10 +159,206 @@ public interface ConditionalGenericConverter extends GenericConverter, Condition
 
 `ConversionService` 接口是整个类型转换系统的入口，通过统一的 `API`实现运行时的类型转换逻辑。 
 
+```java
+public interface ConversionService {
+    // 判断类型转换是否可以进行，将判断逻辑从转换逻辑中抽离
+    boolean canConvert(@Nullable Class<?> sourceType, Class<?> targetType);
+    
+    boolean canConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType);
+    
+    // 实现类型转换逻辑
+    <T> T convert(@Nullable Object source, Class<T> targetType);
+    
+    Object convert(@Nullable Object source, @Nullable TypeDescriptor sourceType, 				TypeDescriptor targetType);
+}
+```
+
+
+
+`GenericConversionService` 是最常用的实现类，并且实现了 `ConverterRegistry` 接口用于将类型转换器注册，在进行类型转换时代理给注册到注册器中的类型转换器实现真正的类型转换逻辑。
+
+```java
+public Object convert(@Nullable Object source, @Nullable TypeDescriptor sourceType, 			TypeDescriptor targetType) {
+    Assert.notNull(targetType, "Target type to convert to cannot be null");
+    // 转换对象为 null 时，目标对象为 optional 或者 null
+    if (sourceType == null) {
+        Assert.isTrue(source == null, "Source must be [null] if source type == [null]");
+        return handleResult(null, targetType, convertNullSource(null, targetType));
+    }
+    if (source != null && !sourceType.getObjectType().isInstance(source)) {
+        throw new IllegalArgumentException("Source to convert from must be an instance of 			[" + sourceType + "]; instead it was a [" + source.getClass().getName() + "]");
+    }
+    // 获取代理的 Converter 执行实际类型转换逻辑
+    GenericConverter converter = getConverter(sourceType, targetType);
+    if (converter != null) {
+        Object result = ConversionUtils.invokeConverter(converter, source, sourceType, 				targetType);
+        return handleResult(sourceType, targetType, result);
+    }
+    // 没有找到 converter 时如果目标对象和源对象是同一类型，则直接返回源对象，否则抛出异常
+    return handleConverterNotFound(source, sourceType, targetType);
+}
+```
+
+`ConversionServiceFactory` 提供了一个方便的工厂类用于将 `Converter` 注册到  `ConverterRegistry`。
+
+```java
+public static void registerConverters(@Nullable Set<?> converters, ConverterRegistry 			registry) {
+    if (converters != null) {
+        for (Object converter : converters) {
+            if (converter instanceof GenericConverter) {
+                registry.addConverter((GenericConverter) converter);
+            }
+            else if (converter instanceof Converter<?, ?>) {
+                registry.addConverter((Converter<?, ?>) converter);
+            }
+            else if (converter instanceof ConverterFactory<?, ?>) {
+                registry.addConverterFactory((ConverterFactory<?, ?>) converter);
+            }
+            else {
+                throw new IllegalArgumentException("Each converter object must implement 					one of the " + "Converter, ConverterFactory, or GenericConverter 						interfaces");
+            }
+        }
+    }
+}
+```
+
+
+
+`ConversionService` 是无状态的，在应用启动的时候实例化并且在多个线程之间共享。Spring 应用中，只需要为容器或者 `ApplicationContext` 配置 `ConversionService` 实例，就可以在需要类型转换的任何 bean 中注入并直接调用。
+
+Spring 使用 `ConversionServiceFactoryBean` 来注册提供的默认 `ConversionService`，将其注册到容器中就可以使用 Spring 提供的类型转换器：
+
+```java
+// ConversionServiceFactoryBean 的 name 需要为 conversionService
+@Bean
+public ConversionServiceFactoryBean conversionService(){
+    return new ConversionServiceFactoryBean();
+}
+```
+
+`ConversionServiceFactoryBean` 实例化了 `DefaultConversionService`，在实例化时将内建的转换器注册：
+
+```java
+public void afterPropertiesSet() {
+    this.conversionService = createConversionService();
+    ConversionServiceFactory.registerConverters(this.converters, this.conversionService);
+}
+
+
+protected GenericConversionService createConversionService() {
+    return new DefaultConversionService();
+}
+```
+
+
+
 ## 格式化
 
+`Converter` API 提供了通用的类型转换体系，Spring 在大部分情况下使用这套体系完成类型的转换以及数据的绑定。但是在一些情况下，如本地化字符串值，`Converter` 体系就不能直接处理这类问题，Spring 提供了 `Formatter` 作为 `PropertyEditor` 的替换。
+
 ### `Formatter`
-`core.convert` 包定义了一个通用的类型转换系统，提供了一个统一的 `ConversionService` API 用于实现从一个类型转换到另一个类型，Spring 容器使用这个系统来绑定 bean 的属性，Spring 的表达式语言(SpEL) 和 `DataBinder` 都是使用这个系统来绑定字段值。
+
+`Formatter` 接口继承了 `Printer` 和 `Parser` 接口，定义了强类型的字段类型格式化：
+
+```java
+public interface Formatter<T> extends Printer<T>, Parser<T> {
+}
+```
+
+创建自定义的字段格式化需要实现 `Formatter` 接口并重写 `print` 方法完成对象的本地化，重写 `parse` 方法完成从本地化值解析对象。在本地化以及解析的过程中，`Formatter` 可能因为解析失败而抛出 `ParseException` 或者 `IllegalArgumentException`，`Formatter` 的实现也需要保证时线程安全的。
+
+```java
+public final class DateFormatter implements Formatter<Date>{
+    private String pattern;
+    
+    public DateFormatter(String pattern){
+        this.pattern = pattern;
+    }
+    
+    public String print(Date date, Locale locale){
+        if(date == null){
+            return "";
+        }
+        return getDateFormat(locale).format(date);
+    }
+    
+    public Date parse(String formatted, Locale locale){
+        if(formatted.length() == 0){
+            return null;
+        }
+        return getDateFormat(locale).parse(formatted);
+    }
+    
+    protected DateFormat getDateFormat(Locale locale){
+		DateFormat dateFormat = new SimpleDateFormat(this.pattern, locale);
+        dateFormat.setLenient(false);
+        return dateFormat;
+    }
+}
+```
+
+### `AnnotationFormatterFactory`
+
+通过实现 `AnnotationFormatterFactory` 将注解和 `Formatter` 实现绑定就可以直接使用注解来配置字段的格式化。`AnnotationFormatterFactory` 接口定义了三个方法：
+
+```java
+public interface AnnotationFomatterFactory<A extends Annotation> {
+    
+    // 定义注解适用的字段类型
+    Set<Class<?>> getFieldTypes();
+    
+    // 返回作用在字段上的注解对应的 Fomartter
+    Printer<?> getPrinter(A annotation, Class<?> fieldType);
+    
+    Parser<?> getParser(A annotation, Class<?> fieldType);
+}
+```
+
+Spring 内置的 `@NumberFormat` 注解用于格式化数字类型的字段，其原理就是通过实现 `AnnotationFormatterFactory` 接口完成字段格式化：
+
+```java
+public final class NumberFormatAnnotationFomatterFactory 
+    implements AnnotationFormatterFactory<NumberFormat> {
+    
+    public Set<Class<?>> getFieldTypes(){
+        return new HashSet<Class<?>>(Arrays.asList(new Class<?>[]{
+            Short.class, Integer.class, Long.class, Float.class,
+            Double.class, BigDecimal.class, BigInteger.class
+        }))
+    }
+    
+    public Printer<Number> getPrinter(NumberFormat annotation, Class<?> fieldType){
+        return configureFormatterFrom(annotation, fieldType);
+    }
+    
+    public Parser<Number> getParser(NumberFormat annotation, Class<?> fieldType){
+        return configureFormatterFrom(annotation, fieldType);
+    }
+    
+    private Formatter<Number> configureFormatterFrom(
+        NumberFormat annotation, Class<?> fieldType){
+        
+        if(!annotation.pattern().isEmpty()){
+            return new NumberStyleFormatter(annotation,pattern());
+        }else{
+            Style style = annotation.style();
+            if(style == Style.PERCENT){
+                return new PercentStyleFormatter();
+            }else if(stype == Style.CURRENCY){
+                return new CurrencyStyleFormatter();
+            }else{
+                return new NumberFormatter();
+            }
+        }
+    }
+}
+```
+
+Spring 在 `org.springframework.format.annotation` 包定义了 `@NumberFormat` 格式化数字类型，`@DateTimeFormat` 格式化时间类型。
+
+### `FormatterRegistry`
+
+`FormatterRegistry` 接口继承自 `ConverterRegistry`，用于注册 `Formatter` 和 `Converter` 实现类 `FormattingConversionService` 
 
 ## 数据校验
 
@@ -222,40 +372,10 @@ Spring 提供了 `Validator` 框架用于参数的校验，它可以使得参数
 
 ### `MethodValidationPostProcessor`
 
-## 自动配置
+## 实现原理
+
+### 源码分析
+
+### 自动配置
 
 SpringBoot 自动配置文件 `spring.factories` 中配置 Spring Boot 应用启动时加载的 Web 自动配置类 `WebMvcAutoConfiguration`，类上的注解 `@AutoConfigureAfter` 表明在配置该类之前需要配置 `ValidationAutoConfiguration`。
-
-
-
-
-
-```flow
-st=>start: Start
-op=>operation: Your OPeration
-cond=>condition: Yes or No?
-e=>end
-st->op->cond
-cond(yes)->e
-cond(no)->op
-```
-
-```sequence
-TiTle:时序图示例
-客户端->服务端:我想访问你 SYN
-服务端->客户端:我收到请求，开始通信吧 ACK+SYN
-客户端->服务端:我收到你的确认啦 ACK
-客户端-->服务端:虚线实心箭头
-服务端->>客户端:实线小箭头
-客户端-->>服务端:虚线小箭头
-Note right of 服务端:我是一个服务端
-Note left of 客户端:我是一个客户端
-Note over 服务端,客户端: TCP 三次握手
-participant 观察者
-```
-
-https://blog.csdn.net/kl28978113/article/details/93617103
-
-
-
-https://segmentfault.com/a/1190000006247465
