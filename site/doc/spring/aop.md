@@ -1,7 +1,11 @@
 ## AOP
 AOP(Aspect Oriented Programming) 是面向切面的编程，通过代理模式为目标对象生成代理对象并将横切逻辑插入到目标方法执行的前后。
 
-### AOP 术语
+Spring AOP 实现不需要特殊的编译过程，也不需要控制类加载器的层次结构，因此适合在 servlet 容器或者应用服务器中使用。Spring AOP 目前只支持方法执行的连接点，也就是通知只会在 bean 的方法上应用。
+
+### AOP 编程
+
+#### AOP 术语
 
 - **切面(Aspect)**：跨越多个类的切入点的集合，Spring 中 Aspect 的实现是 `@Aspect` 注解的普通类
 - **连接点(JoinPoint)**：程序执行的某个点，例如方法的执行或者异常的处理。Spring 中连接点总是表示一个方法的执行
@@ -16,6 +20,57 @@ AOP(Aspect Oriented Programming) 是面向切面的编程，通过代理模式�
 - **目标对象(Target Object)**：被一个或者多个切面切入的对象，也是通知作用的对象。Spring 使用运行时代理来实现 AOP，因此目标对象是被代理的对象，即从容器获取的是代理对象
 - **代理(Proxy)**：Spring 使用代理实现 AOP，支持 JDK 动态代理和 CGLIB 代理
 - **织入(Weaving)**：把切面应用到目标对象来创建新的代理对象的过程，这个过程可以发生在编译(AspectJ)、加载和运行时，Spring 使用运行时执行织入
+
+与切入点匹配的连接点的概念是 AOP 的关键，它使得通知独立于面向对象层次结构，即通知操作可以作用于多个对象的一组方法。
+
+#### Spring AOP
+
+Spring AOP 默认使用标准的 JDK 动态代理实现，因此实现了接口的类就可以使用 AOP。如果没有实现接口，Spring 则使用 CGLIB 来完成代理。
+
+Spring 支持 `@AspectJ` 和 XML 配置文件两种形式，`@AspectJ` 形式可以采用在普通的 bean 上添加注解声明切面，XML 配置文件则需要在配置文件中定义。
+
+```java
+// 使用注解开启 AOP 支持
+@EnableAspectJAutoProxy
+@Configuration
+public class AopConfig{
+    
+}
+```
+
+开启 `@AspectJ` 注解支持后就可以通过注解的方式定义切面、切入点以及通知了。Spring 在 bean 上使用 `@Aspect` 注解定义切面，切面和普通的 bean 一样可以有方法和字段，另外切面中还可以包含切入点、通知和引入的声明。**在 Spring AOP 中，切面本身不能作为代理的目标对象，也就是说切入点表达式不会匹配切面中的方法**。
+
+```java
+@Aspect
+@Component
+public class NotVeryUsefulAspect {
+    
+}
+```
+
+切入点声明通知可以执行的连接点，Spring AOP 只支持在 bean 的方法上的连接点，因此可以将切入点看做是与 bean 上的方法执行相匹配。切入点声明包含两部分：一个由名称和任意参数组成的签名和一个确定连接点方法的切入点表达式。Spring AOP 注解方式使用定义在返回值为 void 的普通方法上的 `@Pointcuut` 注解来声明切入点：
+
+```java
+// anyOldTransfer	定义的切入点声明
+// transfer			切入点匹配的连接点
+@Pointcut("execution(* transfer(..))")
+private void anyOldTransfer(){}
+```
+
+Spring AOP 支持使用 `&&`,  `||`,  `!` 来组合不同的切入点表达式，使得切入点可以支持多个表达式：
+
+```java
+@Pointcut("execution(public * *(..))")
+private void anyPublicOperation(){}
+
+@Pointcut("within(com.xyz.myapp.trading..*)")
+private void isTrading(){}
+
+@Pointcut("anyPublicOperation() && isTrading()")
+private void tradingOperation(){}
+```
+
+
 
 ### AOP API
 
