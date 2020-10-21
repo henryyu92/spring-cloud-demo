@@ -1,9 +1,8 @@
-## AOP
+### AOP 编程
+
 AOP(Aspect Oriented Programming) 是面向切面的编程，通过代理模式为目标对象生成代理对象并将横切逻辑插入到目标方法执行的前后。
 
 Spring AOP 实现不需要特殊的编译过程，也不需要控制类加载器的层次结构，因此适合在 servlet 容器或者应用服务器中使用。Spring AOP 目前只支持方法执行的连接点，也就是通知只会在 bean 的方法上应用。
-
-### AOP 编程
 
 #### AOP 术语
 
@@ -23,7 +22,7 @@ Spring AOP 实现不需要特殊的编译过程，也不需要控制类加载器
 
 与切入点匹配的连接点的概念是 AOP 的关键，它使得通知独立于面向对象层次结构，即通知操作可以作用于多个对象的一组方法。
 
-#### Spring AOP
+#### 开启 AOP 支持
 
 Spring AOP 默认使用标准的 JDK 动态代理实现，因此实现了接口的类就可以使用 AOP。如果没有实现接口，Spring 则使用 CGLIB 来完成代理。
 
@@ -38,6 +37,8 @@ public class AopConfig{
 }
 ```
 
+#### 切面声明
+
 开启 `@AspectJ` 注解支持后就可以通过注解的方式定义切面、切入点以及通知了。Spring 在 bean 上使用 `@Aspect` 注解定义切面，切面和普通的 bean 一样可以有方法和字段，另外切面中还可以包含切入点、通知和引入的声明。**在 Spring AOP 中，切面本身不能作为代理的目标对象，也就是说切入点表达式不会匹配切面中的方法**。
 
 ```java
@@ -47,6 +48,8 @@ public class NotVeryUsefulAspect {
     
 }
 ```
+
+#### 切入点声明
 
 切入点声明通知可以执行的连接点，Spring AOP 只支持在 bean 的方法上的连接点，因此可以将切入点看做是与 bean 上的方法执行相匹配。切入点声明包含两部分：一个由名称和任意参数组成的签名和一个确定连接点方法的切入点表达式。Spring AOP 注解方式使用定义在返回值为 void 的普通方法上的 `@Pointcuut` 注解来声明切入点：
 
@@ -69,6 +72,78 @@ private void isTrading(){}
 @Pointcut("anyPublicOperation() && isTrading()")
 private void tradingOperation(){}
 ```
+
+切入点表达式常用 `execution` 指示符，其表达式语法为：
+
+```
+execution(modifiers-pattern? ret-type-pattern declaring-type-pattern?name-pattern(param-pattern)
+                throws-pattern?)
+```
+
+除了返回类型 (ret-type-pattern) 表达式，方法名 (name-pattern) 表达式，方法参数(param-pattern) 表达式外，其他所有的表达式都是可选的。返回类型、方法名、方法参数需要全限定名匹配，通配符 `*` 可以用于匹配所有的类型，对于方法参数 `()` 表示方法不需要参数，`(*)` 表示方法只有一个参数(任意类型都行)，`(..)` 表示方法可以有任意参数：
+
+```
+// 任意类的 public 方法，方法需要任意参数，返回任意类型
+execution("public * *(..)")
+
+// service 包及其子包的任意方法
+execution(* com.xyz.service..*.*(..))
+
+// service 包的任意方法
+execution(* com.xyz.service.*.*(..))
+
+// service 包下 AccountService 类的任意方法
+execution(* com.xyz.service.AccountService.*(..))
+```
+
+#### 通知声明
+
+通知和切入点表达式相关联并且会在连接点执行之前、之后或者前后运行。通知关联的切入点表达式可以是已经命名的切入点表达式的引用，也可以直接声明新的表达式。
+
+**前置通知**
+
+前置通知在连接点方法执行之前执行，使用 `@Before` 注解在切面中声明
+
+```java
+@Aspect
+public class BeforeExample{
+    
+    @Before("com.xyz.myapp.CommonPointcuts.dataAccessOperation()")
+    public void doAccessCheck(){
+        // ...
+    }
+    
+    @Before("execution(* com.xyz.myapp.dao.*.*(..))")
+    public void doAccessCheck() {
+        // ...
+    }
+}
+```
+
+**后置通知**
+
+后置通知在连接点方法正常执行完成之后执行，使用 `@AfterReturning` 注解在切面中声明：
+
+```java
+@Aspect
+public class AfterReturningExample{
+    
+    @AfterReturning("com.xyz.myapp.CommonPointcuts.dataAccessOperation()")
+    public void doAccessCheck() {
+        // ...
+    }
+    
+    // 使用 returning 绑定连接点方法的返回值
+    @AfterReturning(
+        pointcut="com.xyz.myapp.CommonPointcuts.dataAccessOperation()",
+        returning="retVal")
+    public void doAccessCheck(Object retVal) {
+        // ...
+    }
+}
+```
+
+**异常通知**
 
 
 
