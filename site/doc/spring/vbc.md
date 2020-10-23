@@ -1,4 +1,4 @@
-## 数据绑定
+### 数据绑定
 
 数据绑定用于将用户的输入动态的绑定到程序的领域模型(domain model)，也就是允许在目标对象中设置属性值。Spring 提供了 `DataBinder` 实现数据绑，并且提供了字段校验、格式化和绑定结果分析。
 
@@ -43,9 +43,9 @@ public static void dataBindAndResult(){
 
 https://www.cnblogs.com/yourbatman/p/11212092.html
 
-### `DataBinder`
+#### `DataBinder`
 
-### `PropertyEditor`
+#### `PropertyEditor`
 
 ``PropertyEditors` 是 JavaBeans 规范的一部分，可以实现对象和字符串之间的转换。`DataBinder` 和 `BeanWrapper` 使用 `PropertyEditorSupport` 实现解析和格式化属性值。 
 
@@ -85,11 +85,11 @@ PropertyEditor editor = PropertyEditorManager.findEditor(Hello.class);
 
 `JavaBeans` 规范还提供了标准的 `BeanInfo` 机制
 
-## 类型转换
+### 类型转换
 
 Spring 在 `core.convert` 包中定义了通用的类型转换系统，在 Spring 容器中可以使用该系统代替 `PropertyEditor` 实现将字符串转换为所需的数据类型。
 
-### `Converter`
+#### `Converter`
 
 `Converter`  接口是 Spring 提供的实现简单的强类型转换逻辑的 `SPI` ，实现类型转换需要实现该接口并重写类型转换逻辑。Spring 在 `core.convert.support` 包中定义了多种类型转换实现，并通过 `DefaultConversionService` 注册。
 
@@ -107,7 +107,7 @@ public interface Converter<S, T> {
 
 
 
-### `ConverterFactory`
+#### `ConverterFactory`
 
 `Converter` 接口只能在特定类型之间进行转换，在对具有相同父类或者接口进行转换时，使用 Spring 提供的 `ConverterFactory` 接口能够更加方便的管理类型的转换。
 
@@ -126,7 +126,7 @@ addConverter(new ConverterFactoryAdapter(factory,
 
 
 
-### `GenericConverter`
+#### `GenericConverter`
 
 `GenericConverter` 可以实现更加复杂的转换，支持多个类型间的转换并提供类型上下文用于类型转换逻辑，是 Spring 提供的最复杂的类型转换 `SPI`。`GenericConverter` 接口定义了两个方法：
 
@@ -140,7 +140,7 @@ Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetTy
 
 
 
-### `ConditionalGenericConverter`
+#### `ConditionalGenericConverter`
 
 `ConditionalGenericConverter` 接口继承了 `GenericConvertion` 和 `ConditionalConverter`，可以在满足特定情况下才进行类型转换：
 
@@ -155,7 +155,7 @@ public interface ConditionalGenericConverter extends GenericConverter, Condition
 
 
 
-### `ConversionService`
+#### `ConversionService`
 
 `ConversionService` 接口是整个类型转换系统的入口，通过统一的 `API`实现运行时的类型转换逻辑。 
 
@@ -252,11 +252,11 @@ protected GenericConversionService createConversionService() {
 
 
 
-## 格式化
+### 格式化
 
 `Converter` API 提供了通用的类型转换体系，Spring 在大部分情况下使用这套体系完成类型的转换以及数据的绑定。但是在一些情况下，如本地化字符串值，`Converter` 体系就不能直接处理这类问题，Spring 提供了 `Formatter` 作为 `PropertyEditor` 的替换。
 
-### `Formatter`
+#### `Formatter`
 
 `Formatter` 接口继承了 `Printer` 和 `Parser` 接口，定义了强类型的字段类型格式化：
 
@@ -297,7 +297,7 @@ public final class DateFormatter implements Formatter<Date>{
 }
 ```
 
-### `AnnotationFormatterFactory`
+#### `AnnotationFormatterFactory`
 
 通过实现 `AnnotationFormatterFactory` 将注解和 `Formatter` 实现绑定就可以直接使用注解来配置字段的格式化。`AnnotationFormatterFactory` 接口定义了三个方法：
 
@@ -356,25 +356,61 @@ public final class NumberFormatAnnotationFomatterFactory
 
 Spring 在 `org.springframework.format.annotation` 包定义了 `@NumberFormat` 格式化数字类型，`@DateTimeFormat` 格式化时间类型。
 
-### `FormatterRegistry`
+#### `FormatterRegistry`
 
-`FormatterRegistry` 接口继承自 `ConverterRegistry`，用于注册 `Formatter` 和 `Converter` 实现类 `FormattingConversionService` 
+`FormatterRegistry` 接口继承自 `ConverterRegistry`，因此可以注册 `Formatter` 和 `Converter` 。`FormattingConversionRegistry` 是 `FormatterRegistry` 的一种实现，通过 `FormattingConversionServiceFactoryBean` 可以显式的将其注册到容器中：
 
-## 数据校验
+```java
+public void afterPropertiesSet() {
+    this.conversionService = new DefaultFormattingConversionService(
+        this.embeddedValueResolver, this.registerDefaultFormatters);
+    ConversionServiceFactory.registerConverters(this.converters, this.conversionService);
+    registerFormatters(this.conversionService);
+}
+```
+
+
+
+`FormatterRegistry` 集中了格式化规则的配置，只需要一次定义就可以在所有地方使用这些规则。可以按照字段类型或者注解来注册格式化规则：
+
+```java
+public interface FormatterRegistry extends ConverterRegistry {
+    
+    // 按照字段类型添加 Formatter
+    void addFormatterForFieldType(Class<?> fieldType, Formatter<?> formatter);
+
+	// 按照注解添加 Formatter
+    void addFormatterForAnnotation(AnnotationFormatterFactory<?> factory);
+}
+```
+
+
+
+#### `FormatterRegistrar`
+
+`FormatterRegistrar` 通过 `FormatterRegistry` 注册 `Formatter` 和 `Converter`，在为给定的类别注册多种格式化注册器的时候会非常有用。
+
+```java
+public interface FormatterRegistrar {
+    
+    void registerFormatters(FormatterRegistry registry);
+}
+```
+
+- `DateTimeFormatterRegistrar`
+- `DateFormatterRegistrar`
+
+### 数据校验
 
 Spring 提供了 `Validator` 框架用于参数的校验，它可以使得参数的校验可以在应用的每一层，并且可以和任何的 `validator` 插件组合。
 
-### `Validator`
+#### `Validator`
 
-### `ValidatorFactory`
+#### `ValidatorFactory`
 
-### `LocalValidatorFactoryBean`
+#### `LocalValidatorFactoryBean`
 
-### `MethodValidationPostProcessor`
-
-## 实现原理
-
-### 源码分析
+#### `MethodValidationPostProcessor`
 
 ### 自动配置
 
