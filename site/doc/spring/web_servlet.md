@@ -74,6 +74,17 @@ public void MyWebApplicationInitializer implements WebApplicationInitializer {
 
 Spring MVC 的架构是基于前端控制器(DispatcherServlet)设计的，HTTP 请求都是由 DispatcherServlet 代理并通过设置的 HandlerMapping 将请求映射到对应的处理器链(HandlerExecutionChain),然后通过 HandlerAdapter 适配的处理器链完成请求的处理,请求处理的结果由 DispatcherServlet 代理给 ViewResolver 渲染后返回,从而完成整个 HTTP 请求.
 
+```sequence
+DispatcherServlet-->HandlerMapping: getHandler
+HandlerMapping->DispatcherServlet: HandlerExecutionChain
+DispatcherServlet-->HandlerAdapter: getHandlerAdapter
+HandlerAdapter-->Handler: handle
+HandlerAdapter->DispatcherServlet: ModelAndView
+DispatcherServlet-->ViewResolver: postHandle
+```
+
+
+
 ![Web MVC 执行流程](../../resources/mvc.png)
 
 Dispatcher 是 Spring MVC 框架的中央处理器,所有的请求都会通过 DispatcherServlet 完成处理并返回渲染后的结果.
@@ -270,6 +281,7 @@ public class DispatcherServlet extends FrameworkServlet {
 }
 ```
 `HandlerMapping` 接口定义了 `getHandler` 方法接收 `HttpServletRequest` 并返回 `HandlerExecutionChain`,其中包含了该请求对应的处理类以及对应的 `HandlerInterceptor` 列表
+
 ```java
 public interface HandlerMapping {
     
@@ -404,14 +416,6 @@ Spring 定义了 `ViewResolver` 和 `View` 接口用于渲染模型，`ViewResol
 
 
 
-### WebMvcConfigurer
-
-WebMvcConfigure 接口是 Spring 提供的通过代码方式配置 MVC 的入口,通过实现接口并重写接口方法可以使用自定义的 Spring MVC 组件.
-
-```java
-
-```
-
 ### Filter
 
 #### Forwarded
@@ -420,7 +424,7 @@ WebMvcConfigure 接口是 Spring 提供的通过代码方式配置 MVC 的入口
 
 `ForwardedHeaderFilter` 是一个 Servlet Filter 用于基于 `Forward` 头修改 `Origin` 头，并且移除掉一些有影响的头，这个过滤器需要在过滤器链的最前面
 
-### 注解
+### Annotation
 
 #### @ControllerAdvice
 
@@ -450,6 +454,22 @@ public class MyConfig {
 }
 ```
 
+#### `@ReponseBody`
 
+**MessageConversion**
+
+### CORS
+
+### MVC Config
+
+#### WebMvcConfigurer
+
+WebMvcConfigure 接口是 Spring 提供的通过代码方式配置 MVC 的入口,通过实现接口并重写接口方法可以使用自定义的 Spring MVC 组件.
+
+```java
+
+```
+
+### RestClient
 
 ## WebSocket
