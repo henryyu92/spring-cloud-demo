@@ -402,15 +402,77 @@ public interface FormatterRegistrar {
 
 ### 数据校验
 
-Spring 提供了 `Validator` 框架用于参数的校验，它可以使得参数的校验可以在应用的每一层，并且可以和任何的 `validator` 插件组合。
+Spring 提供 `Validator` 框架可以通过约束声明和元数据进行参数的校验，`Validator` 可以作用于任何的对象并且通过与 `Hibernate Validator` 结合使用实现更加方便的参数校验。
 
 #### `Validator`
 
-#### `ValidatorFactory`
+`Validator` 接口声明应用程序中对象的校验器，接口完全独立于任何基础设施或者上下文，因此可以在任意地方验证任何对象。
+
+```java
+public interface Validator {
+    
+    boolean supports(Class<?> clazz);
+    
+    // 验证失败则将错误记录在 Errors 对象中
+    void validate(Object target, Errors errors);
+}
+```
+
+
 
 #### `LocalValidatorFactoryBean`
 
+Spring 对 Bean 的校验提供了全面的支持，通过 `LocalValidatorFactoryBean` 将 `javax.validation.Vlidator` 以及 `javax.validation.ValidationFactory` 设置到 Spring 上下文中。
+
+将 `LocalValidatorFactoryBean` 注册到容器中就会触发默认的校验器初始化，包括 `javax.validator` 和 `Hibernate Validator` 都会注册到容器中，之后就可以在需要的地方直接注入：
+
+```java
+@Configuration
+public class AppConfig{
+    
+    @Bean
+    public LocalValidatorFactoryBean validator(){
+        return new LocalValidatorFactoryBean();
+    }
+    
+}
+```
+
+
+
 #### `MethodValidationPostProcessor`
+
+#### 自定义校验器
+
+每个校验器由两部分组成：
+
+- 声明约束以及可以配置属性的 `@Constraint` 注解
+- 实现 `javax.validation.ConstraintValidator` 接口的类
+
+为了将注解声明与接口实现相关联，每个 `@Constraint` 注解都引用对应的 `ConstraintValidator` 实现类，在运行时如果遇到定义的注解，`ConstraintValidatorFactory` 就会实例化引用的实现类。
+
+默认情况下，`LocalValidatorFactoryBean` 配置了一个 `SpringConstraintValidatorFactory` 使得 `ConstraintValidator` 的创建交由 Spring 管理，这使得自定义的 `ConstraintVlidator` 可以注入到其他类中。
+
+```java
+@Target({ElementType.METHOD, ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy=MyConstraintValidator.class)
+public @interface MyConstraint {
+}
+
+// Spring 会自动将关联的实现类注入容器
+public class MyConstraintValidator implements ConstraintValidator {
+
+    @Autowired;
+    private Foo aDependency;
+
+    // ...
+}
+```
+
+
+
+
 
 ### 自动配置
 
