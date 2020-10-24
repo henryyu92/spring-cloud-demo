@@ -442,6 +442,32 @@ public class AppConfig{
 
 #### `MethodValidationPostProcessor`
 
+Spring 通过 `MethodValidationPostProcessor` 将 Bean Validation 标准以及自定义的实现(如 `Hibernate Validator`) 支持的方法校验集成到 Spring 上下文中。
+
+```java
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public MethodValidationPostProcessor validationPostProcessor() {
+        return new MethodValidationPostProcessor();
+    }
+}
+```
+
+要使用方法校验，则需要在校验类添加 `@Validated` 注解，方法校验依赖 `AOP` 代理。
+
+```java
+@Validated
+public class Person{
+    
+    @Max(120)
+    private int age;
+}
+```
+
+
+
 #### 自定义校验器
 
 每个校验器由两部分组成：
@@ -472,8 +498,28 @@ public class MyConstraintValidator implements ConstraintValidator {
 
 
 
-
-
 ### 自动配置
 
-SpringBoot 自动配置文件 `spring.factories` 中配置 Spring Boot 应用启动时加载的 Web 自动配置类 `WebMvcAutoConfiguration`，类上的注解 `@AutoConfigureAfter` 表明在配置该类之前需要配置 `ValidationAutoConfiguration`。
+Spring Boot 在启动时自动配置了数据转换和数据校验的默认实现类，这使得不需要额外的配置就可以使用 Spring 提供的大量默认的类型转换器和校验器。
+
+#### 类型转换
+
+在 `WebMvcAutoConfiguration` 配置类中定义了
+
+```java
+@Bean
+public FormattingConversionService mvcConversionService() {
+    WebConversionService conversionService = new WebConversionService(this.mvcProperties.getDateFormat());
+    addFormatters(conversionService);
+    return conversionService;
+}
+```
+
+
+
+#### 数据校验
+
+Spring Boot 自动配置文件 `spring.factories` 中配置了应用启动时加载的自动配置类 `WebMvcAutoConfiguration`，类上的注解 `@AutoConfigureAfter` 表明在配置该类之前需要配置 `ValidationAutoConfiguration`。
+
+在 `ValidationAutoConfiguration` 中向 Spring 容器注册了 `LocalValidatorFactoryBean` 和 `MethodValidationPostProcessor`。
+
