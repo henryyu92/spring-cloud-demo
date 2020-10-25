@@ -20,9 +20,6 @@ public class ConverterConfiguration {
 
         final ConversionServiceFactoryBean conversionService = new ConversionServiceFactoryBean();
 
-        // ConversionServiceFactoryBean 可以注册自定义的 Converter
-        conversionService.setConverters(Collections.singleton(StringToInteger.class));
-
         return conversionService;
     }
 

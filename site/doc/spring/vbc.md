@@ -422,9 +422,7 @@ public interface Validator {
 
 #### `LocalValidatorFactoryBean`
 
-Spring 对 Bean 的校验提供了全面的支持，通过 `LocalValidatorFactoryBean` 将 `javax.validation.Vlidator` 以及 `javax.validation.ValidationFactory` 设置到 Spring 上下文中。
-
-将 `LocalValidatorFactoryBean` 注册到容器中就会触发默认的校验器初始化，包括 `javax.validator` 和 `Hibernate Validator` 都会注册到容器中，之后就可以在需要的地方直接注入：
+`LocalValidatorFactoryBean` 是 Spring 提供的验证功能的核心类，在初始化完成时(`afterPropertiesSet`)会将默认提供的所有 `Validator` 注册到容器中，包括 `javax.validator` 和 `Hibernate Validator` 都会注册到容器中，之后就可以在需要的地方直接注入：
 
 ```java
 @Configuration
@@ -442,7 +440,7 @@ public class AppConfig{
 
 #### `MethodValidationPostProcessor`
 
-Spring 通过 `MethodValidationPostProcessor` 将 Bean Validation 标准以及自定义的实现(如 `Hibernate Validator`) 支持的方法校验集成到 Spring 上下文中。
+Spring 通过 `MethodValidationPostProcessor` 将 Bean Validation 标准以及自定义的实现(如 `Hibernate Validator`) 支持的方法校验集成到 Spring 上下文中。要使用方法校验，则需要在校验类添加 `@Validated` 注解。
 
 ```java
 @Configuration
@@ -453,16 +451,12 @@ public class AppConfig {
         return new MethodValidationPostProcessor();
     }
 }
-```
 
-要使用方法校验，则需要在校验类添加 `@Validated` 注解，方法校验依赖 `AOP` 代理。
-
-```java
 @Validated
 public class Person{
     
     @Max(120)
-    private int age;
+    privte int age;
 }
 ```
 

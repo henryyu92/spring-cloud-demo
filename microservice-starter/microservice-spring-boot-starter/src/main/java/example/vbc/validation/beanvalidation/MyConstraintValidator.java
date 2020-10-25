@@ -7,6 +7,7 @@ public class MyConstraintValidator implements ConstraintValidator<MyConstraint, 
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return false;
+
+        return value != null && !value.isEmpty();
     }
 }

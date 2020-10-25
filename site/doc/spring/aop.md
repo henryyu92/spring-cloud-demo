@@ -22,7 +22,7 @@ Spring AOP 实现不需要特殊的编译过程，也不需要控制类加载器
 
 与切入点匹配的连接点的概念是 AOP 的关键，它使得通知独立于面向对象层次结构，即通知操作可以作用于多个对象的一组方法。
 
-#### 开启 AOP 支持
+#### 开启 AOP
 
 Spring AOP 默认使用标准的 JDK 动态代理实现，因此实现了接口的类就可以使用 AOP。如果没有实现接口，Spring 则使用 CGLIB 来完成代理。
 
@@ -76,8 +76,7 @@ private void tradingOperation(){}
 切入点表达式常用 `execution` 指示符，其表达式语法为：
 
 ```
-execution(modifiers-pattern? ret-type-pattern declaring-type-pattern?name-pattern(param-pattern)
-                throws-pattern?)
+execution(modifiers-pattern? ret-type-pattern declaring-type-pattern?name-pattern(param-pattern) throws-pattern?)
 ```
 
 除了返回类型 (ret-type-pattern) 表达式，方法名 (name-pattern) 表达式，方法参数(param-pattern) 表达式外，其他所有的表达式都是可选的。返回类型、方法名、方法参数需要全限定名匹配，通配符 `*` 可以用于匹配所有的类型，对于方法参数 `()` 表示方法不需要参数，`(*)` 表示方法只有一个参数(任意类型都行)，`(..)` 表示方法可以有任意参数：
@@ -100,7 +99,7 @@ execution(* com.xyz.service.AccountService.*(..))
 
 通知和切入点表达式相关联并且会在连接点执行之前、之后或者前后运行。通知关联的切入点表达式可以是已经命名的切入点表达式的引用，也可以直接声明新的表达式。
 
-**前置通知**
+##### 前置通知
 
 前置通知在连接点方法执行之前执行，使用 `@Before` 注解在切面中声明
 
@@ -120,7 +119,7 @@ public class BeforeExample{
 }
 ```
 
-**后置通知**
+##### 后置通知
 
 后置通知在连接点方法正常执行完成之后执行，使用 `@AfterReturning` 注解在切面中声明：
 
@@ -143,9 +142,112 @@ public class AfterReturningExample{
 }
 ```
 
-**异常通知**
+##### 异常通知
+
+异常通知在匹配的连接点方法执行时抛出异常后执行，使用 `@AfterThrowing` 注解可以在切面中声明：
+
+```java
+@Aspect
+public class AfterThrowingExample {
+    
+    @AfterThrowing("com.xyz.myapp.CommonPointcuts.dataAccessOperation()")
+    public void doRecoveryActions(){
+        // ...
+    }
+}
+```
+
+异常通知可以在连接点方法抛出指定的异常后执行，并且可以获取到抛出的异常，`@AfterThrowing` 注解包含 `throwing` 属性指定抛出的异常，并且与通知方法的参数绑定：
+
+```java
+@Aspect
+public class AfterThrowingExample {
+    
+    // 连接点在抛出 Exception 的时候才触发异常通知
+    @AfterThrowing(
+        pointcut="com.xyz.myapp.CommonPointcuts.dataAccessOperation()",
+    	throwing="ex")
+    public void doRecoveryActions(Exception ex){
+        // ...
+    }
+}
+```
+
+##### 最终通知
+
+最终通知在连接点方法执行完后执行，无论连接点方法是正常执行完还是由于异常返回都需要执行，通常用于释放资源。最终通知使用 `@After` 注解在切面中声明：
+
+```java
+@Aspect
+public class AfterFinallyExample {
+    
+    @After("com.xyz.myapp.CommonPointcuts.dataAccessOperation()")
+    public void doReleaseLock() {
+        // ...
+    }
+}
+```
+
+##### 环绕通知
+
+环绕通知再连接点方法执行的前后都会执行，可以决定连接点方法的执行时间以及执行方式，常用于在需要以线程安全的方式共享方法执行前后的状态的场景。
+
+环绕通知使用 `@Around` 注解在切面中声明，环绕通知声明的方法第一个参数需要是 `ProceedingJoinPoint`，在通知方法体中调用 `ProceedingJoinPoint#proceed` 方法就会执行连接点方法，`proceed` 方法可以传入 `Object[]` 类型参数，其值为连接方法的参数。
+
+```java
+@Aspect
+public class AroundExample {
+    
+    @Around("com.xyz.myapp.CommonPointcuts.businessService()")
+    public Object doBasicProfiling(ProceedingJoinPoint pjp) throws Throwable {
+        // start stopwatch
+        Object retVal = pjp.proceed();
+        // stop stopwatch
+        return retVal;
+    }
+}
+```
+
+环绕通知的返回值就是方法调用的返回值，利用这种特性可以实现一个缓存的切面，当缓存中不存在则调用 `proceed` 方法，否则直接返回缓存的数据。
+
+##### 通知参数
+
+Spring 提供了全类型的通知，也就是说可以在通知签名中声明任意的参数，可以在任意通知的签名中声明第一个参数为 `org.aspectj.lang.JoinPoint`(环绕通知需要是其子类 `ProceedingJoinPoint`)，通过接口提供的方法可以获取连接点方法和代理信息：
+
+- `getArgs()`：返回连接点方法的参数
+- `getThis()`：返回连接点方法的代理对象
+- `getTarget()`：返回被代理的对象
+- `getSignature()`：返回连接点方法的描述
+
+如果需要向通知传入参数，可以使用 `args` 表达式，如果在表达式中指定参数的名字，则在通知调用的时候就会将值传入参数：
+
+```java
+@Aspect
+public class ParameterExample {
+    
+    @Before("com.xyz.myapp.CommonPointcuts.dataAccessOperation() && args(account,..)")
+    public void validateAccount(Account account){
+        // ...
+    }
+    
+    // 等效写法
+    @Pointcut("com.xyz.myapp.CommonPointcuts.dataAccessOperation() && args(account,..)")
+	private void accountDataAccessOperation(Account account) {}
+
+	@Before("accountDataAccessOperation(account)")
+	public void validateAccount(Account account) {
+    	// ...
+	}
+}
+```
+
+`args` 表达是有两个用处，首先它仅匹配那些至少需要一个参数且参数为指定的类型，其次它将参数和通知参数进行绑定使得在通知中能够使用。
 
 
+
+
+
+#### 引入
 
 ### AOP API
 
