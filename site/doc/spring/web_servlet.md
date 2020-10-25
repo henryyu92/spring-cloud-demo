@@ -1,78 +1,36 @@
 ## WebMVC
 
-Spring Web MVC 是 Spring 提供的基于 Servlet 的 Web 框架，使用 Spring Web MVC 框架开发的 Web 应用程序需要运行在 Servlet 容器中。
+Spring Web MVC 是基于 Servlet 的 Web 框架，使用 Spring Web MVC 框架开发的 Web 应用程序需要运行在 Servlet 容器中。
 
-### Initializer
+### DispatcherServlet
 
-Servlet 容器在启动应用时会创建一个 `ServletContext` 用于不同 `Servlet` 共享。Servlet 容器在启动应用时会加载 `web.xml` 文件，并根据文件的内容初始化应用的 `Servlet` 及其对应的 `ServletContext`。
+Spring MVC 和大多数基于 `Servlet` 容器的 Web 框架一样，是以`Servlet`(`DispatcherServlet`)为核心设计的，请求经过代理交由配置的组件完成实际的处理。
 
-```xml
-<!-- 配置 Servlet -->
-<servlet>
-    <servlet-name>springmvc</servlet-name>
-    <servlet-class>org.springframwork.web.servlet.DispatcherServlet</servlet-class>
-</servlet>
-<!-- 配置 Listener -->
-<listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-</listener>
-```
+`DispatcherServlet` 实现了 `Servlet` 接口，因此需要在 `web.xml` 配置文件中配置映射关系，而其代理的处理请求的组件则需要在 Spring 中配置。Servlet3.0 提供 `ServletContainerInitializer` 接口以 Java 的方式配置 `web.xml`，通过 SPI 机制加载 `META-INF/services/javax.servlet.ServletContainerInitializer` 文件中配置的实现了该接口的类并实例化。
 
-`web.xml` 文件中需要配置应用启动的 Servlet 并指定初始化时对应的 ServletContext 的配置文件，并设置了 `ContextLoaderListener` 来监听 `ServletContext` 的加载事件。
-
-#### WebApplicationInitializer
-
-Servlet 3.0 为了支持以 Java 编程的方式替代 `web.xml` 来配置，提供了 `ServletContainerInitializer` 接口，通过 SPI 机制加载 `META-INF/services/javax.servlet.ServletContainerInitializer` 文件中配置的实现了该接口的类并实例化。
-
-容器启动时会调用加载的 `ServletContainerInitializer` 实现类的 `onStartup` 方法并传入该实现类的 `@HandlesTypes` 注解中的类。Spring 提供了 `SpringServletContainerInitializer` 类实现了 `ServletContainerInitializer` ，因此在 Servlet 容器启动时会实例化并调用 `onStartup`方法：
+Spring 提供了 `SpringServletContainerInitializer` 用于在容器启动的时候实例化所有`WebApplicationInitializer`的实现类并调用实现类的 `onStartup`初始化容器：
 
 ```java
-// 遍历所有传入的 Class，只保留类上通过 @HandlesTypes 注解的 WebApplicationInitializer 类
-for (Class<?> waiClass : webAppInitializerClasses) {
-	// Be defensive: Some servlet containers provide us with invalid classes,
-	// no matter what @HandlesTypes says...
-	if (!waiClass.isInterface() && !Modifier.isAbstract(waiClass.getModifiers()) &&
-		WebApplicationInitializer.class.isAssignableFrom(waiClass)) {
-	try {
-		initializers.add((WebApplicationInitializer)											// 实例化保留下来的类
-        ReflectionUtils.accessibleConstructor(waiClass).newInstance());
-	}
-	catch (Throwable ex) {
-		throw new ServletException("Failed to instantiate WebApplicationInitializer class", ex);
-	}
-}
-
-
-// 实现类进行排序并依次调用 onStarup 方法
-AnnotationAwareOrderComparator.sort(initializers);
-for (WebApplicationInitializer initializer : initializers) {
-	initializer.onStartup(servletContext);
-}
-```
-
- `SpringServletContainerInitializer#onStartup` 方法实例化所有实现 `WebApplicationInitializer` 接口的类并在排序后依次调用 `onStartup` 方法。通过实现 `WebApplicationInitializer` 就可以自定义 Web 应用：
-
-```java
-public void MyWebApplicationInitializer implements WebApplicationInitializer {
+public class MyWebApplicationInitializer implements WebApplicationInitializer {
     
     @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
-    	// ...
+    public void onStartup(ServletContext servletContext){
+    	//   
     }
 }
 ```
 
 #### WebApplicationContext
 
-`DispatcherServlet` 在创建的时候需要参数 `WebApplicationContext`，实现了 `ApplicationContext`
+Servlet 容器在启动应用时会创建一个 `ServletContext` 用于不同 `Servlet` 共享。
 
-- `XmlWebApplicationContext`
 
-- `AnnotationConfigWebApplicationContext`
 
-### DispatcherServlet
+#### 组件
 
-Spring MVC 的架构是基于前端控制器(DispatcherServlet)设计的，HTTP 请求都是由 DispatcherServlet 代理并通过设置的 HandlerMapping 将请求映射到对应的处理器链(HandlerExecutionChain),然后通过 HandlerAdapter 适配的处理器链完成请求的处理,请求处理的结果由 DispatcherServlet 代理给 ViewResolver 渲染后返回,从而完成整个 HTTP 请求.
+HTTP 请求经由 `DispatcherServlet` 代理并转发给配置的组件处理，完成后再由 `Dispachter` 将结果返回，整个处理流程为：
+
+- DispatcherServlet 调用 
 
 ```sequence
 DispatcherServlet-->HandlerMapping: getHandler
@@ -85,11 +43,7 @@ DispatcherServlet-->ViewResolver: postHandle
 
 
 
-![Web MVC 执行流程](../../resources/mvc.png)
-
-Dispatcher 是 Spring MVC 框架的中央处理器,所有的请求都会通过 DispatcherServlet 完成处理并返回渲染后的结果.
-
-Dispatcher 并没有直接参与请求的处理以及结果的渲染,而是通过代理给其内部的组件完成这些功能.Spring MVC 为 DispatcherServlet 的内部组件提供了默认的实现,并将这些 bean 交由容器来管理,通过自定义这些 bean 可以扩展或者替换它们:
+Spring MVC 为 DispatcherServlet 的内部组件提供了默认的实现,并将这些 bean 交由容器来管理,通过自定义这些 bean 可以扩展或者替换它们:
 - HandlerMapping：将请求映射到 handler 和 拦截器链用于预处理和后处理，映射的条件取决于不同的实现类
 - HandlerAdapter：将不同的处理器处理方法适配到统一的方法中并处理方法参数,数据绑定,消息转换等
 - HandlerExceptionResolver：请求映射或者请求处理过程中的异常处理接口
@@ -217,7 +171,9 @@ public class DispatcherServlet extends FrameworkServlet {
 
 请求处理完成之后的结果由 `processDispatchResult` 方法处理,这个方法除了渲染请求处理返回的 `ModelAndView` 外,还通过 `HandlerExceptionResolver` 全局处理请求映射和处理过程中出现的异常.
 
-#### HandlerMapping
+
+
+##### HandlerMapping
 
 HandlerMapping 负责映射 URL 和对应的处理类，`DispatcherServlet` 在启动时调用 `initHandlerMappings` 方法，该方法会从容器中加载 `HandlerMapping` 的实现类,如果没有指定就使用默认配置`DispatcherServlet.properties`中的实现:
 ```java
@@ -297,7 +253,7 @@ Spring 在配置文件中提供了默认的 `HandlerMapping` 实现类:
 
 https://blog.csdn.net/qq_38410730/article/details/79507465
 
-#### HandlerAdapter
+##### HandlerAdapter
 
 请求经过 `HandlerMapping` 处理后得到处理请求的 `HandlerExecutionChain`，不同的 `HandlerMapping` 映射的 `HandlerExecutionChain` 中的处理类是不同的，Spring 利用适配器模式通过 `HandlerAdapter` 接口将不同的处理类以统一的方式来处理请求。
 
@@ -343,8 +299,7 @@ https://www.jianshu.com/p/1ccd4b326cff
 
 https://www.jianshu.com/p/23ad68d8b421
 
-
-#### HandlerMethodArgumentResolver
+**HandlerMethodArgumentResolver**
 
 `HandlerMethodArgumentResolver` 接口将 `HttpServletRequest` 中的请求参数转换为处理类方法的参数.
 
@@ -362,9 +317,9 @@ Spring 提供了默认的 `HandlerMethodArgumentResolver` 的实现类,不同的
 - ModelAttributeMethodProcessor 用于处理 @ModelAttribute 注解的参数
 - RequestResponseBodyMethodProcessor 用于处理 @RequestBody 注解的参数
 
-#### HandlerMethodReturnValueHandler
+**HandlerMethodReturnValueHandler**
 
-#### HttpMessageConverter
+**HttpMessageConverter**
 
 `HttpMessageConverter` 接口是 Spring MVC 中用于将 HTTP 中的字节流数据和应用程序中的对象进行转换.
 
@@ -372,7 +327,7 @@ Spring 提供了常用的数据格式的转换:
 
 - ProtobufHttpMessageConverter
 
-#### HandlerExceptionResolver
+##### HandlerExceptionResolver
 
 在 HandlerMapping 映射的过程中获取在请求的处理过程抛出的异常会被 DispatcherServlet 捕获到并交给 HandlerExceptionResolver 来处理。Spring 提供了多种 HandlerExceptionResolver 的实现：
 
@@ -406,23 +361,23 @@ public class ErrorController {
 > ```
 >
 
-#### ViewResolver
+##### MultipartResolver
 
-Spring 定义了 `ViewResolver` 和 `View` 接口用于渲染模型，`ViewResolver` 用于映射视图名称和实际的视图，`View` 接口用于准备视图需要的数据。
-
-
-
-#### LocalResolver
+#### Exceptions
 
 
 
-### Filter
+### 过滤器
+
+#### Form Data
 
 #### Forwarded
 
 请求在经过负载均衡器后，请求头中的 `Origin` 会丢失，为了得到请求的真实客户端，在请求头 `Forwarded`、`X-Forwarded-Host`、`X-Forwarded-Proto`、`X-Forwarded-Ssl` 和 `X-Forwarded-Prefix` 中提供了请求的原始信息。
 
 `ForwardedHeaderFilter` 是一个 Servlet Filter 用于基于 `Forward` 头修改 `Origin` 头，并且移除掉一些有影响的头，这个过滤器需要在过滤器链的最前面
+
+#### ETag
 
 ### Annotation
 
