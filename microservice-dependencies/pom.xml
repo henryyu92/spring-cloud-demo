@@ -7,9 +7,6 @@
 	<artifactId>microservice-dependencies</artifactId>
 	<packaging>pom</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-    <modules>
-        <module>../microservice-alibaba/untitled</module>
-    </modules>
 
     <repositories>
 		<repository>

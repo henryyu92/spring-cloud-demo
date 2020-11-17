@@ -11,6 +11,7 @@
 
     <modules>
         <module>microservice-config-nacos</module>
+        <module>microservice-sentinel</module>
     </modules>
 
 </project>
