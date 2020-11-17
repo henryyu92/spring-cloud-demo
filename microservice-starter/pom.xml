@@ -14,5 +14,6 @@
         <module>microservice-spring-boot-starter</module>
         <module>microservice-component</module>
         <module>microservice-security</module>
+        <module>microservice-scheduler</module>
     </modules>
 </project>
