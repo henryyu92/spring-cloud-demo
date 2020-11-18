@@ -2,6 +2,9 @@ package example.listener;
 
 import org.springframework.context.ApplicationListener;
 
+/**
+ * 事件监听器
+ */
 public class BlockedListNotifier implements ApplicationListener<BlockedListEvent> {
 
     private String notificationAddress;

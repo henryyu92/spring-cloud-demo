@@ -57,4 +57,6 @@ System.out.println(bean2);
 FacotryBean 接口可以用于 AOP 代理对象的创建，在运行时创建代理对象并在代理对象的目标方法中根据业务要求织入相应的方法，这个对象在 Spring 中就是 ProxyFactoryBean
 
 
+### Lifecycle
+
 [Back](../../)
