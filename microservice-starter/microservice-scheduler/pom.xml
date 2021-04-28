@@ -6,7 +6,7 @@
         <artifactId>microservice-dependencies</artifactId>
         <groupId>org.mooc.cloud</groupId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../microservice-dependencies/pom.xml</relativePath>
+        <relativePath>../../microservice-dependencies/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
