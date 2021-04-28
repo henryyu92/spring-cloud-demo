@@ -23,8 +23,6 @@ IoC 容器是也是实现依赖注入(DI, Dependency Injection)的载体，IoC �
 - ```registerListeners```：注册 ApplicationListener
 - ```finishBeanFactoryInitialization```：初始化 BeanDefinition 定义的非 lazy 的 Bean。在这个方法中调用 ```beanFactory.preInstantiateSingletons()```，beanFactory 遍历 beanName 得到 BeanDefinition 并进行校验后调用 ```getBean(beanName)``` 方法实例化 Bean
 
-### 容器关闭
-
 ### 扩展点
 
 
@@ -55,6 +53,47 @@ Object bean2 = context.getBean("&studentFactoryBean");
 System.out.println(bean2);
 ```
 FacotryBean 接口可以用于 AOP 代理对象的创建，在运行时创建代理对象并在代理对象的目标方法中根据业务要求织入相应的方法，这个对象在 Spring 中就是 ProxyFactoryBean
+
+#### BeanFactoryPostProcessor
+
+`BeanDefinitionRegistryPostProcessor` 接口继承自 `BeanFactoryPostProcessor` 接口，可以在其他 BeanPostProcessor 实现类执行之前注册更多的 BeanDefinition。
+
+```
+public interface BeanDefinitionRegistryPostProcessor extends BeanFactoryPostProcessor {
+    // 在 bean 的定义注册后执行，可以修改或者增加已经注册的 bean
+    void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException;
+}
+```
+
+BeanDefinitionRegistryPostProcessor 接口的实现类在执行之前，所有常规的 `BeanDefinition` 都已经注册到 `BeanDefinitionRegistry` 中，因此可以修改在 `BeanDefinitionRegistry` 中注册的任意 `BeanDefinition`，也可以增加或者删除 `BeanDefinition`：
+
+```
+public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+    String[] names = registry.getBeanDefinitionNames();
+    for (String name : names){
+        System.out.println("BeanDefinitionNames: " + name);
+    }
+}
+```
+
+Spring 中 `org.springframework.context.annotation.ConfigurationClassPostProcessor` 是用这种方式来将注解 @Configuration 中的生成 bean 的方法所对应的 `BeanDefinition` 进行注册。
+
+### BeanFactoryPostProcessor
+
+`BeanFactoryPostProcessor` 可以在 BeanFactory 初始化完毕，即资源定位、加载、解析并注册 BeanDefinition 之后但在 Bean 初始化前对 BeanFactory 进行修改。ApplicationContext 会在创建其他 Bean 之前自动应用这些 BeanFactoryPostProcessor。
+
+```
+public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+    String[] names = beanFactory.getBeanDefinitionNames();
+    for (String name : names){
+        BeanDefinition bd = beanFactory.getBeanDefinition(name);
+        String className = bd.getBeanClassName();
+        if (className != null && className.equalsIgnoreCase(StudentFactoryBean.class.getName())){
+            bd.setAttribute("hello", "world");
+        }
+    }
+}
+```
 
 
 [Back](../../)
