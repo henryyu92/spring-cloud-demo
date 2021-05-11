@@ -4,16 +4,6 @@ spring:
       enabled: true # 启用 spring-cloud-gateway 默认为 true
       # 路由策略
       routes:
-        - id: after_route
-          uri: https://example.org
-          # 匹配在指定时间之后的请求
-          predicates:
-            - After=2017-01-20T17:42:47.789-07:00[America/Denver]
-        - id: before_route
-          uri: https://example.org
-          # 匹配在指定时间之前的请求
-          predicates:
-            - Before=2017-01-20T17:42:47.789-07:00[America/Denver]
         - id: between_route
           uri: https://example.org
           predicates:
@@ -23,14 +13,6 @@ spring:
           predicates:
             - Cookie=chocolate, ch.p
             - Cookie=key, value
-        - id: header_route
-          uri: https://example.org
-          predicates:
-            - Header=X-Request-Id, \d+
-        - id: host_route
-          uri: https://example.org
-          predicates:
-            - Host=**.somehost.org,**.anotherhost.org
         - id: method_route
           uri: https://example.org
           predicates:
@@ -57,3 +39,50 @@ spring:
           uri: https://weightlow.org
           predicates:
             - Weight=group1, 2
+
+
+---
+# AfterRoute
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: after_route
+          uri: https://example.org
+          # 匹配在指定时间之后的请求
+          predicates:
+            - After=2017-01-20T17:42:47.789-07:00[America/Denver]
+
+---
+# BeforeRoute
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: before_route
+          uri: https://example.org
+          # 匹配在指定时间之前的请求
+          predicates:
+            - Before=2017-01-20T17:42:47.789-07:00[America/Denver]
+
+---
+# HostRoute
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: host_route
+          uri: https://example.org
+          predicates:
+            - Host=**.somehost.org,**.anotherhost.org
+
+---
+# HeaderRoute
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: header_route
+          uri: https://example.org
+          predicates:
+            - Header=X-Request-Id, \d+
