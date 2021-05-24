@@ -1,6 +1,0 @@
-spring:
-  application:
-    name: order-hystrix
-feign:
-  hystrix:
-    enable: true
