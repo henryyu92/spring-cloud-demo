@@ -1,9 +1,9 @@
-package example.security.oauth2;
+package example.security.servlet.oauth2;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
-@SpringBootApplication
+@EnableAutoConfiguration
 public class OAuth2Application {
 
   public static void main(String[] args) {

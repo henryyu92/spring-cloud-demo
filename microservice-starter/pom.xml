@@ -12,7 +12,6 @@
 
     <modules>
         <module>microservice-spring-boot-starter</module>
-        <module>microservice-component</module>
         <module>microservice-security</module>
         <module>microservice-scheduler</module>
         <module>microservice-sharding-jdbc</module>

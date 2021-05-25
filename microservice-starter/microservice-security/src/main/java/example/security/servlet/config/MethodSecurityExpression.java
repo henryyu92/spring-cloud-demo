@@ -26,7 +26,7 @@ public class MethodSecurityExpression {
     }
 
     @PreAuthorize("hasPermission(#contact, 'admin')")
-    public void deletePermission(String contact, String recipient, Permission permission){
+    public void deletePermission(String contact, String recipient){
 
     }
 

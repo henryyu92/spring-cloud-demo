@@ -8,20 +8,12 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <properties>
-        <java.version>1.8</java.version>
-        <spring-boot-admin.version>2.2.1</spring-boot-admin.version>
-        <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
-    </properties>
-
     <modules>
         <module>microservice-business-order</module>
         <module>microservice-business-payment</module>
         <module>microservice-alibaba</module>
         <module>microservice-gateway</module>
-        <module>microservice-stream</module>
         <module>microservice-dependencies</module>
-        <module>microservice-admin</module>
         <module>microservice-starter</module>
     </modules>
 
